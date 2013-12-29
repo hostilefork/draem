@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block main %}
+<div id="entry-date"><p><b>Date:</b> <span>
+{% block date %}
+{% endblock date %}
+</span></p></div>
+
+<div id="entry-tags"><p><b>Tags:</b> <span>
+{% block tags %}
+{% endblock tags %}
+</span></p></div>
+
+<div id="entry-characters"><p><b>Characters:</b> <span>
+{% block characters %}
+{% endblock characters %}
+</span></p></div>
+
+<div id="entry-content">
+{% block content %}
+        Content
+{% endblock content %}
+</div>
+
+
+<div style="text-align: center; border:1px solid lightgray; width:90%; margin:20px; padding: 20px; font-variant:small-caps; font-weight: bold">
+<div style="text-align: left;"><a href="{% block prevurl %}http://realityhandbook.org{% endblock prevurl %}" title="Previous">&laquo; &laquo; {% block prevtitle %}Home{% endblock prevtitle %}</a></div>
+<div style="text-align: right;"><a href="{% block nexturl %}http://realityhandbook.org{% endblock nexturl %}" title="Next">{% block nexttitle %}Home{% endblock nexttitle %} &raquo; &raquo;</a></div>
+</div>
+{% endblock main %}

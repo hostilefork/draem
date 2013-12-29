@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang=en>
+<head>
+	<meta charset=utf-8>
+	<meta name="google-site-verification" content="eoQP3nJ2qyDceZYAYN6-XaF24JZ2DVrzC6penYi8Rnc" />
+
+<!--
+{# This is a django-templated HTML file #}
+{# http://docs.djangoproject.com/en/dev/topics/templates/#topics-templates #}
+
+	This is a first simple attempt at putting the record of my interdimensional
+	experiences in a place that (might) be a better way to share the information.
+
+	Just in case it isn't, I'm leaving the LiveJournal around.
+	Breaking links is for hoo-mans.  More to come...
+
+	Greets to Cerul, SkyNet, and the rest of my peeps :P
+
+{% comment %}
+
+{% endcomment %}
+-->
+{% block meta %}
+		<meta name="keywords" content="{% block keywords %}lucid dreaming, astral projection, matrix{% endblock keywords %}" />
+		<meta name="description" content="{% block description %}{% endblock description %}" />
+{% endblock meta %}
+
+		<title>{% block title %}{% endblock title %}</title>
+
+	<!-- Django allows us to pass parameters into our templates, good to have as javascript vars -->
+	<!-- http://lethain.com/entry/2008/sep/21/intro-to-unintrusive-javascript-with-django/ -->
+	<script>
+{% block params-javascript %}
+		PARAMS = {};
+		PARAMS.libs_url = "{{ LIBS_URL }}"; 
+{% endblock params-javascript %}
+	</script>
+
+{% block css %}
+    <link rel='stylesheet' href='{{ MEDIA_URL }}default.css' type='text/css' />
+{% endblock css %}
+
+
+{% block scripts %}
+{% if false %}
+		<!-- Google has these online, so it saves on bandwidth to use their hosting -->
+		<!--<script type="text/javascript" src="{{ LIBS_URL }}jquery/jquery-1.3.2.min.js"></script>
+		<script type="text/javascript" src="{{ LIBS_URL }}jquery-ui/jquery-ui-1.7.1.custom.min.js"></script>-->
+{% else %}
+
+		<!--<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script>-->
+{% endif %}
+		
+		<!-- If debugging in a browser without decent debugging infrastructure, Firebug Lite can be helpful -->
+		<!-- http://getfirebug.com/lite.html -->
+		<!-- <script type="text/javascript" src="http://getfirebug.com/releases/lite/1.2/firebug-lite-compressed.js"></script> -->
+{% endblock scripts %}
+
+	
+	</head>
+<body {% block bodymethods %}{% endblock bodymethods %}>
+<ul id="path">
+
+{% block path %}
+{% endblock path %}
+</ul>
+
+
+<div id="body">
+    <h1>{% block header %}{% endblock header %}</h1>
+{% block main %}
+    <p>realityhandbook.org documents the literally hundreds of lucid dreams of a scientifically-minded
+        individual&mdash;unwittingly cast into the role of amateur interviewer and experimenter.
+        To learn more, please read <a href="http://realityhandbook.org/about/">http://realityhandbook.org/about/</a></p>
+{% endblock main %}
+</div>
+
+{% block footer %}
+<div style="text-align: center;"><p>Please subscribe to the <img src="/media/feed-icon-14x14.png" alt="Feed Icon" /> <a href="http://realityhandbook.org/feed/">Atom 1.0 Feed</a> or use <img src="/media/feedburner-icon-14x14.png" alt="Feedburner Icon" /> <a href="http://feeds.feedburner.com/realityhandbook">Feedburner</a> to receive updates as they are posted!!</p></div>
+{% endblock footer %}
+
+	<!-- This is the Google Analytics Code -->
+	<!-- My understanding is that document.write is deprecated in XHTML -->
+	<!-- Also it causes lags on page loads... I will tend to this later. -->
+	<script type="text/javascript">
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	</script>
+	<script type="text/javascript">
+		try {
+		var pageTracker = _gat._getTracker("UA-11096690-1");
+		pageTracker._trackPageview();
+		} catch(err) {}
+	</script>
+
+</body>
+</html>
+

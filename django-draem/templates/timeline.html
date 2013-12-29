@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block bodymethods %}
+onload="onLoad();" onresize="onResize();"
+{% endblock bodymethods %}
+
+{% block css %}
+{{ block.super }}
+    <link rel='stylesheet' href='{{ MEDIA_URL }}timeline/styles.css' type='text/css' /> 
+{% endblock css %}
+ 
+ 
+{% block scripts %}
+{{ block.super }}
+    <!-- ############################################################################ --> 
+    <!-- To use this file on your own system, replace ../../api/timeline-api.js with  --> 
+    <!--     http://static.simile.mit.edu/timeline/api-2.3.0/timeline-api.js          --> 
+    <!-- (Where 2.3.0 is the current release number.)                                 --> 
+    <script src="http://api.simile-widgets.org/timeline/2.3.1/timeline-api.js?bundle=true" type="text/javascript"></script> 
+    <script src="{{ MEDIA_URL }}timeline/examples.js" type="text/javascript"></script> 
+    <script> 
+        var tl;
+        function onLoad() {
+            var eventSource = new Timeline.DefaultEventSource();
+            
+            var zones = [
+                {   start:    "Thu Jan 01 1998 00:00:00 GMT-0600",
+                    end:      "Mon Jan 01 2001 00:00:00 GMT-0600",
+                    magnify:  10,
+                    unit:     Timeline.DateTime.YEAR
+                },
+                {   start:    "Fri Jan 01 2001 09:00:00 GMT-0600",
+                    end:      "Sun Oct 01 2004 00:00:00 GMT-0600",
+                    magnify:  5,
+                    unit:     Timeline.DateTime.MONTH
+                },
+                {   start:    "Fri Oct 01 2004 11:00:00 GMT-0600",
+                    end:      "Sat Jan 01 2006 00:00:00 GMT-0600",
+                    magnify:  5,
+                    unit:     Timeline.DateTime.WEEK,
+                    multiple: 10
+                },
+                {   start:    "Sun Jan 02 2006 12:00:00 GMT-0600",
+                    end:      "Tue Oct 13 2009 14:00:00 GMT-0600",
+                    magnify:  1,
+                    unit:     Timeline.DateTime.WEEK,
+                    multiple: 1
+                }
+            ];
+/*            var zones2 = [
+                {   start:    "Fri Nov 22 1963 00:00:00 GMT-0600",
+                    end:      "Mon Nov 25 1963 00:00:00 GMT-0600",
+                    magnify:  10,
+                    unit:     Timeline.DateTime.WEEK
+                },
+                {   start:    "Fri Nov 22 1963 09:00:00 GMT-0600",
+                    end:      "Sun Nov 24 1963 00:00:00 GMT-0600",
+                    magnify:  5,
+                    unit:     Timeline.DateTime.DAY
+                },
+                {   start:    "Fri Nov 22 1963 11:00:00 GMT-0600",
+                    end:      "Sat Nov 23 1963 00:00:00 GMT-0600",
+                    magnify:  5,
+                    unit:     Timeline.DateTime.MINUTE,
+                    multiple: 60
+                },
+                {   start:    "Fri Nov 22 1963 12:00:00 GMT-0600",
+                    end:      "Fri Nov 22 1963 14:00:00 GMT-0600",
+                    magnify:  3,
+                    unit:     Timeline.DateTime.MINUTE,
+                    multiple: 15
+                }
+            ];*/
+            
+            var theme = Timeline.ClassicTheme.create();
+            theme.event.bubble.width = 250;
+            
+            var date = "Tue Oct 13 2009 13:00:00 GMT-0600"
+            var bandInfos = [
+                Timeline.createHotZoneBandInfo({
+                    width:          "80%", 
+                    intervalUnit:   Timeline.DateTime.WEEK, 
+                    intervalPixels: 220,
+                    zones:          zones,
+                    eventSource:    eventSource,
+                    date:           date,
+                    timeZone:       -6,
+                    theme:          theme
+                }),
+                Timeline.createHotZoneBandInfo({
+                    width:          "20%", 
+                    intervalUnit:   Timeline.DateTime.MONTH, 
+                    intervalPixels: 200,
+                    zones:          /*zones2*/ zones, 
+                    eventSource:    eventSource,
+                    date:           date, 
+                    timeZone:       -6,
+                    overview:       true,
+                    theme:          theme
+                })
+            ];
+            bandInfos[1].syncWith = 0;
+            bandInfos[1].highlight = true;
+            
+            for (var i = 0; i < bandInfos.length; i++) {
+                bandInfos[i].decorators = [
+                    new Timeline.SpanHighlightDecorator({
+                        startDate:  "Fri Nov 22 1963 12:30:00 GMT-0600",
+                        endDate:    "Fri Nov 22 1963 13:00:00 GMT-0600",
+                        color:      "#FFC080", // set color explicitly
+                        opacity:    50,
+                        startLabel: "shot",
+                        endLabel:   "t.o.d.",
+                        theme:      theme
+                    }),
+                    new Timeline.PointHighlightDecorator({
+                        date:       "Fri Nov 22 1963 14:38:00 GMT-0600",
+                        opacity:    50,
+                        theme:      theme
+                        // use the color from the css file
+                    }),
+                    new Timeline.PointHighlightDecorator({
+                        date:       "Sun Nov 24 1963 13:00:00 GMT-0600",
+                        opacity:    50,
+                        theme:      theme
+                        // use the color from the css file
+                    })
+                ];
+            }
+            
+            tl = Timeline.create(document.getElementById("tl"), bandInfos, Timeline.HORIZONTAL);
+            tl.loadXML("{{MEDIA_URL}}timeline/jfk.xml", function(xml, url) { eventSource.loadXML(xml, url); });
+            
+            setupFilterHighlightControls(document.getElementById("controls"), tl, [0,1], theme);
+        }
+        var resizeTimerID = null;
+        function onResize() {
+            if (resizeTimerID == null) {
+                resizeTimerID = window.setTimeout(function() {
+                    resizeTimerID = null;
+                    tl.layout();
+                }, 500);
+            }
+        }
+    </script> 
+{% endblock scripts %}
+
+{% block path %}
+  <li><a href="http://realityhandbook.org" title="Home">Home</a></li> 
+  <li><span>Timeline</span></li> 
+{% endblock path %} 
+ 
+{% block title %}
+Lucid Dream, Essay, and Non Lucid Dream Timeline
+{% endblock title %}
+
+{% block header %}
+Lucid Dream, Essay, and Non Lucid Dream Timeline
+{% endblock header %}
+
+{% block main %}
+{{ block.super }}
+	<p>This page is a work in progress, but it is powered by MIT's 
+	<a href="http://code.google.com/p/simile-widgets/wiki/Timeline">Simile Timeline</a></p>
+
+    <p>Timeline version <span id='tl_ver'></span>.</p> 
+<script>Timeline.writeVersion('tl_ver')</script> 
+    
+    <div id="tl" class="timeline-default" style="height: 300px;"> 
+    </div> 
+    <div class="footnotes"> 
+        All times are in Dallas CST (GMT-0600).
+    </div> 
+    
+    <div class="controls" id="controls"> 
+    </div> 
+{% endblock main %}
