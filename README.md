@@ -6,14 +6,14 @@ The tool is mostly notable for the reasons Rebol is notable.  This includes depe
 
 See [http://rebolsource.net](http://rebolsource.net)
 
-If you are the sort of person who just clicks "yes" to installing packages or DLLs without concern about size or dependencies, the biggests advantages of Draem will probably be off your radar.  But if you think these matters are worth considering, perhaps it's worth looking at to see how it works.  Rebol 3 was open sourced in December of 2012, and a compiled variant called [Red](http://red-lang.org) is under heavy development.
+If you are the sort of person who just clicks "yes" to installing packages or DLLs without concern about size or dependencies, the biggest advantages of Draem will probably be off your radar.  But if you think these matters are worth considering, perhaps it's worth looking at to see how it works.  Rebol 3 was open sourced in December of 2012, and a compiled variant called [Red](http://red-lang.org) is under heavy development.
 
 
 ## History
 
 Draem was initially designed as a simple system for making a website which facilitated the easy authoring of a stylized "screenplay" format of blogging.  This was primarily for journaling [lucid dreams](http://en.wikipedia.org/wiki/Lucid_dream), biased toward a traditional "movie script" style.  This was to help build [realityhandbook.org](http://realityhandbook.org), by rescuing unstructured information from captivity at [realityhandbook.livejournal.com](http://realityhandbook.livejournal.com).
 
-*(Note: The author's belief is that documenting dreams...especially very atypical ones...may constitue a "data set" which would be useful to analyze.  For others interested in that particular concept, they may also be interested [Shadow Project](http://discovershadow.com/), which had a successful $82,577 KickStarter to develop mobile apps to assist in dream documention.)**
+*(Note: The author's belief is that documenting dreams...especially very atypical ones...may constitue a "data set" which would be useful to analyze.  For others interested in that particular concept, they may also be interested [Shadow Project](http://discovershadow.com/), which had a successful $82,577 KickStarter to develop mobile apps to assist in dream documention.)*
 
 The scope of the project then expanded to try and be a more general purpose markup system, to rescue data out of a somewhat archaic WordPress installation.
 

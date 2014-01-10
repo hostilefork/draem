@@ -215,24 +215,24 @@ context [
 
 		print "=== LOADING ENTRIES ==="
 
-		set [entries indexes] load-entries %entries/
+		set [entries indexes] load-entries draem-config/entries-dir
 
 		probe entries
 
 		print "=== TEMPLATES OUTPUT ==="
 
 		do %make-templates.reb
-		make-templates entries indexes %templates/
+		make-templates entries indexes draem-config/templates-dir
 
 		print "=== TIMELINE OUTPUT ==="
 
 		do %make-timeline.reb
-		make-timeline entries %templates/timeline.xml
+		make-timeline entries %rejoin [draem-config/templates-dir %timeline.xml]
 
 		print "=== ATOM FEED OUTPUT ==="
 
 		do %make-atom-feed.reb
-		make-atom-feed entries %templates/atom.xml 20
+		make-atom-feed entries rejoin [draem-config/templates-dir %atom.xml] 20
 
 		none
 	]
