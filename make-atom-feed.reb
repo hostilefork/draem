@@ -147,6 +147,8 @@ make-atom-feed: function [
 	atom-length [integer!]
 		{Number of most recent entries to feed}
 ] [
+	draem/stage "ATOM FEED OUTPUT"
+
 	atom-xml: rejoin compose [{<?xml version="1.0" encoding="utf-8"?>
 		
 	<feed xmlns="http://www.w3.org/2005/Atom">

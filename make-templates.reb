@@ -40,7 +40,7 @@ django-block: func [name [string!] stuff [block!] /inline] [
 django-path: func [stuff [block!] ] [
 	django-block "path" compose [
 		{<li>
-			<a href="} draem-config/site-url {" title="Home">Home</a>
+			<a href="} draem/config/site-url {" title="Home">Home</a>
 		</li>}
 		(stuff)
 		{}
@@ -63,7 +63,7 @@ close-anchor: {</a>}
 link-to-category: func [category [word!] /count num] [
 	rejoin [
 		open-anchor rejoin [
-			draem-config/site-url {category/}
+			draem/config/site-url {category/}
 			stringify/dashes category 
 			{/}
 		]
@@ -77,7 +77,7 @@ link-to-category: func [category [word!] /count num] [
 link-to-tag: func [tag [word!] /count num] [
 	rejoin [
 		open-anchor rejoin [
-			draem-config/site-url "tag/" stringify/dashes tag {/}
+			draem/config/site-url "tag/" stringify/dashes tag {/}
 		]
 		stringify tag
 		close-anchor
@@ -88,7 +88,7 @@ link-to-tag: func [tag [word!] /count num] [
 link-to-character: func [character [word!] /count num] [
 	rejoin [
 		open-anchor rejoin [
-			draem-config/site-url "character/" stringify/dashes character {/}
+			draem/config/site-url "character/" stringify/dashes character {/}
 		]
 		stringify character
 		close-anchor
@@ -414,7 +414,7 @@ write-entry: function [
 		(django-path [
 			rejoin [
 				{<li>}
-					{<a href="} draem-config/site-url {category/}
+					{<a href="} draem/config/site-url {category/}
 					stringify/dashes entry/header/category {/">} 
 					stringify entry/header/category 
 					{</a>}
@@ -435,7 +435,7 @@ write-entry: function [
 			] [
 				comma-separated/callback entry/header/tags function [tag] [
 					rejoin [ 
-						{<a href="} draem-config/site-url {tag/}
+						{<a href="} draem/config/site-url {tag/}
 						stringify/dashes tag
 						{/">} stringify tag {</a>}
 					]
@@ -444,12 +444,12 @@ write-entry: function [
 		])
 
 		(django-block "characters" [
-			either empty? select indexes/slug-to-characters entry/header/slug [
+			either empty? select draem/indexes/slug-to-characters entry/header/slug [
 				"(none)"
 			] [
-				 comma-separated/callback select indexes/slug-to-characters entry/header/slug function [character] [
+				 comma-separated/callback select draem/indexes/slug-to-characters entry/header/slug function [character] [
 					rejoin [ 
-						{<a href="} draem-config/site-url {character/}
+						{<a href="} draem/config/site-url {character/}
 						stringify/dashes character
 						{/">} stringify character {</a>}
 					]
@@ -482,12 +482,13 @@ write-entry: function [
 ]
 
 make-templates: function [
-	{ Generates the django templates from the entries and indexes }
+	{ Generates the django templates from the entries and draem/indexes }
 
 	entries [block!]
 	indexes [object!]
 	templates-dir [file!]
 ] [
+	draem/stage "TEMPLATES OUTPUT"
 
 	unless exists? templates-dir [
 		make-dir templates-dir
@@ -544,7 +545,7 @@ make-templates: function [
 		])
 		
 		(django-block/inline "header" [
-			rejoin ["All Tags for " draem-config/site-name]
+			rejoin ["All Tags for " draem/config/site-name]
 		])
 
 		(django-path [
@@ -554,7 +555,7 @@ make-templates: function [
 		"{% block tags %}"
 	]
 
-	foreach [tag entries] indexes/tag-to-entries [
+	foreach [tag entries] draem/indexes/tag-to-entries [
 		directory: to file! rejoin [templates-dir %tags/]
 		if (not exists? directory) [
 			make-dir directory
@@ -573,7 +574,7 @@ make-templates: function [
 			])
 		
 			(django-path [
-				{<li><a href="} draem-config/site-url {tag/" title="Tag List">Tag</a></li>}
+				{<li><a href="} draem/config/site-url {tag/" title="Tag List">Tag</a></li>}
 				rejoin [{<li><span>} stringify tag {</span></li>}]
 			])
 			
@@ -615,7 +616,7 @@ make-templates: function [
 		"{% block characters %}"
 	]
 
-	foreach [character entries] indexes/character-to-entries [
+	foreach [character entries] draem/indexes/character-to-entries [
 		directory: to file! rejoin [templates-dir %characters/]
 		unless exists? directory [
 			make-dir directory
@@ -634,7 +635,7 @@ make-templates: function [
 			])
 			
 			(django-path [
-				{<li><a href="} draem-config/site-url {character/" title="Character List">Character</a></li>}
+				{<li><a href="} draem/config/site-url {character/" title="Character List">Character</a></li>}
 				rejoin [{<li><span>} stringify character {</span></li>}]
 			])
 			
@@ -663,7 +664,7 @@ make-templates: function [
 		(django-extends %categorylist.html)
 
 		(django-block/inline "title" [
-			rejoin ["All Categories for " draem-config/site-name]
+			rejoin ["All Categories for " draem/config/site-name]
 		])
 		
 		(django-block/inline "header" [
@@ -677,7 +678,7 @@ make-templates: function [
 		"{% block categories %}"
 	]
 
-	foreach [category entries] indexes/category-to-entries [
+	foreach [category entries] draem/indexes/category-to-entries [
 		if fake-category category [
 			continue
 		]
@@ -700,7 +701,7 @@ make-templates: function [
 			])
 			
 			(django-path [
-				{<li><a href="} draem-config/site-url {category/" title="Category">Category</a></li>}
+				{<li><a href="} draem/config/site-url {category/" title="Category">Category</a></li>}
 				rejoin [{<li><span>} stringify category {</span></li>}]
 			])
 

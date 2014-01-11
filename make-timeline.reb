@@ -45,11 +45,13 @@ to-timeline-date: function [d [date!]] [
 	]
 ]
 
-make-timeline: function [entries [block!] xml-filename [file!]] [ 
+make-timeline: function [entries [block!] xml-filename [file!]] [
+	draem/stage "TIMELINE OUTPUT"
+
 	timelinexml: reduce [
 		{<data>}
-		rejoin [tab {wiki-url="} draem-config/site-url {"}]
-		rejoin [tab {wiki-section="} draem-config/site-name { Timeline"}]
+		rejoin [tab {wiki-url="} draem/config/site-url {"}]
+		rejoin [tab {wiki-section="} draem/config/site-name { Timeline"}]
 		{>}
 	]
 

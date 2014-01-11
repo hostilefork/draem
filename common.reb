@@ -1,8 +1,8 @@
 rebol [
-	Title: "Common Realityhandbook Routines"
+	Title: "Common Draem Routines"
 	Description: {
 
-	Common definitions used by all the realityhandbook site building modules.
+	Common definitions included by all the Draem modules.
 
 	}
 
@@ -10,17 +10,19 @@ rebol [
 	License: 'mit
 
 	Date: 20-Oct-2010
-	Version: 3.0.4
+	Version: 0.3.0.4
 
 	; Header conventions: http://www.rebol.org/one-click-submission-help.r
-	File: %make-atom-feed.reb
+	File: %common.reb
 	Type: 'dialect
 	Level: 'intermediate
 ]
 
 
-;; Implement TO and FUNCTION behavior for which there are pull requests,
-;; but not integrated into the mainline yet.
+;---
+; Bridge TO and FUNCTION behavior for which there are pull requests,
+; but not integrated into the mainline yet.
+;---
 
 function: :funct
 
@@ -36,6 +38,32 @@ to: func [type value] [
     ]
     return old-to type value
 ]
+
+
+;---
+; Delete directory function from:
+; http://en.wikibooks.org/wiki/REBOL_Programming/delete-dir
+;---
+
+delete-dir: func [
+    {Deletes a directory including all files and subdirectories.} 
+    dir [file! url!] 
+    /local files
+][
+    if all [
+        dir? dir 
+        dir: dirize dir 
+        attempt [files: load dir]
+    ] [
+        foreach file files [delete-dir dir/:file]
+    ] 
+    attempt [delete dir]
+]
+
+
+;---
+; Helper routines for generating templates etc.
+;---
 
 ; converts slug, character, or tag to a string with option to have dashes
 ; or spaces (default)
@@ -73,15 +101,11 @@ fake-category: function [
 	find [about contact] category 
 ]
 
-url-for-entry: func [entry [object!]] [
-	rejoin [
-		draem-config/site-url stringify/dashes entry/header/category {/}
-		either fake-category entry/header/category [
-			{}
-		] [
-			entry/header/slug
-		]
-	]
+url-for-entry: function [entry [object!]] [
+	;-- Required hook: produce URL from header
+	assert [function? :draem/config/url-from-header]
+
+	draem/config/url-from-header entry/header
 ]
 
 link-to-entry: func [entry [object!]] [
