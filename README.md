@@ -61,6 +61,19 @@ It's possible to add an action to a line of dialogue by enclosing it in parenthe
 The contents of the parentheses must be a string enclosed in quotes.
 
 
+### Headings
+
+Currently there's only a single level:
+
+    [heading "This is a section heading"]
+
+If you want to make it possible to hyperlink directly to that heading with an anchor, use a file! at the end:
+
+    [heading "This has an anchor" %anchor-name]
+
+In the future, an optional number could indicate the level of heading, e.g. `[heading 3 "third level"]`.
+
+
 ### Pictures
 
 The picture facility is a little bit half-baked at the moment, but what it does is lets you specify a URL and a caption.  So for instance:
@@ -82,6 +95,20 @@ I am considering auto-detecting URLs, somewhat in the spirit of how StackOverflo
 Similar to how NOTE works.  You can put any structural unit into a list slot.
 
     [list [{One.}] [{Two.}] [{Three.}]]
+
+
+### Divider
+
+Whether to call this "separator" or "divider" is a reasonable question.  But I chose "divider":
+
+    [divider]
+
+
+### More
+
+WordPress had a special invisible indicator for a cut point between the lead-in of your content that would be on the main blog roll, and the "rest".  Because one of the data sets I imported had these indicators, I included them.  I'm not sure how they'll be handled ultimately.  For the moment they are just ignored.
+
+    [more]
 
 
 ## SYNCHRONIZATION NOTES

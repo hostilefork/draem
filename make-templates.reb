@@ -210,7 +210,10 @@ htmlify: function [
 				; if not string? second e [probe e print result]
 			]
 			more [
-				result: rejoin [{<p><i>Read more...</i></p>} lf]
+				result: {} ;-- output nothing for now
+				comment [
+					result: rejoin [{<p><i>Read more...</i></p>} lf]
+				]
 			]
 			error
 			text
@@ -501,8 +504,27 @@ make-templates: function [
 	print "MAIN OUTPUT LOOP"
 
 	index-html: compose [
-		(django-extends %homepage.html)
-			
+		(django-extends %base.html)
+		
+		(django-block/inline "title" [
+			draem/config/site-title
+		])
+
+		(django-block/inline "header" [
+			draem/config/site-tagline
+		])
+
+		(django-block/inline "path" [
+			rejoin [{<li><span>} draem/config/site-url {</span></li>}]
+		])		
+
+		(django-block "main" [
+			"{{ block.super }}"
+
+			{<hr>}
+			draem/config/site-intro
+		])
+
 		"{% block entries %}"
 	]
 
@@ -530,6 +552,13 @@ make-templates: function [
 	]
 
 	append index-html "{% endblock entries %}"
+
+	append index-html compose [
+		(django-block/inline "footer" [
+			draem/config/site-footer
+		])		
+	]
+
 	write/lines rejoin [templates-dir %index.html] index-html
 
 
