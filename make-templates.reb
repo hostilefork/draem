@@ -479,6 +479,10 @@ write-entry: function [
 		(either earlier-entry [django-block {prevurl} [
 			url-for-entry earlier-entry
 		]] [])
+
+		(django-block/inline "footer" [
+			draem/config/site-footer
+		])
 	]
 	
 	write/lines html-file html
