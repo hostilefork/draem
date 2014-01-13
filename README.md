@@ -1,6 +1,6 @@
-# DRAEM
+![DRAEM logo](https://raw2.github.com/hostilefork/draem/master/draem-logo.png)
 
-Draem is a static website builder, which is along the lines of something like [Jekyll](http://jekyllrb.com/)...but using open source [Rebol 3](http://en.wikipedia.org/wiki/Rebol).  Blog entries (or pages) are written in a "dialect" of the language, so despite their customized appearance they have no parser of their own.  Rather, they embrace the carefully-chosen limits of the host system to create a [Domain-Specific Language](http://en.wikipedia.org/wiki/Domain-specific_language).
+**DRAEM** is a static website builder, which is along the lines of something like [Jekyll](http://jekyllrb.com/)...but using open source [Rebol 3](http://en.wikipedia.org/wiki/Rebol).  Blog entries (or pages) are written in a "dialect" of the language, so despite their customized appearance they have no parser of their own.  Rather, they embrace the carefully-chosen limits of the host system to create a [Domain-Specific Language](http://en.wikipedia.org/wiki/Domain-specific_language).
 
 The tool is mostly notable for the reasons Rebol is notable.  This includes depending only on a *half-megabyte*, *zero-install*, *cross-platform* executable that can run on Linux, Android, HaikuOS, Windows, Mac, etc.
 

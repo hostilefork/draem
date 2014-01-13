@@ -14,7 +14,9 @@ body {
     color: #222;
     background-color: #fff;
     quotes: "\201C" "\201E" "\2018" "\2019";
-
+    line-height: 1.5em;
+    color: #333;
+    
 /*    font-size: 12px; */
 /*    font-family: "georgia", "times", "times new roman", serif; */
 }
