@@ -8,12 +8,6 @@
 {# This is a django-templated HTML file #}
 {# http://docs.djangoproject.com/en/dev/topics/templates/#topics-templates #}
 
-	This is a first simple attempt at putting the record of my interdimensional
-	experiences in a place that (might) be a better way to share the information.
-
-	Just in case it isn't, I'm leaving the LiveJournal around.
-	Breaking links is for hoo-mans.  More to come...
-
 	Greets to Cerul, SkyNet, and the rest of my peeps :P
 
 {% comment %}
@@ -25,7 +19,7 @@
 		<meta name="description" content="{% block description %}{% endblock description %}" />
 {% endblock meta %}
 
-		<title>{% block title %}{% endblock title %}</title>
+		<title>{% block title %}MISSING TITLE BLOCK{% endblock title %}</title>
 
 	<!-- Django allows us to pass parameters into our templates, good to have as javascript vars -->
 	<!-- http://lethain.com/entry/2008/sep/21/intro-to-unintrusive-javascript-with-django/ -->
@@ -63,6 +57,7 @@
 <ul id="path">
 
 {% block path %}
+	<p>MISSING PATH BLOCK</p>
 {% endblock path %}
 </ul>
 
@@ -70,14 +65,12 @@
 <div id="body">
     <h1>{% block header %}{% endblock header %}</h1>
 {% block main %}
-    <p>realityhandbook.org documents the literally hundreds of lucid dreams of a scientifically-minded
-        individual&mdash;unwittingly cast into the role of amateur interviewer and experimenter.
-        To learn more, please read <a href="http://realityhandbook.org/about/">http://realityhandbook.org/about/</a></p>
+    <p>MISSING MAIN BLOCK</p>
 {% endblock main %}
 </div>
 
 {% block footer %}
-<div style="text-align: center;"><p>Please subscribe to the <img src="/media/feed-icon-14x14.png" alt="Feed Icon" /> <a href="http://realityhandbook.org/feed/">Atom 1.0 Feed</a> or use <img src="/media/feedburner-icon-14x14.png" alt="Feedburner Icon" /> <a href="http://feeds.feedburner.com/realityhandbook">Feedburner</a> to receive updates as they are posted!!</p></div>
+	<p>MISSING FOOTER BLOCK</p>
 {% endblock footer %}
 
 	<!-- This is the Google Analytics Code -->

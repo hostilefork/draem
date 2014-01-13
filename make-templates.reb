@@ -518,14 +518,9 @@ make-templates: function [
 			rejoin [{<li><span>} draem/config/site-url {</span></li>}]
 		])		
 
-		(django-block "main" [
-			"{{ block.super }}"
+		"{% block main %}"
 
-			{<hr>}
-			draem/config/site-intro
-		])
-
-		"{% block entries %}"
+		(draem/config/site-intro)
 	]
 
 	iter: entries
@@ -551,7 +546,7 @@ make-templates: function [
 		iter: next iter
 	]
 
-	append index-html "{% endblock entries %}"
+	append index-html "{% endblock main %}"
 
 	append index-html compose [
 		(django-block/inline "footer" [
