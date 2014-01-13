@@ -61,6 +61,20 @@ delete-dir: func [
 ]
 
 
+prompt-delete-dir-if-exists: function [
+	dir [file!]
+] [
+	if exists? dir [
+		print [{Directory} dir {currently exists.}]
+		either "Y" = uppercase ask "Delete it [Y/N]?" [
+			delete-dir dir
+		] [
+			quit
+		]
+	]
+]
+
+
 ;---
 ; Helper routines for generating templates etc.
 ;---

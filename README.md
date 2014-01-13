@@ -20,32 +20,34 @@ The scope of the project then expanded to try and be a more general purpose mark
 
 ## FORMAT
 
-The input format is a series of blocks, representing sequential sections of the dream dialogue.  Here are the block formats:
+The input format is a series of blocks, representing sequential sections of the dream dialogue.  The rule is that the behavior of any block that would accept a single item as legal is the same as omitting the block.  So if you can write:
+
+    [Foo]
+
+Then you could have just written:
+
+    Foo
+
+However, you cannot omit the block if something takes options.  So instead of writing:
+
+    [Foo FooOption]
+
+You *cannot* just write:
+
+    Foo FooOption
 
 
 ### Exposition
 
 Simple exposition or narration is just a string inside of a block.
 
-    [{See, I'm naked in church when I meet a dinosaur.  I try to run but
+    {See, I'm naked in church when I meet a dinosaur.  I try to run but
       my feet have been nailed to the floor.  Then a midget pushes me through
-      a revolving door.  And I'm back in the very same place I was before...}]
+      a revolving door.  And I'm back in the very same place I was before...}
 
 ( apologies to [Weird Al Yankovic](http://www.youtube.com/watch?v=K4fezNM7-Kk ) )
 
-It is now likely that exposition will be changed to allow the block to be optional.
-
-
-### Sidenotes
-
-Sidenotes are indicated with a block beginning with the word! NOTE:
-
-    [note {I told the dream alien it was the year 2000, but it's
-     actually 2013 at the time of this writing.}]
-
-Multi-line notes are achieved by instead of having a string as the second argument, putting a block there instead.  In that block, all line formats are legal.  The template generator will wrap that up in a blockquote.
-
-    [note [[{One.}] [{Two.}] [{Three}]]]
+Putting it in a block is optional, but not necessary.
 
 
 ### Dialogue
@@ -59,6 +61,22 @@ It's possible to add an action to a line of dialogue by enclosing it in parenthe
     [purple-cheetah: ("growling fiercely") {Give me back that shoe pie!}]
 
 The contents of the parentheses must be a string enclosed in quotes.
+
+
+### Sidenotes
+
+Sidenotes are indicated with a block beginning with the word! NOTE:
+
+    [note {I told the dream alien it was the year 2000, but it's
+     actually 2013 at the time of this writing.}]
+
+Multi-line notes are achieved by instead of having a string as the second argument, putting a block there instead.  In that block, all line formats are legal.  The template generator will wrap that up in a blockquote.
+
+    [note [
+        {One}
+        [two: {Message}]
+        [{Three} {Four}]
+    ]]
 
 
 ### Headings
@@ -85,7 +103,7 @@ The picture facility is a little bit half-baked at the moment, but what it does 
 
 A simple URL will just be turned into a clickable hyperlink whose text will the text of the link:
 
-    [https://github.com/hostilefork/draem]
+    https://github.com/hostilefork/draem
 
 If you put a string after it, then that will be the string on the link:
 
@@ -105,21 +123,28 @@ I am considering auto-detecting URLs, somewhat in the spirit of how StackOverflo
 
 Similar to how NOTE works.  You can put any structural unit into a list slot.
 
-    [list [{One.}] [{Two.}] [{Three.}]]
+    [list [
+        {One.}
+        [two: {Message}]
+        [note [
+            {Three.}
+            {Four.}
+        ]]
+    ]]
 
 
 ### Divider
 
 Whether to call this "separator" or "divider" is a reasonable question.  But I chose "divider":
 
-    [divider]
+    divider
 
 
 ### More
 
 WordPress had a special invisible indicator for a cut point between the lead-in of your content that would be on the main blog roll, and the "rest".  Because one of the data sets I imported had these indicators, I included them.  I'm not sure how they'll be handled ultimately.  For the moment they are just ignored.
 
-    [more]
+    more
 
 
 ## SYNCHRONIZATION NOTES

@@ -70,6 +70,9 @@ draem: context [
 	;-- Block of entries sorted by reverse date, defaults to none
 	entries: none
 
+	;-- a map that remembers where each entry was originally loaded from
+	slug-to-source-path: make map! []
+
 	set-entries: func [
 		{Sets the entries block in this context, assumed valid.}
 
@@ -105,25 +108,25 @@ draem: context [
 		{Recurse into the provided directory and load all the entries
 		into a block, sorted reverse chronologically.}
 
-		/recurse entries-dir [file!] entries [block!]
+		/recurse sub-dir [file!] entries [block!]
 	] [
+		print ["Entering load entries with" sub-dir]
 		unless recurse [
 			stage "LOADING ENTRIES"
 
 			; entries list sorted newest first, oldest last
 			entries: copy []
-			entries-dir: config/entries-dir
+			sub-dir: to file! {}
 		]
 
-		foreach file load entries-dir [
+		foreach file load rejoin [config/entries-dir sub-dir] [
 			either dir? file [
-				subdir: rejoin [entries-dir file]
-				print [{Recursing into:} subdir]
-				load-entries/recurse subdir entries
+				print [{Recursing into:} rejoin [config/entries-dir sub-dir file]]
+				load-entries/recurse rejoin [sub-dir file] entries
 			] [
 				print [{Pre-processing:} file]
 
-				data: load rejoin [entries-dir file]
+				data: load rejoin [config/entries-dir sub-dir file]
 
 				pos: data
 
@@ -170,6 +173,7 @@ draem: context [
 					word? header/category
 					find config/valid-categories header/category
 				] [
+					probe config
 					throw make error! "Header requires a legal category"
 				]
 
@@ -180,6 +184,11 @@ draem: context [
 				entry: make object! compose/only [
 					header: (header)
 					content: (copy pos)
+				]
+
+				append slug-to-source-path reduce [
+					entry/header/slug
+					rejoin [sub-dir file]
 				]
 
 				append entries entry
@@ -193,6 +202,62 @@ draem: context [
 		]
 
 		exit
+	]
+
+
+	do-nulyne: function [
+		blk [any-block!]
+	] [
+		foreach elem blk [
+			case [
+				any-block? elem [do-nulyne elem]
+				string? elem [replace/all elem "^/" "^/NULYNE"]
+			]
+		]
+	]
+
+	save-entries: function [
+		target-dir [file!]
+	] [
+		prompt-delete-dir-if-exists target-dir
+
+		foreach entry entries [
+			target-file: rejoin [target-dir (select slug-to-source-path entry/header/slug)]
+			make-dir/deep first split-path target-file
+
+			out: copy {Draem }
+
+			foreach w words-of entry/header [
+				if word? select entry/header w [
+					entry/header/(w): to lit-word! select entry/header w
+				]
+			]
+
+			append out mold body-of entry/header
+			append out "^/^/"
+
+			print mold/only entry/content
+			do-nulyne entry/content
+			print mold/only entry/content
+			content-string: mold/only entry/content
+
+			pos: content-string
+			while [not tail? pos] [
+				if #"^/" = first pos [
+					if "^/NULYNE" <> copy/part pos 7 [
+						insert pos "^/"
+						++ pos
+					]
+				]
+				++ pos
+			]
+			replace/all content-string "^/NULYNE" "^/"
+
+			append out content-string
+			append out "^/"
+
+			write target-file out
+		]
 	]
 
 
@@ -288,14 +353,7 @@ draem: context [
 			unless entries [load-entries]
 			unless indexes [build-indexes]
 
-			if exists? config/templates-dir [
-				print [{Directory} config/templates-dir {currently exists.}]
-				either "Y" = uppercase ask "Delete it [Y/N]?" [
-					delete-dir config/templates-dir
-				] [
-					quit
-				]
-			]
+			prompt-delete-dir-if-exists config/templates-dir
 
 			make-templates entries indexes config/templates-dir
 

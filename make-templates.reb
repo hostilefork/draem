@@ -118,11 +118,15 @@ htmlify: function [
 		similar in django.  For now it's looking like a Rebol script is
 		a better idea.
 	}
-	e [block!]
+	e
 	/nested
 	/nestfirst
 	/nestlast
 ] [
+	unless block? e [
+		e: compose/only [(e)]
+	]
+
 	either block? first e [
 		result: copy {}
 		subpos: head e
