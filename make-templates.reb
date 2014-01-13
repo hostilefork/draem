@@ -330,7 +330,7 @@ htmlify: function [
 					url: to string! first e
 
 					;-- put in better url encoding logic or decide what should be done
-					replace/all url "&" "%26"
+					replace/all url "&" "&amp;"
 
 					result: rejoin [
 						{<p>}{<a href="} url {">}

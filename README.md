@@ -81,6 +81,17 @@ The picture facility is a little bit half-baked at the moment, but what it does 
     [picture http://example.com/image.jpg {Example image}]
     
 
+### URLs
+
+A simple URL will just be turned into a clickable hyperlink whose text will the text of the link:
+
+    [https://github.com/hostilefork/draem]
+
+If you put a string after it, then that will be the string on the link:
+
+    [https://github.com/hostilefork/draem {Draem Static Website Generator}]
+
+
 ### YouTube Videos
 
 Takes a URL and then an optional size to embed:
