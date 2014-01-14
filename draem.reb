@@ -235,9 +235,7 @@ draem: context [
 			append out mold body-of entry/header
 			append out "^/^/"
 
-			print mold/only entry/content
 			do-nulyne entry/content
-			print mold/only entry/content
 			content-string: mold/only entry/content
 
 			pos: content-string
