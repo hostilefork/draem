@@ -1,5 +1,35 @@
 {% extends "base.html" %}
 
+{% block scripts %}
+{{ block.super }}
+
+		<script>
+			/* http://stackoverflow.com/questions/1402698/binding-arrow-keys-in-js-jquery */
+			$(document).keydown(function(e) {
+			    switch(e.which) {
+      			case 37: // left (up is 38) 
+      				anchors = $("#prev > a");
+      				if (anchors.length > 0) {
+	      				window.location.href = anchors.eq(0).attr('href');
+	      			}
+        			break;
+
+        		case 39: // right (down is 40)
+      				anchors = $("#next > a");
+      				if (anchors.length > 0) {
+	      				window.location.href = anchors.eq(0).attr('href');
+	      			}
+        			break;
+
+		        default: return; // exit this handler for other keys
+		    	}
+   
+				e.preventDefault(); // prevent the default action (scroll / move caret)
+			});
+		</script>
+
+{% endblock scripts %}
+
 {% block main %}
 <div id="entry-date"><p><b>Date:</b> <span>
 {% block date %}
@@ -23,8 +53,8 @@
 </div>
 
 
-<div style="text-align: center; border:1px solid lightgray; width:90%; margin:20px; padding: 20px; font-variant:small-caps; font-weight: bold">
-<div style="text-align: left;"><a href="{% block prevurl %}http://realityhandbook.org{% endblock prevurl %}" title="Previous">&laquo; &laquo; {% block prevtitle %}Home{% endblock prevtitle %}</a></div>
-<div style="text-align: right;"><a href="{% block nexturl %}http://realityhandbook.org{% endblock nexturl %}" title="Next">{% block nexttitle %}Home{% endblock nexttitle %} &raquo; &raquo;</a></div>
+<div id="prevnext">
+<div id="prev"><a href="{% block prevurl %}http://realityhandbook.org{% endblock prevurl %}" title="Previous">{% block prevtitle %}Home{% endblock prevtitle %}</a></div>
+<div id="next"><a href="{% block nexturl %}http://realityhandbook.org{% endblock nexturl %}" title="Next">{% block nexttitle %}Home{% endblock nexttitle %}</a></div>
 </div>
 {% endblock main %}

@@ -47,7 +47,10 @@ Simple exposition or narration is just a string inside of a block.
 
 ( apologies to [Weird Al Yankovic](http://www.youtube.com/watch?v=K4fezNM7-Kk ) )
 
-Putting it in a block is optional, but not necessary.
+Putting it in a block is optional, but not necessary.  The string itself is processed as a subset of Markdown, similar to what can appear in StackOverflow comments or chat:
+
+    {You can do *italics*, **bold**, [web links](http://example.com),
+        code in `backticks`, and maybe more someday...}
 
 
 ### Dialogue
@@ -133,11 +136,35 @@ Similar to how NOTE works.  You can put any structural unit into a list slot.
     ]]
 
 
-### Divider
+### Dividers
 
-Whether to call this "separator" or "divider" is a reasonable question.  But I chose "divider":
+A divider creates a visual horizontal line:
 
     divider
+
+
+### Separators
+
+A separator just leaves a line of extra space in a context, without drawing a line:
+
+    separator
+
+
+### Groups
+
+A group can be used in contexts where you wish several sequential elements to be treated as one group.  This is useful in particular in lists, because sometimes a list item can contain multiple paragraphs, a picture, etc.
+
+    [list [
+        {Item One}
+        [group
+            {Item Two-A}
+            [note {Note on Item Two-B}]
+            {Item Two-C}
+        ]
+        {Item Three}
+    ]]
+
+Because of the group, the above would only have three bullets.  You should *not* put the group's items in a block...just have them follow as if they were normal parameters.
 
 
 ### More
@@ -145,6 +172,14 @@ Whether to call this "separator" or "divider" is a reasonable question.  But I c
 WordPress had a special invisible indicator for a cut point between the lead-in of your content that would be on the main blog roll, and the "rest".  Because one of the data sets I imported had these indicators, I included them.  I'm not sure how they'll be handled ultimately.  For the moment they are just ignored.
 
     more
+
+
+### HTML
+
+You would ideally use the nicer Markdown syntax which is handled in raw strings.  , but sometimes raw HTML is needed (tables, etc.)
+
+    [html {Wouldn't this look <i>nicer</i> as Markdown?}]
+
 
 
 ## SYNCHRONIZATION NOTES

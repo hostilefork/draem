@@ -5,6 +5,124 @@
  * Written by Stefano Mazzocchi <stefanom at mit dot edu>
  */
 
+/* SPECIAL CLASSES ADDED FOR DRAEM */
+
+#body .character {
+    font-weight: bold;
+}
+
+#body .action {
+    font-style: italic;
+}
+
+#body div {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#body .update-span {
+    font-weight: bold;
+}
+
+#body .note {
+    font-style: italic;
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+#body .note-span:after {
+    content: ":";
+}
+
+#body .update {
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+#body .update-span:after {
+    content: ":";
+}
+
+#body h1 {
+    line-height: 1em;
+}
+
+#prevnext {
+    text-align: center;
+/*    border: 1px solid lightgray; */
+    width:90%;
+    margin:20px;
+    padding: 20px; 
+    /* font-variant:small-caps; */
+    font-weight: bold;
+}
+
+#prev {
+    text-align: left;
+}
+
+#next {
+    text-align: right;
+}
+
+#next:after {
+    content: "\25B6"
+}
+
+#prev:before {
+    content: "\25C0"
+}
+
+blockquote footer {
+    text-align: right;
+    font-weight: bold;
+}
+
+blockquote footer:before {
+    content: "\2014"
+}
+
+/* http://css-tricks.com/snippets/css/simple-and-nice-blockquote-styling/ */
+blockquote {
+  background: #f9f9f9;
+  border-left: 10px solid #ccc;
+  margin: 1.5em 10px;
+  padding: 0.5em 10px;
+  quotes: "\201C""\201D""\2018""\2019";
+}
+blockquote:before {
+  color: #ccc;
+  font-size: 4em;
+  line-height: 0.1em;
+  margin-right: 0.25em;
+  vertical-align: -0.4em;
+
+  /* Patches problem with original article, from comments thread. */
+  /* could also do blockquote:after {content:"\201D";} */
+  content:"\201C";
+}
+blockquote p {
+  display: inline;
+}
+
+/* URL on a line by itself, indent */
+/* (Don't do it to spans, for instance it would mess up the attribution footer in blockquote) */
+#body div.url {
+    margin: 20px;
+}
+
+/* Attempt at a hanging indent and to get dialogue in the middle. */
+/* http://demosthenes.info/blog/50/Classic-Typography-Effects-in-CSS-Hanging-Indent */
+#body .dialogue {
+    text-indent: -2em;
+    margin-left: 4em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    margin-right: 4em;
+}
+
+
 /* ----------------------------- Global Definitions -------------------- */
 
 body {
@@ -16,8 +134,8 @@ body {
     quotes: "\201C" "\201E" "\2018" "\2019";
     line-height: 1.5em;
     color: #333;
-    
-/*    font-size: 12px; */
+    font-size: 16px; /* too big? */
+
 /*    font-family: "georgia", "times", "times new roman", serif; */
 }
 
@@ -203,6 +321,8 @@ img {
     padding: 5px;
 }
 
+/* 
+
 #body .note {
     margin: 3px;
     padding: 3px;
@@ -214,6 +334,7 @@ img {
     content: "Note: ";
     font-weight: bold;
 }
+*/
 
 #body .figure {
     text-align: center;

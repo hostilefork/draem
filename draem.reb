@@ -11,8 +11,8 @@ Rebol [
 	Home: https://github.com/hostilefork/draem
 	License: 'mit
 
-	Date: 20-Oct-2010
-	Version: 3.0.4
+	Date: 13-Jan-2014
+	Version: 0.4
 
 	; Header conventions: http://www.rebol.org/one-click-submission-help.r
 	File: %make-site.reb
@@ -100,7 +100,7 @@ draem: context [
 		{Log what stage we are in.}
 		name [string!]
 	] [
-		print [{===} name {===}]
+		print [lf {===} name {===}]
 	]
 
 
@@ -173,7 +173,6 @@ draem: context [
 					word? header/category
 					find config/valid-categories header/category
 				] [
-					probe config
 					throw make error! "Header requires a legal category"
 				]
 

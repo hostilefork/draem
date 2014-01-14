@@ -81,7 +81,12 @@ prompt-delete-dir-if-exists: function [
 
 ; converts slug, character, or tag to a string with option to have dashes
 ; or spaces (default)
-stringify: func [word [set-word! word! file!] /dashes] [
+stringify: func [word [set-word! word! file! string!] /dashes] [
+	if string? word [
+		print ["already stringified:" word]
+		quit
+	]
+
 	either dashes [
 		to string! word
 	] [

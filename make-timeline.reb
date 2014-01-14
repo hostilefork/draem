@@ -30,6 +30,14 @@ do %common.reb
 ; "Nov 29 1963 00:00:00 GMT-0600"
 ; Rebol is close "13-Oct-2009/19:51:30-7:00"
 to-timeline-date: function [d [date!]] [
+
+	; Not all Rebol dates have times or time zone info
+	; force it for convenience in the parse.
+	unless d/time [
+		d/time: 0:00:00
+		d/zone: -5:00
+	]
+
 	date-string: to string! d
 	rule: [
 		copy day-string to "-" skip 
@@ -56,9 +64,8 @@ make-timeline: function [entries [block!] xml-filename [file!]] [
 	]
 
 	foreach entry entries [
-		print entry/header/slug
 		append timelinexml reduce [
-			rejoin [tab tab{<event start="} to-timeline-date entry/header/date {"}]
+			rejoin [tab tab {<event start="} to-timeline-date entry/header/date {"}]
 			rejoin [tab tab tab {title="} stringify entry/header/slug {"}]
 			rejoin [tab tab tab {>}]
 			entry/header/title

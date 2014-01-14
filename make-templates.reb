@@ -97,56 +97,74 @@ link-to-character: func [character [word!] /count num] [
 ]
 
 
-
-dream-markup: function [block [block!]] [
-	unless all [
-		 1 == length? block
-		 string? first block
-	] [
-		throw make error! "Currently we don't mark up anything but single strings"
-	]
-	str: copy first block
+;-- Want to switch over to supporting markdown...
+dream-markup: function [str [string!]] [
+	result: copy str
 	replace/all str {--} {&mdash;}
 	return str
 ]
 
+
+htmlify-group: function [
+	{The ordinary htmlify function considers blocks to be elements,
+	but this treats blocks as groups.}
+
+	blk [block!]
+] [
+	result: copy {}
+	pos: blk
+	while [not tail? pos] [
+		case [
+		 	all [
+		 		head? pos
+		 		tail? pos
+		 	] [
+		 		append result htmlify/nestfirst/nestlast first pos
+		 	]
+		 	head? pos [
+		 		append result htmlify/nestfirst first pos
+		 	]
+		 	tail? pos [
+		 		append result htmlify/nestlast first pos
+		 	]
+		 	true [
+				append result htmlify first pos
+			]
+		]
+		pos: next pos
+	]
+	return result
+] 
+
+
+begin-span-or-div: function [
+	is-span [none! logic!]
+	class [word!]
+] [
+	rejoin ["<" either is-span ["span"] ["div"] space {class="} to string! class {">}]
+]
+
+
+end-span-or-div: function [
+	is-span [none! logic!]
+] [
+	rejoin ["</" either is-span ["span"] ["div"] {>} lf]
+]
+
+
 htmlify: function [
-	{	This recursive function is what produces the readable HTML for
-		an entry from its structure.  It's tricky but seems to work well
-		enough for now.  If I move away from storing entries as Rebol
-		and migrate instead to a database I'll have to write something
-		similar in django.  For now it's looking like a Rebol script is
-		a better idea.
-	}
+	{Recursively produces the HTML for a Draem Rebol structure.}
 	e
-	/nested
 	/nestfirst
 	/nestlast
+	/span
 ] [
+	;-- For uniformity of processing, wrap in a block
 	unless block? e [
-		e: compose/only [(e)]
+		e: append/only copy [] e
 	]
 
-	either block? first e [
-		result: copy {}
-		subpos: head e
-		while [not tail? subpos] [
-			if (not none? nested) and (head? subpos) [
-				append result htmlify/nestfirst first subpos
-				subpos: next subpos
-				continue
-			]
-			
-			if (not none? nested) and (subpos == back tail e) [
-				append result htmlify/nestlast first subpos
-				subpos: next subpos
-				continue
-			]
-			
-			append result htmlify first subpos
-			subpos: next subpos
-		]
-	] [
+	error: catch [
 		if 'center = first e [
 			;-- centering requires CSS as <center> is invalid now :-/
 			;-- worry about it in a bit, don't center it for now
@@ -157,8 +175,8 @@ htmlify: function [
 		switch/default first e [
 			picture [
 				result: rejoin [
-					either nestfirst [{}] [{<p>}]
-					{<center><a href="http://s159.photobucket.com/albums/t125/realityhandbook/}
+					{<div class="picture">}
+					{<a href="http://s159.photobucket.com/albums/t125/realityhandbook/}
 					second e
 					{">}
 					
@@ -166,32 +184,43 @@ htmlify: function [
 					{th_}
 					second e
 					{" />}
-					{</a></center>}
-					either nestlast [{}] [rejoin [{</p>} lf]]
+					{</a>}
+					{</div>}
+					lf
 				]
 			]
+
 			divider [
-				result: rejoin ["<hr>" space]
+				;-- horizontal line
+				result: rejoin ["<hr />" space]
 			]
+
+			separator [
+				;-- some space, but no line
+				result: rejoin ["<span>&nbsp;<br /></span>"]
+			]
+
 			quote [
 				result: rejoin [
-
-					;-- This nestfirst thing breaks when lists are embedded in quotes
-					;-- This whole thing needs a revisit, as the code has gotten out of hand
-					;-- Probably want to be parse-driven anyway
-
-					either nestfirst [{<blockquote>}] [{<blockquote><p>}]
-					either string? second e [
-						second e
+					{<blockquote>}
+					either block? second e [
+						htmlify-group second e
 					] [
-						htmlify/nested second e
+						htmlify second e
 					]
-					either nestlast [{</blockquote>}] [rejoin [{</p></blockquote>} lf]]
+					;-- http://html5doctor.com/blockquote-q-cite/
+					either third e [
+						rejoin [{<footer>} htmlify/span third e {</footer>}]
+					] [
+						{}
+					]
+					{</blockquote>}
+					lf
 				]
-				if not string? second e [probe e print result ]
 			]
-			note
-			update [
+
+			note update [
+
 				either date? second e [
 					date: second e
 					content: third e
@@ -200,25 +229,33 @@ htmlify: function [
 					content: second e
 				]
 
+				is-note: 'note = first e
+
 				result: rejoin [
-					either nestfirst [{}] [{<p>}]
-					{(} either 'note = first e [{Note}] [rejoin [{<b>UPDATE} either date [rejoin [space date]] [{}] {</b>}]] {:} space
-					either string? content [
-						content
+					{<div class="} either is-note [{note}] [{update}] {">}
+					either is-note [
+						{<span class="note-span">Note</span>}
 					] [
-						htmlify/nested content
+						rejoin [{<span class="update-span">UPDATE} either date [rejoin [space date]] [{}] {</span>}]
 					]
-					{)}
-					either nestlast [{}] [rejoin [{</p>} lf]]
+					space
+					either block? content [
+						htmlify-group content
+					] [
+						htmlify/span content
+					]
+					{</div>}
+					lf
 				]
-				; if not string? second e [probe e print result]
 			]
+
 			more [
 				result: {} ;-- output nothing for now
 				comment [
 					result: rejoin [{<p><i>Read more...</i></p>} lf]
 				]
 			]
+
 			error
 			text
 			code [
@@ -267,54 +304,59 @@ htmlify: function [
 					lf
 				]
 			]
+
 			heading [
 				result: rejoin [{<h3>} second e {</h3>} lf]
 			]
+
+			group [
+				;-- treat the rest of the elements as a group
+				;-- would be ambiguous if we just used a naked block to do this
+				result: htmlify-group next e
+			]
+
 			list [
 				unless all [
 					block? second e
-					not nested
 				] [
-					probe e
 					throw make error! "Bad list found" 
 				]
 				result: copy {<ul>}
 				foreach elem second e [
 					append result rejoin [
 						{<li>}
-						either string? first elem [
-							first elem
-						] [
-							htmlify elem
-						]
+						htmlify elem
 						{</li>}
 						lf
 					]
 				]
 				append result rejoin [{</ul>} lf]
 			]
-			raw [
-				;-- don't wrap in <p> tag; e.g. contains <div> or block level elements.
+
+			html [
 				unless string? second e [
-					probe e
 					throw make error! "Bad raw HTML"
 				]
 				result: second e
 			]
+
 			youtube [
 				;-- I like the idea of being able to put actual working youtube URLs in
 				;-- without having to extract the stupid ID, so I can just click on the
 				;-- video from the source I'm writing.
+
+				;-- But revisit what's tolerated and what isn't
 				unless all [
 					url? second e
 					pair? third e
 					parse second e [
-						["http://www.youtube.com/v/" copy video-id to [end | "?"]]
+						["http" [opt "s"] "://" [opt "www."] "youtube.com/v/" copy video-id to [end | "?"]]
 					|
-						["http://www.youtube.com/watch" thru "v=" copy video-id to [end | "#"]]
+						["http" [opt "s"] "://" [opt "www."] "youtube.com/watch" thru "v=" copy video-id to [end | "#"]]
+					|
+						["http" [opt "s"] "://" [opt "www."] "youtube.com/embed/" copy video-id to [end | "#"]]
 					]
 				] [
-					probe e
 					throw make error! "Bad youtube embed"
 				]
 				;-- http://www.webupd8.org/2010/07/embed-youtube-videos-in-html5-new.html
@@ -337,45 +379,65 @@ htmlify: function [
 					replace/all url "&" "&amp;"
 
 					result: rejoin [
-						{<p>}{<a href="} url {">}
+						begin-span-or-div span 'url
+						{<a href="} url {">}
 						case [
 							none? second e [url]
 							string? second e [second e]
-							true [print "Bad URL specification"]
+							true [throw make error! "Bad URL specification"]
 						]
-						{</a>}{</p>}
+						{</a>}
+						end-span-or-div span
 						lf
 					]
 				]
-				string? first e [
+
+				if all [
+					1 = length? e
+					string? first e
+				] [
+					;-- If the first element of a block is a string, then all the 
+					;-- elements must be strings.  
+
 					result: rejoin [
-						either nestfirst [{}] [{<p>}]
-						dream-markup e
-						either nestlast [{}] [rejoin [{</p>} lf]]
+						begin-span-or-div span 'exposition
+						dream-markup first e
+						end-span-or-div span
 					]
 				]
+
 				set-word? first e [
 					;; Dialogue
 
 					result: rejoin [
-						either nestfirst [{}] [{<p>}]
-						{<b>} stringify first+ e {</b>} ":" space 
+						begin-span-or-div span 'dialogue
+						{<span class="character">} stringify first+ e {</span>} ":" space 
 						either paren? first e [
-							rejoin ["(" first+ e ")" space]
+							rejoin [{<span class="action">} "(" first+ e ")" {</span>} space]
 						] [
 							{}
 						]
-						{"} dream-markup e {"}
-						either nestlast [{}] [rejoin [{</p>} lf]]
+
+						{"} dream-markup first+ e {"}
+						end-span-or-div span
 					]
 				]
 				true [
-					print head e
-					throw make error! "Entry lines should start with a keyword, a string (if exposition), or a set-word (if dialogue)" 
+					throw make error! "Unrecognized Draem block" 
 				]
 			]
 		]
+
+		;-- No error
+		none
 	]
+
+	if error [
+		probe error
+		probe e
+		quit
+	]
+
 	return result
 ]
 
@@ -391,7 +453,7 @@ write-entry: function [
 
 	print [{write-entry} html-file]
 	
-	content-html: htmlify entry/content
+	content-html: htmlify-group entry/content
 	
 	html: compose [
 		(django-extends %entry.html)
@@ -509,7 +571,7 @@ make-templates: function [
 	;; OMIT ABOUT AND CONTACT CATEGORIES FROM MAIN INDEX AND USE SPECIAL URL
 	;; ALSO WRITE OUT A MAIN PAGE IN REVERSE CHRONOLOGICAL ORDER
 
-	print "MAIN OUTPUT LOOP"
+	draem/stage "MAIN OUTPUT LOOP"
 
 	index-html: compose [
 		(django-extends %base.html)
@@ -568,7 +630,7 @@ make-templates: function [
 
 	;; GENERATE THE TAG LIST AND A PAGE FOR EACH TAG
 
-	print "TAG OUTPUT"
+	draem/stage "TAG OUTPUT"
 	tag-list-html: compose [
 		(django-extends %taglist.html)
 
@@ -629,7 +691,7 @@ make-templates: function [
 
 	;; GENERATE THE CHARACTER LIST AND A PAGE FOR EACH CHARACTER
 
-	print "CHARACTER OUTPUT"
+	draem/stage "CHARACTER OUTPUT"
 	character-list-html: compose [
 		(django-extends %characterlist.html)
 
@@ -691,7 +753,7 @@ make-templates: function [
 
 	;; WRITE OUT CATEGORY PAGES
 
-	print "CATEGORY OUTPUT"
+	draem/stage "CATEGORY OUTPUT"
 	category-list-html: compose [
 		(django-extends %categorylist.html)
 
