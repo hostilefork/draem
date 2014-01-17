@@ -101,6 +101,37 @@ link-to-character: func [character [word!] /count num] [
 dream-markup: function [str [string!]] [
 	result: copy str
 	replace/all str {--} {&mdash;}
+	while [pos: find str {**}] [
+		replace pos {**} {<b>}
+		replace pos {**} {</b>}
+	]
+	while [pos: find str {*}] [
+		replace pos {*} {<i>}
+		replace pos {*} {</i>}
+	]
+	while [pos: find str {`}] [
+		replace pos {`} {<code>}
+		replace pos {`} {</code>}
+	]
+	parse str [
+		some [
+			[
+				s:
+				"[" copy label to "]("
+				2 skip
+				copy url to ")"
+				skip
+				e:
+				(
+					change/part s rejoin [{<a href="} url {">} label {</a>}] e
+				)
+				:s
+			] 
+		|
+			skip
+		]
+	]
+
 	return str
 ]
 
@@ -349,10 +380,10 @@ htmlify: function [
 				unless all [
 					url? second e
 					pair? third e
-					parse second e [
-						["http" [opt "s"] "://" [opt "www."] "youtube.com/v/" copy video-id to [end | "?"]]
+					parse to string! second e [
+						["http" (print "mofo") [opt "s"] "://" [opt "www."] "youtube.com/v/" copy video-id to [end | "?"]]
 					|
-						["http" [opt "s"] "://" [opt "www."] "youtube.com/watch" thru "v=" copy video-id to [end | "#"]]
+						["http" (print "wee") [opt "s"] "://" [opt "www."] "youtube.com/watch" thru "v=" copy video-id to [end | "#"]]
 					|
 						["http" [opt "s"] "://" [opt "www."] "youtube.com/embed/" copy video-id to [end | "#"]]
 					]
