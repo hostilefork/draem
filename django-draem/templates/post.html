@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+{{ block.super }}
+{% endblock scripts %}
+
+{% block main %}
+<div id="entry-date"><p><b>Date:</b> <span>
+{% block date %}
+{% endblock date %}
+</span></p></div>
+
+<div id="entry-tags"><p><b>Tags:</b> <span>
+{% block tags %}
+{% endblock tags %}
+</span></p></div>
+
+<div id="entry-characters"><p><b>Characters:</b> <span>
+{% block characters %}
+{% endblock characters %}
+</span></p></div>
+
+<div id="entry-content">
+{% block content %}
+        Content
+{% endblock content %}
+</div>
+
+{% endblock main %}

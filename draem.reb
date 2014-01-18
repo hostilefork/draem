@@ -48,12 +48,13 @@ draem: context [
 			;-- Required properties
 			string? cfg/site-name
 			url? cfg/site-url
-			block? cfg/valid-categories
 			dir? cfg/entries-dir
 			dir? cfg/templates-dir
+			block? cfg/site-toplevel-slugs
 
 			;-- Required hooks
 			function? :cfg/url-from-header
+			function? :cfg/file-for-template
 
 			;-- Optional hooks
 			either in cfg 'check-header [
@@ -168,14 +169,6 @@ draem: context [
 					throw make error! "Header requires a tags block containing words"
 				]
 
-				unless all [
-					in header 'category
-					word? header/category
-					find config/valid-categories header/category
-				] [
-					throw make error! "Header requires a legal category"
-				]
-
 				if in config 'check-header [
 					config/check-header header
 				]
@@ -201,6 +194,51 @@ draem: context [
 		]
 
 		exit
+	]
+
+	;-- Next and previous entry logic; slow and bad
+
+	next-entry: function [header [object!]] [
+		if find config/site-toplevel-slugs header/slug [
+			return none
+		]
+
+		pos: entries
+		while [not tail? pos] [
+			if pos/1/header = header [
+				pos: next pos
+				while [ 
+					all [
+						not tail? pos
+						find config/site-toplevel-slugs pos/1/header/slug
+					]
+				] [
+					pos: next pos
+				]
+				return pos/1
+			]
+			pos: next pos
+		]
+		assert [false]
+	]
+
+	previous-entry: function [header [object!]] [
+		if find config/site-toplevel-slugs header/slug [
+			return none
+		]
+
+		previous: none
+		pos: entries
+		while [not tail? pos] [
+			if pos/1/header = header [
+				return previous
+			]
+			unless find config/site-toplevel-slugs pos/1/header/slug [
+				previous: pos/1
+			]
+			pos: next pos
+		]
+		assert [false]
 	]
 
 
@@ -257,6 +295,16 @@ draem: context [
 		]
 	]
 
+	entry-tags-by-popularity: function [
+		{Return the tags as a block sorted by popularity.}
+		header [object!]
+	] [
+		sorted-tags: copy header/tags
+		sort/compare sorted-tags func [a b] [
+			(length? indexes/tag-to-entries/(a)) >
+			(length? indexes/tag-to-entries/(b))
+		]
+	]
 
 	build-indexes: function [
 		{Build indexing information over the entries block.}
@@ -269,9 +317,6 @@ draem: context [
 
 			; map from character to list of entries where they appear
 			character-to-entries: make map! []
-
-			; map from categories to list of entries in that category
-			category-to-entries: make map! []
 
 			; map from entry slug to the characters list appearing in it
 			slug-to-characters: make map! []
@@ -286,12 +331,6 @@ draem: context [
 			header: entry/header
 			content: entry/content
 
-			either select indexes/category-to-entries header/category [
-				append select indexes/category-to-entries header/category entry
-			] [
-				append indexes/category-to-entries compose/deep copy/deep [(header/category) [(entry)]]
-			]
-
 			foreach tag header/tags [
 				either select indexes/tag-to-entries tag [
 					append select indexes/tag-to-entries tag entry
@@ -305,26 +344,26 @@ draem: context [
 			characters: copy []
 			repend indexes/slug-to-characters [entry/header/slug characters]
 
-			pos: content
-			while [not tail? pos] [
-				line: first+ pos
+			collect-characters: func [blk [block!] /local pos line] [
 
-				if all [
-					block? line
-					set-word? first line
-					not find characters to word! first line
-				] [
-					append characters to word! first line
-				]
+				pos: head blk
+				while [not tail? pos] [
+					line: first+ pos
 
-				comment [
-					if 'picture = first line [
-						;;
-						;; What to do?  Index or list these?  Scrape them?
-						;;
+					if block? line [
+						either all [
+							set-word? first line
+							not find characters to word! first line
+						] [
+							append characters to word! first line
+						] [
+							collect-characters line
+						]
 					]
 				]
 			]
+
+			collect-characters content
 
 			foreach character characters [
 				either select indexes/character-to-entries character [

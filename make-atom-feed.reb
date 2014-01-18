@@ -165,6 +165,7 @@ make-atom-feed: function [
 	}]
 
 	foreach entry entries [
+		sorted-tags: draem/entry-tags-by-popularity entry/header
 		if 0 = atom-length [
 			break
 		]
@@ -179,8 +180,8 @@ make-atom-feed: function [
 	{
 			<id>} (atomid-from-url url-for-entry entry entry/header/date) {</id>
 			<updated>} (to-iso8601-date/timestamp entry/header/date) {</updated>
-			<summary>} (stringify entry/header/category)
-				{ - Tags: } (comma-separated entry/header/tags)
+			<summary>}
+				{Tags: } (comma-separated sorted-tags)
 			{</summary>
 		</entry>
 	}

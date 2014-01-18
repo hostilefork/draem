@@ -39,9 +39,9 @@ django-block: func [name [string!] stuff [block!] /inline] [
 
 django-path: func [stuff [block!] ] [
 	django-block "path" compose [
-		{<li>
+		(rejoin [{<li>
 			<a href="} draem/config/site-url {" title="Home">Home</a>
-		</li>}
+		</li>}])
 		(stuff)
 		{}
 	]
@@ -60,20 +60,6 @@ open-anchor: func [url [url!]] [
 
 close-anchor: {</a>}
 
-link-to-category: func [category [word!] /count num] [
-	rejoin [
-		open-anchor rejoin [
-			draem/config/site-url {category/}
-			stringify/dashes category 
-			{/}
-		]
-		stringify category
-		close-anchor
-		space {:} space num {<br />}
-	]
-
-]
-
 link-to-tag: func [tag [word!] /count num] [
 	rejoin [
 		open-anchor rejoin [
@@ -81,18 +67,22 @@ link-to-tag: func [tag [word!] /count num] [
 		]
 		stringify tag
 		close-anchor
-		space {:} space num {<br />}
+		either count [
+			rejoin [space {:} space num {<br />}]
+		] [{}]
 	]
 ]
 
 link-to-character: func [character [word!] /count num] [
 	rejoin [
 		open-anchor rejoin [
-			draem/config/site-url "character/" stringify/dashes character {/}
+			draem/config/site-url "character/" lowercase stringify/dashes character {/}
 		]
 		stringify character
 		close-anchor
-		space {:} space num {<br />}
+		either count [
+			rejoin [space {:} space num {<br />}]
+		] [{}]
 	]
 ]
 
@@ -603,25 +593,29 @@ write-entry: function [
 	
 	content-html: htmlify-group entry/content
 	
+	sorted-tags: draem/entry-tags-by-popularity entry/header
+	main-tag: first sorted-tags
+
+	is-page: any [earlier-entry later-entry]
+
 	html: compose [
-		(django-extends %entry.html)
+		(django-extends either is-page [%page.html] [%post.html])
 		
 		(django-block/inline "keywords" [
-			comma-separated head insert copy entry/header/tags entry/header/category
+			comma-separated sorted-tags
 		])
 		
 		(django-block/inline "description" [
 			comma-separated reduce [
 				{Author: A.E. 1020}
-				rejoin [{Category:} space stringify entry/header/category]
 				rejoin [{Title:} space entry/header/title]
-				rejoin [{date:} space entry/header/date/date]
+				rejoin [{Date:} space entry/header/date/date]
 				rejoin [{Length:} space length? (split content-html space) space "words"]
 			]
 		])
 		
 		(django-block/inline "title" [
-			rejoin [entry/header/category space ":" space entry/header/title]
+			rejoin [main-tag space ":" space entry/header/title]
 		])
 		
 		(django-block/inline "header" [
@@ -630,12 +624,13 @@ write-entry: function [
 		
 		(django-path [
 			rejoin [
-				{<li>}
-					{<a href="} draem/config/site-url {category/}
-					stringify/dashes entry/header/category {/">} 
-					stringify entry/header/category 
-					{</a>}
-				{</li>}
+				either main-tag [
+					rejoin [
+						{<li>}
+							link-to-tag main-tag
+						{</li>}
+					]
+				] [{}]
 				{<li><span>}
 					entry/header/title
 				{</span></li>}
@@ -647,10 +642,10 @@ write-entry: function [
 		])
 
 		(django-block "tags" [
-			either empty? entry/header/tags [
+			either empty? sorted-tags [
 				"(none)"
 			] [
-				comma-separated/callback entry/header/tags function [tag] [
+				comma-separated/callback sorted-tags function [tag] [
 					rejoin [ 
 						{<a href="} draem/config/site-url {tag/}
 						stringify/dashes tag
@@ -698,7 +693,8 @@ write-entry: function [
 			draem/config/site-footer
 		])
 	]
-	
+
+	make-dir/deep first split-path html-file
 	write/lines html-file html
 ]
 
@@ -744,20 +740,15 @@ make-templates: function [
 	iter: entries
 	while [not tail? iter] [
 		entry: first iter
-		earlier-entry: first next iter ;-- maybe none
-		later-entry: first back iter ;-- maybe none
+		earlier-entry: draem/previous-entry entry/header ;-- maybe none
+		later-entry: draem/next-entry entry/header ;-- maybe none
 
-		either fake-category entry/header/category [
-			write-entry entry none none rejoin [templates-dir stringify/dashes entry/header/category %.html]
+		write-entry entry earlier-entry later-entry (draem/config/file-for-template entry/header)
+		unless all [
+			none? earlier-entry
+			none? later-entry
 		] [
-			directory: rejoin [
-				templates-dir stringify/dashes entry/header/category {/}
-			]
-			unless exists? directory [
-				make-dir directory
-			]
-			
-			write-entry entry earlier-entry later-entry rejoin [directory entry/header/slug %.html]
+			;-- It's not "chained" into the index, so leave it standing alone
 			append index-html link-to-entry entry
 		]
 
@@ -797,7 +788,12 @@ make-templates: function [
 		"{% block tags %}"
 	]
 
-	foreach [tag entries] draem/indexes/tag-to-entries [
+	taglist-sorted: make-sorted-block-from-map draem/indexes/tag-to-entries
+
+	foreach [tag entries] taglist-sorted [
+		assert [word? tag]
+		assert [block? entries]
+
 		directory: to file! rejoin [templates-dir %tags/]
 		if (not exists? directory) [
 			make-dir directory
@@ -824,7 +820,10 @@ make-templates: function [
 		]
 		
 		foreach entry entries [
-			unless fake-category entry/header/category [
+			if all [
+				draem/next-entry entry/header
+				draem/previous-entry entry/header
+			] [
 				append tag-html link-to-entry entry
 			]
 		]
@@ -858,7 +857,12 @@ make-templates: function [
 		"{% block characters %}"
 	]
 
-	foreach [character entries] draem/indexes/character-to-entries [
+	characterlist-sorted: make-sorted-block-from-map draem/indexes/character-to-entries
+
+	foreach [character entries] characterlist-sorted [
+		assert [word? character]
+		assert [block? entries]
+
 		directory: to file! rejoin [templates-dir %characters/]
 		unless exists? directory [
 			make-dir directory
@@ -877,87 +881,26 @@ make-templates: function [
 			])
 			
 			(django-path [
-				{<li><a href="} draem/config/site-url {character/" title="Character List">Character</a></li>}
+				rejoin [{<li><a href="} draem/config/site-url {character/" title="Character List">Character</a></li>}]
 				rejoin [{<li><span>} stringify character {</span></li>}]
 			])
 			
 			"{% block entries %}"
 		]
-		
+
 		foreach entry entries [
-			unless fake-category entry/header/category [
+			if all [
+				draem/next-entry entry/header
+				draem/previous-entry entry/header
+			] [
 				append character-html link-to-entry entry
 			]
 		]
-		
+				
 		append character-html "{% endblock entries %}"
-		write/lines rejoin [directory stringify/dashes character ".html"] character-html
+		write/lines rejoin [directory lowercase stringify/dashes character ".html"] character-html
 	]
 
 	append character-list-html "{% endblock characters %}"
 	write/lines rejoin [templates-dir %characters.html] character-list-html
-
-
-
-	;; WRITE OUT CATEGORY PAGES
-
-	draem/stage "CATEGORY OUTPUT"
-	category-list-html: compose [
-		(django-extends %categorylist.html)
-
-		(django-block/inline "title" [
-			rejoin ["All Categories for " draem/config/site-name]
-		])
-		
-		(django-block/inline "header" [
-			{Category List}
-		])
-
-		(django-path [
-			{<li><span>Category List</span></li>}
-		])
-		
-		"{% block categories %}"
-	]
-
-	foreach [category entries] draem/indexes/category-to-entries [
-		if fake-category category [
-			continue
-		]
-
-		directory: to file! rejoin [templates-dir %categories/]
-		unless exists? directory [
-			make-dir directory
-		]
-		append category-list-html link-to-category/count category length? entries
-		
-		category-html: compose [
-			(django-extends %category.html)
-			
-			(django-block/inline "title" [
-				rejoin [{category:} space stringify category]
-			])
-			
-			(django-block/inline "header" [
-				stringify category
-			])
-			
-			(django-path [
-				{<li><a href="} draem/config/site-url {category/" title="Category">Category</a></li>}
-				rejoin [{<li><span>} stringify category {</span></li>}]
-			])
-
-			"{% block entries %}"
-		]
-		
-		foreach entry entries [
-			append category-html link-to-entry entry
-		]
-		
-		append category-html "{% endblock entries %}"
-		write/lines rejoin [directory stringify/dashes category ".html"] category-html
-	]
-
-	append category-list-html "{% endblock categories %}"
-	write/lines rejoin [templates-dir %categories.html] category-list-html
 ]

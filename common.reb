@@ -41,6 +41,21 @@ to: func [type value] [
 
 
 ;---
+; If keys are mapped to blocks in a map, return a block variant of that
+; map sorted in order of the longest blocks first
+;---
+make-sorted-block-from-map: function [map [map!]] [
+	blk: split make block! map 2
+	sort/compare blk func [a b] [(length? second a) > (length? second b)]
+	pos: head blk
+	while [not tail? pos] [
+		pos: change/part pos first pos 1 
+		
+	]
+	return blk
+]
+
+;---
 ; Delete directory function from:
 ; http://en.wikibooks.org/wiki/REBOL_Programming/delete-dir
 ;---
@@ -108,16 +123,6 @@ comma-separated: function [
 	]
 	remove/part back back tail result 2
 	return result
-]
-
-fake-category: function [
-	{Some categories like ABOUT and CONTACT aren't really for entries, but
-	for pages formatted in a similar way.  They should not be shown in 
-	lists and should direct to top-level templates, e.g. %templates/about.html}
-
-	category [word!]
-] [
-	find [about contact] category 
 ]
 
 url-for-entry: function [entry [object!]] [
