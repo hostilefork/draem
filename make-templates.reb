@@ -97,23 +97,57 @@ link-to-character: func [character [word!] /count num] [
 ]
 
 
-;-- Want to switch over to supporting markdown...
+;-- Very hacky and limited markdown-to-html rendering
 dream-markup: function [str [string!]] [
 	result: copy str
-	replace/all str {--} {&mdash;}
-	while [pos: find str {**}] [
+
+	pos: result
+	while [pos: find pos {&}] [
+		unless #"#" = second pos [
+			replace pos "&" "&amp;"
+		]
+		++ pos
+	]
+
+	replace/all result ">" "&gt;"
+	replace/all result "<" "&lt;"
+
+	pos: result
+	while [pos: find pos {**}] [
 		replace pos {**} {<b>}
 		replace pos {**} {</b>}
 	]
-	while [pos: find str {*}] [
-		replace pos {*} {<i>}
-		replace pos {*} {</i>}
+
+	pos: result
+	while [pos: find pos {*}] [
+
+		unless space = second pos [
+			pos-end: pos
+			while [pos-end: find next pos-end {*}] [
+				if space <> first back pos-end [
+					break
+				]
+			]
+
+			unless pos-end [
+				print "Unmatched asterisk in markdown"
+				print result
+				quit
+			] 
+
+			replace pos {*} {<i>}
+			replace pos-end {*} {</i>}
+		]
+		pos: pos-end
 	]
-	while [pos: find str {`}] [
+
+	pos: result
+	while [pos: find pos {`}] [
 		replace pos {`} {<code>}
 		replace pos {`} {</code>}
 	]
-	parse str [
+	
+	parse result [
 		some [
 			[
 				s:
@@ -124,6 +158,7 @@ dream-markup: function [str [string!]] [
 				e:
 				(
 					change/part s rejoin [{<a href="} url {">} label {</a>}] e
+					s: head s
 				)
 				:s
 			] 
@@ -132,7 +167,30 @@ dream-markup: function [str [string!]] [
 		]
 	]
 
-	return str
+	replace/all result {--} {&mdash;}
+
+	;-- hacky way to support these known escapes
+	;-- Find general solution...
+	replace/all result {&amp;delta;} {&delta;}	
+	replace/all result {&amp;rarr;} {&rarr;}
+	replace/all result {&amp;larr;} {&larr;}
+	replace/all result {&amp;darr;} {&darr;}
+	replace/all result {&amp;uarr;} {&uarr;}
+	replace/all result {&amp;eacute;} {&eacute;}
+	replace/all result {&amp;iuml;} {&iuml;}
+	replace/all result {&amp;asymp;} {&asymp;}
+	replace/all result {&amp;nbsp;} {&nbsp;}
+
+	replace/all result {&lt;sup&gt;} {<sup>}
+	replace/all result {&lt;/sup&gt;} {</sup>}
+
+	replace/all result {&lt;sub&gt;} {<sub>}
+	replace/all result {&lt;/sub&gt;} {</sub>}
+
+	replace/all result {&lt;br&gt;} {<br />}
+	replace/all result {&lt;br /&gt;} {<br />}
+
+	return result
 ]
 
 
@@ -280,6 +338,40 @@ htmlify: function [
 				]
 			]
 
+			image [
+				assert [url? second e]
+				assert [pair? third e]
+				assert [string? fourth e]
+				result: rejoin [
+					{<div class="picture">}
+					{<a href="} to string! second e {">}
+					{<img src="} to string! second e {"} space
+					{alt="} fourth e {"} space
+					{width="} first third e {"} space
+					{height="} second third e {" />}
+					{</a>}
+					{</div>}
+				]
+			]
+
+			button [
+				assert [url? second e]
+				assert [pair? third e]
+				assert [string? fourth e]
+				assert [url? fifth e]
+				result: rejoin [
+					{<div class="picture">}
+					{<a href="} to string! fifth e {">}
+					{<img src="} to string! second e {"} space
+					{alt="} fourth e {"} space
+					{width="} first third e {"} space
+					{height="} second third e {" />}
+					{</a>}
+					{</div>}
+				]
+
+			]
+
 			more [
 				result: {} ;-- output nothing for now
 				comment [
@@ -381,9 +473,9 @@ htmlify: function [
 					url? second e
 					pair? third e
 					parse to string! second e [
-						["http" (print "mofo") [opt "s"] "://" [opt "www."] "youtube.com/v/" copy video-id to [end | "?"]]
+						["http" [opt "s"] "://" [opt "www."] "youtube.com/v/" copy video-id to [end | "?"]]
 					|
-						["http" (print "wee") [opt "s"] "://" [opt "www."] "youtube.com/watch" thru "v=" copy video-id to [end | "#"]]
+						["http" [opt "s"] "://" [opt "www."] "youtube.com/watch" thru "v=" copy video-id to [end | "#"]]
 					|
 						["http" [opt "s"] "://" [opt "www."] "youtube.com/embed/" copy video-id to [end | "#"]]
 					]
@@ -392,6 +484,7 @@ htmlify: function [
 				]
 				;-- http://www.webupd8.org/2010/07/embed-youtube-videos-in-html5-new.html
 				result: rejoin [
+					{<div class="youtube">}
 					{<iframe class="youtube-player"} space
 
 					;-- Integer conversion needed as first 10x20 returns 10.0 :-/
@@ -399,6 +492,7 @@ htmlify: function [
 					{height="} to integer! second third e {"} space
 					{src="http://www.youtube.com/embed/} video-id {">}
 					{</iframe>}
+					{</div>}
 				]
 			]
 		] [

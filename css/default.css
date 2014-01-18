@@ -74,6 +74,14 @@
     content: "\25C0"
 }
 
+.youtube {
+    text-align: center;
+}
+
+.picture {
+    text-align: center;
+}
+
 blockquote footer {
     text-align: right;
     font-weight: bold;
