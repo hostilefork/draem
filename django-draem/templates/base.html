@@ -32,6 +32,9 @@
 
 {% block css %}
     <link rel='stylesheet' href='{{ MEDIA_URL }}default.css' type='text/css' />
+
+   	<link rel="stylesheet" href="{{ MEDIA_URL }}google-code-prettify/prettify.css">
+	<link rel="stylesheet" href="{{ MEDIA_URL }}google-code-prettify/reb4me-prettify.css">
 {% endblock css %}
 
 
@@ -42,6 +45,22 @@
 		<script type="text/javascript" src="{{ LIBS_URL }}jquery-ui/jquery-ui-1.7.1.custom.min.js"></script>-->
 {% else %}
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+
+		<!-- http://mayurrokade.com/blog/syntax-highlighting-twitter-bootstrap/ -->
+		<script src="{{ MEDIA_URL }}google-code-prettify/prettify.js"></script>
+
+		<!-- https://github.com/draegtun/PrettifyRebol -->
+		<script src="{{ MEDIA_URL }}google-code-prettify/lang-rebol.js"></script>
+
+		<script>
+			$(document).ready(
+				function(){
+					// recolors every time, or does prettyprint class get removed?
+					window.prettyPrint && prettyPrint()
+				}
+			);
+		</script>
+
 {% endif %}
 		
 		<!-- If debugging in a browser without decent debugging infrastructure, Firebug Lite can be helpful -->

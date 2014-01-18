@@ -171,16 +171,24 @@ dream-markup: function [str [string!]] [
 
 	;-- hacky way to support these known escapes
 	;-- Find general solution...
-	replace/all result {&amp;delta;} {&delta;}	
-	replace/all result {&amp;rarr;} {&rarr;}
-	replace/all result {&amp;larr;} {&larr;}
-	replace/all result {&amp;darr;} {&darr;}
-	replace/all result {&amp;uarr;} {&uarr;}
-	replace/all result {&amp;eacute;} {&eacute;}
-	replace/all result {&amp;iuml;} {&iuml;}
-	replace/all result {&amp;asymp;} {&asymp;}
-	replace/all result {&amp;nbsp;} {&nbsp;}
+	recover-entity: func [entity [word!]] [
+		replace/all result rejoin [
+			{&amp;} to string! entity {;}
+		] rejoin [
+			{&} to string! entity {;}
+		]
+	]
+	foreach entity [
+		delta
+		larr rarr uarr darr
+		eacute aacute iuml asymp nbsp
+		iquest
+	] [
+		recover-entity entity
+	]
 
+	;-- Hacky way to get a few HTML things back
+	;-- Need to study Markdown to know what the rules are
 	replace/all result {&lt;sup&gt;} {<sup>}
 	replace/all result {&lt;/sup&gt;} {</sup>}
 
@@ -419,7 +427,22 @@ htmlify: function [
 				;-- TODO: work out the right language classes for google code prettify
 				;-- http://stackoverflow.com/q/11742907/211160
 				result: rejoin [
-					either needs-pre [{<pre>}] [{}]
+					either needs-pre [
+						rejoin [
+							{<pre}
+							either 'code = first e [
+								rejoin [
+									space
+									{class="prettyprint}
+									either language [
+										rejoin [space {lang-} to string! language]
+									] [{}]
+									{"}
+								]
+							] [{}]
+							{>}
+						]
+					] [{}]
 					either needs-code [{<code>}] [{}]
 					rejoin code-lines
 					either needs-code [{</code>}] [{}]
@@ -631,7 +654,7 @@ write-entry: function [
 					rejoin [ 
 						{<a href="} draem/config/site-url {tag/}
 						stringify/dashes tag
-						{/">} stringify tag {</a>}
+						{/" class="post-tag" rel="tag">} stringify tag {</a>}
 					]
 				]
 			]
