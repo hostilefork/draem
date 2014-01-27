@@ -49,8 +49,7 @@ make-sorted-block-from-map: function [map [map!]] [
 	sort/compare blk func [a b] [(length? second a) > (length? second b)]
 	pos: head blk
 	while [not tail? pos] [
-		pos: change/part pos first pos 1 
-		
+		pos: change/part pos first pos 1 		
 	]
 	return blk
 ]

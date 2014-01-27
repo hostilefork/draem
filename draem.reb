@@ -198,7 +198,7 @@ draem: context [
 
 	;-- Next and previous entry logic; slow and bad
 
-	next-entry: function [header [object!]] [
+	previous-entry: function [header [object!]] [
 		if find config/site-toplevel-slugs header/slug [
 			return none
 		]
@@ -222,19 +222,19 @@ draem: context [
 		assert [false]
 	]
 
-	previous-entry: function [header [object!]] [
+	next-entry: function [header [object!]] [
 		if find config/site-toplevel-slugs header/slug [
 			return none
 		]
 
-		previous: none
+		result: none
 		pos: entries
 		while [not tail? pos] [
 			if pos/1/header = header [
-				return previous
+				return result
 			]
 			unless find config/site-toplevel-slugs pos/1/header/slug [
-				previous: pos/1
+				result: pos/1
 			]
 			pos: next pos
 		]

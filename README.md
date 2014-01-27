@@ -36,6 +36,17 @@ You *cannot* just write:
 
     Foo FooOption
 
+Whitespace between items is ignored, per Rebol's rules.  So a series of items are presumed to be different sections.  So this would produce three separate "paragraphs", despite the lack of a newline:
+
+    {One} {Two} {Three}
+
+Blocks can be used to group items in places where a single item would be expected.  So for instance, this is ia legitimate way of passing two "groups" to Foo: 
+
+    [Foo [{Baz} {Bar}] [{Mumble} {Frotz}]]
+
+This is applicable to cases like bulleted lists, where you might want to put multiple sections under a single bullet.  But most constructs do not require the blocks.
+
+
 
 ### Exposition
 
@@ -59,27 +70,39 @@ A line of dialogue starts with a hyphenated character name followed by a colon. 
 
     [taco-bell-dog: {Yo quiero taco bell.}]
 
-It's possible to add an action to a line of dialogue by enclosing it in parentheses as the second item in a dialogue block:
+It's possible to add an action to a line of dialogue by enclosing it in angle brackets as the second item in a dialogue block:
 
-    [purple-cheetah: ("growling fiercely") {Give me back that shoe pie!}]
+    [purple-cheetah: <growling fiercely> {Give me back that shoe pie!}]
 
-The contents of the parentheses must be a string enclosed in quotes.
+The contents of the action must be a valid Rebol TAG!, which is a subclass of string that permits most characters.
 
 
-### Sidenotes
+### Notes
 
 Sidenotes are indicated with a block beginning with the word! NOTE:
 
     [note {I told the dream alien it was the year 2000, but it's
      actually 2013 at the time of this writing.}]
 
-Multi-line notes are achieved by instead of having a string as the second argument, putting a block there instead.  In that block, all line formats are legal.  The template generator will wrap that up in a blockquote.
+Multi-line notes are also possible, just put the items in a sequence.  They will be considered to be different achieved by instead of having a string as the second argument, putting a block there instead.  In that block, all line formats are legal.  The template generator will wrap that up in a blockquote.
 
-    [note [
+    [note
         {One}
-        [two: {Message}]
-        [{Three} {Four}]
-    ]]
+        [person-two: <surprised> {I can put dialogue in notes?}]
+        [
+            {^-- Pointless grouping block in this case.}
+            {but it's legal...}
+        ]
+    ]
+
+
+### Updates
+
+An update notice is very much like a note, only it has an optional date as the first item.  It would typically be rendered more strongly.
+
+    [update 12-Dec-2012 {Rebol is now open source!}]
+
+Whether a sidenote should also allow dates is up in the air.  It's possible.  The other question, as Draem's standards for optional dialect parameters evolve, is whether the dialect format should be this freeform.
 
 
 ### Headings
@@ -126,14 +149,36 @@ I am considering auto-detecting URLs, somewhat in the spirit of how StackOverflo
 
 Similar to how NOTE works.  You can put any structural unit into a list slot.
 
-    [list [
+    [list
         {One.}
-        [two: {Message}]
-        [note [
-            {Three.}
-            {Four.}
-        ]]
-    ]]
+        [person-two: <impressed> {Looks pretty fancy!}]
+        [
+            {^-- This block grouping has a point!}
+            {Despite two elements here, only one bullet...}
+        ]
+    ]
+
+
+### Quotes
+
+Something meant to be targeting something like an HTML blockquote.  You do not need to put quotation marks in the content:
+
+If you want to attribute it, use the special option /source:
+
+    [quote
+        {Security is mostly a superstition. It does not
+        exist in nature, nor do the children of men as
+        a whole experience it. Avoiding danger is no
+        safer in the long run than outright exposure.}
+
+        {Life is either a daring adventure, or nothing.}
+
+        /source [http://en.wikipedia.org/wiki/Helen_Keller {Helen Keller}]
+    ]
+
+I can't think of a good reason to let you put lines of dialogue or bulleted lists there.  But at the moment it supports everything.  I'd suggest just making it a simple string or a link format, though.
+
+This way of specifying parameters to constructs which are intended to accept flat lists is something that will need to be revisited.
 
 
 ### Dividers
@@ -150,23 +195,6 @@ A separator just leaves a line of extra space in a context, without drawing a li
     separator
 
 
-### Groups
-
-A group can be used in contexts where you wish several sequential elements to be treated as one group.  This is useful in particular in lists, because sometimes a list item can contain multiple paragraphs, a picture, etc.
-
-    [list [
-        {Item One}
-        [group
-            {Item Two-A}
-            [note {Note on Item Two-B}]
-            {Item Two-C}
-        ]
-        {Item Three}
-    ]]
-
-Because of the group, the above would only have three bullets.  You should *not* put the group's items in a block...just have them follow as if they were normal parameters.
-
-
 ### More
 
 WordPress had a special invisible indicator for a cut point between the lead-in of your content that would be on the main blog roll, and the "rest".  Because one of the data sets I imported had these indicators, I included them.  I'm not sure how they'll be handled ultimately.  For the moment they are just ignored.
@@ -176,10 +204,11 @@ WordPress had a special invisible indicator for a cut point between the lead-in 
 
 ### HTML
 
-You would ideally use the nicer Markdown syntax which is handled in raw strings.  , but sometimes raw HTML is needed (tables, etc.)
+You would ideally use the nicer Markdown syntax which is handled in raw strings.  But sometimes raw HTML is needed (tables, etc.)
 
-    [html {Wouldn't this look <i>nicer</i> as Markdown?}]
+    [html {<p>Wouldn't this look <i>nicer</i> as Markdown?</p>}]
 
+Note that the HTML really is raw; it will have the block-level-element bracketing that you would get with an ordinary string.
 
 
 ## SYNCHRONIZATION NOTES

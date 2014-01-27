@@ -25,6 +25,8 @@ Rebol [
 
 do %common.reb
 
+do %markdown.reb
+
 django-block: func [name [string!] stuff [block!] /inline] [
 	result: compose [
 		(rejoin ["{% block" space name space "%}"])
@@ -47,10 +49,22 @@ django-path: func [stuff [block!] ] [
 	]
 ]
 
+django-google-analytics: function [] [
+	rejoin [
+		django-block/inline "ga_id" compose [
+			(draem/config/google-analytics/tracking-id)
+		]
+		django-block/inline "ga_property" compose [
+			(draem/config/google-analytics/property)
+		]
+	]
+]
+
 django-extends: func [template [file!]] [
 	compose [
 		(rejoin ["{% extends" space {"} to string! template {"} space "%}"])
 		{}
+		(django-google-analytics)
 	]	
 ]
 
@@ -86,132 +100,30 @@ link-to-character: func [character [word!] /count num] [
 	]
 ]
 
-
-;-- Very hacky and limited markdown-to-html rendering
-dream-markup: function [str [string!]] [
-	result: copy str
-
-	pos: result
-	while [pos: find pos {&}] [
-		unless #"#" = second pos [
-			replace pos "&" "&amp;"
-		]
-		++ pos
-	]
-
-	replace/all result ">" "&gt;"
-	replace/all result "<" "&lt;"
-
-	pos: result
-	while [pos: find pos {**}] [
-		replace pos {**} {<b>}
-		replace pos {**} {</b>}
-	]
-
-	pos: result
-	while [pos: find pos {*}] [
-
-		unless space = second pos [
-			pos-end: pos
-			while [pos-end: find next pos-end {*}] [
-				if space <> first back pos-end [
-					break
-				]
-			]
-
-			unless pos-end [
-				print "Unmatched asterisk in markdown"
-				print result
-				quit
-			] 
-
-			replace pos {*} {<i>}
-			replace pos-end {*} {</i>}
-		]
-		pos: pos-end
-	]
-
-	pos: result
-	while [pos: find pos {`}] [
-		replace pos {`} {<code>}
-		replace pos {`} {</code>}
-	]
-	
-	parse result [
-		some [
-			[
-				s:
-				"[" copy label to "]("
-				2 skip
-				copy url to ")"
-				skip
-				e:
-				(
-					change/part s rejoin [{<a href="} url {">} label {</a>}] e
-					s: head s
-				)
-				:s
-			] 
-		|
-			skip
-		]
-	]
-
-	replace/all result {--} {&mdash;}
-
-	;-- hacky way to support these known escapes
-	;-- Find general solution...
-	recover-entity: func [entity [word!]] [
-		replace/all result rejoin [
-			{&amp;} to string! entity {;}
-		] rejoin [
-			{&} to string! entity {;}
-		]
-	]
-	foreach entity [
-		delta
-		larr rarr uarr darr
-		eacute aacute iuml asymp nbsp
-		iquest
-	] [
-		recover-entity entity
-	]
-
-	;-- Hacky way to get a few HTML things back
-	;-- Need to study Markdown to know what the rules are
-	replace/all result {&lt;sup&gt;} {<sup>}
-	replace/all result {&lt;/sup&gt;} {</sup>}
-
-	replace/all result {&lt;sub&gt;} {<sub>}
-	replace/all result {&lt;/sub&gt;} {</sub>}
-
-	replace/all result {&lt;br&gt;} {<br />}
-	replace/all result {&lt;br /&gt;} {<br />}
-
-	return result
-]
-
-
-htmlify-group: function [
+htmlify-range: function [
 	{The ordinary htmlify function considers blocks to be elements,
 	but this treats blocks as groups.}
 
-	blk [block!]
+	start [block!]
+	end [block!]
 ] [
+	assert [(head start) = (head end)]
+	assert [1 <= offset? start end]
+
 	result: copy {}
-	pos: blk
-	while [not tail? pos] [
+	pos: start
+	while [pos <> end] [
 		case [
 		 	all [
-		 		head? pos
-		 		tail? pos
+		 		end = next pos
+		 		start = pos
 		 	] [
 		 		append result htmlify/nestfirst/nestlast first pos
 		 	]
-		 	head? pos [
+		 	start = pos [
 		 		append result htmlify/nestfirst first pos
 		 	]
-		 	tail? pos [
+		 	end = next pos [
 		 		append result htmlify/nestlast first pos
 		 	]
 		 	true [
@@ -221,7 +133,14 @@ htmlify-group: function [
 		pos: next pos
 	]
 	return result
-] 
+]
+
+htmlify-group: function [
+	blk [block!]
+] [
+	assert [blk = head blk]
+	htmlify-range blk (tail blk)
+]
 
 
 begin-span-or-div: function [
@@ -241,7 +160,7 @@ end-span-or-div: function [
 
 htmlify: function [
 	{Recursively produces the HTML for a Draem Rebol structure.}
-	e
+	e [block! url! string! word!]
 	/nestfirst
 	/nestlast
 	/span
@@ -251,16 +170,14 @@ htmlify: function [
 		e: append/only copy [] e
 	]
 
-	error: catch [
-		if 'center = first e [
-			;-- centering requires CSS as <center> is invalid now :-/
-			;-- worry about it in a bit, don't center it for now
-			;-- treat as if it didn't say center
-			take e
-		]
+	result: none
 
-		switch/default first e [
-			picture [
+	err: try [
+		case [
+			'picture = first e [
+				;-- Hack for dream journal, need to revisit a generalized site-wide
+				;-- way of locating media for these constructs.  IMAGE is the one
+				;-- that's generalized.
 				result: rejoin [
 					{<div class="picture">}
 					{<a href="http://s159.photobucket.com/albums/t125/realityhandbook/}
@@ -277,27 +194,34 @@ htmlify: function [
 				]
 			]
 
-			divider [
+			'divider = first e [
 				;-- horizontal line
 				result: rejoin ["<hr />" space]
 			]
 
-			separator [
+			'separator = first e [
 				;-- some space, but no line
 				result: rejoin ["<span>&nbsp;<br /></span>"]
 			]
 
-			quote [
+			'quote = first e [
+				attribution: none
+
+				either end: find e /source [
+					assert [2 = length? end]
+					attribution: second end
+				] [
+					end: tail e
+				]
+
 				result: rejoin [
 					{<blockquote>}
-					either block? second e [
-						htmlify-group second e
-					] [
-						htmlify second e
-					]
+
+					htmlify-range (next e) end
+
 					;-- http://html5doctor.com/blockquote-q-cite/
-					either third e [
-						rejoin [{<footer>} htmlify/span third e {</footer>}]
+					either attribution [
+						rejoin [{<footer>} htmlify/span attribution {</footer>}]
 					] [
 						{}
 					]
@@ -306,37 +230,45 @@ htmlify: function [
 				]
 			]
 
-			note update [
+			any [
+				'note = first e
+				'update = first e
+			] [
+					either date? second e [
+						date: second e
+						content: skip e 2
+					] [
+						date: none
+						content: skip e 1
+					]
 
-				either date? second e [
-					date: second e
-					content: third e
-				] [
-					date: none
-					content: second e
+					is-note: 'note = first e
+
+					result: rejoin [
+						{<div class="} either is-note [{note}] [{update}] {">}
+						either is-note [
+							{<span class="note-span">Note</span>}
+						] [
+							rejoin [
+								{<span class="update-span">UPDATE} either date [
+									rejoin [space date]
+								] [
+									{}
+								] {</span>}
+							]
+						]
+						space
+						either 1 = length? content [
+							htmlify/span first content
+						] [
+							htmlify-range content (tail content)
+						]
+						{</div>}
+						lf
+					]
 				]
 
-				is-note: 'note = first e
-
-				result: rejoin [
-					{<div class="} either is-note [{note}] [{update}] {">}
-					either is-note [
-						{<span class="note-span">Note</span>}
-					] [
-						rejoin [{<span class="update-span">UPDATE} either date [rejoin [space date]] [{}] {</span>}]
-					]
-					space
-					either block? content [
-						htmlify-group content
-					] [
-						htmlify/span content
-					]
-					{</div>}
-					lf
-				]
-			]
-
-			image [
+			'image = first e [
 				assert [url? second e]
 				assert [pair? third e]
 				assert [string? fourth e]
@@ -352,7 +284,7 @@ htmlify: function [
 				]
 			]
 
-			button [
+			'button = first e [
 				assert [url? second e]
 				assert [pair? third e]
 				assert [string? fourth e]
@@ -370,16 +302,18 @@ htmlify: function [
 
 			]
 
-			more [
+			'more = first e [
 				result: {} ;-- output nothing for now
 				comment [
 					result: rejoin [{<p><i>Read more...</i></p>} lf]
 				]
 			]
 
-			error
-			text
-			code [
+			any [
+				'error = first e
+				'text = first e
+				'code = first e
+			] [
 				either word? second e [
 					language: second e
 					code: third e
@@ -441,24 +375,13 @@ htmlify: function [
 				]
 			]
 
-			heading [
-				result: rejoin [{<h3>} second e {</h3>} lf]
+			'heading = first e [
+				result: rejoin [{<h3>} markdown/to-html second e {</h3>} lf]
 			]
 
-			group [
-				;-- treat the rest of the elements as a group
-				;-- would be ambiguous if we just used a naked block to do this
-				result: htmlify-group next e
-			]
-
-			list [
-				unless all [
-					block? second e
-				] [
-					throw make error! "Bad list found" 
-				]
+			'list = first e [
 				result: copy {<ul>}
-				foreach elem second e [
+				foreach elem next e [
 					append result rejoin [
 						{<li>}
 						htmlify elem
@@ -469,14 +392,14 @@ htmlify: function [
 				append result rejoin [{</ul>} lf]
 			]
 
-			html [
+			'html = first e [
 				unless string? second e [
 					throw make error! "Bad raw HTML"
 				]
 				result: second e
 			]
 
-			youtube [
+			'youtube = first e [
 				;-- I like the idea of being able to put actual working youtube URLs in
 				;-- without having to extract the stupid ID, so I can just click on the
 				;-- video from the source I'm writing.
@@ -503,79 +426,92 @@ htmlify: function [
 					;-- Integer conversion needed as first 10x20 returns 10.0 :-/
 					{width="} to integer! first third e {"} space
 					{height="} to integer! second third e {"} space
-					{src="http://www.youtube.com/embed/} video-id {">}
+					{src="http://www.youtube.com/embed/} video-id {"} space
+					{allowFullScreen="1"}
+					{>}
 					{</iframe>}
 					{</div>}
 				]
 			]
-		] [
-			case [
-				url? first e [
-					url: to string! first e
 
-					;-- put in better url encoding logic or decide what should be done
-					replace/all url "&" "&amp;"
+			url? first e [
+				url: to string! first e
 
-					result: rejoin [
-						begin-span-or-div span 'url
-						{<a href="} url {">}
-						case [
-							none? second e [url]
-							string? second e [second e]
-							true [throw make error! "Bad URL specification"]
+				;-- put in better url encoding logic or decide what should be done
+				replace/all url "&" "&amp;"
+
+				result: rejoin [
+					begin-span-or-div span 'url
+					{<a href="} url {">}
+					case [
+						none? second e [url]
+						string? second e [second e]
+						true [throw make error! "Bad URL specification"]
+					]
+					{</a>}
+					end-span-or-div span
+					lf
+				]
+			]
+
+			set-word? first e [
+				;; Dialogue
+
+				result: rejoin [
+					begin-span-or-div span 'dialogue
+					{<span class="character">} stringify first+ e {</span>} ":" space 
+					either tag? first e [
+						rejoin [{<span class="action">} "(" to string! first+ e ")" {</span>} space]
+					] [
+						{}
+					]
+
+					{"} markdown/to-html first+ e {"}
+					end-span-or-div span
+				]
+			]
+
+			true [
+				;-- If none of the known things matched, we 
+				result: copy ""
+				foreach elem e [
+					case [
+						block? elem [
+							either any [
+								string? first elem
+								block? first elem
+							] [
+								append result htmlify-group elem
+							] [
+								append result htmlify elem
+							]
 						]
-						{</a>}
-						end-span-or-div span
-						lf
-					]
-				]
 
-				if all [
-					1 = length? e
-					string? first e
-				] [
-					;-- If the first element of a block is a string, then all the 
-					;-- elements must be strings.  
-
-					result: rejoin [
-						begin-span-or-div span 'exposition
-						dream-markup first e
-						end-span-or-div span
-					]
-				]
-
-				set-word? first e [
-					;; Dialogue
-
-					result: rejoin [
-						begin-span-or-div span 'dialogue
-						{<span class="character">} stringify first+ e {</span>} ":" space 
-						either paren? first e [
-							rejoin [{<span class="action">} "(" first+ e ")" {</span>} space]
-						] [
-							{}
+						string? elem [
+							append result rejoin [
+								begin-span-or-div span 'exposition
+								markdown/to-html elem
+								end-span-or-div span
+							]
 						]
 
-						{"} dream-markup first+ e {"}
-						end-span-or-div span
+						true [
+							throw make error! "Unrecognized Draem block"
+						] 
 					]
-				]
-				true [
-					throw make error! "Unrecognized Draem block" 
 				]
 			]
 		]
-
-		;-- No error
-		none
 	]
 
-	if error [
-		probe error
+	if error? err [
+		probe err
 		probe e
+		print "THERE WAS AN ERROR"
 		quit
 	]
 
+	assert [string? result]
 	return result
 ]
 
@@ -596,11 +532,70 @@ write-entry: function [
 	sorted-tags: draem/entry-tags-by-popularity entry/header
 	main-tag: first sorted-tags
 
-	is-page: any [earlier-entry later-entry]
+	is-post: any [earlier-entry later-entry]
 
 	html: compose [
-		(django-extends either is-page [%page.html] [%post.html])
+		(django-extends either is-post [%post.html] [%page.html] )
 		
+		(either find entry/header 'css [
+			css-block: ["{{ block.super }}"]
+
+			append-css: func [item [string! url!]] [
+				append css-block either string? item [
+					compose [
+						{<style type="text/css">}
+						(item)
+						{</style>}
+					]
+				] [
+					rejoin [{<link rel="stylesheet" type="text/css" href=} {"} to string! item {"} {>}]
+				]
+			]
+
+			either block? entry/header/css [
+				foreach elem entry/header/css [
+					append-css elem
+				]
+			] [
+				append-css entry/header/css
+			]
+
+			django-block "css" css-block
+		] [
+			[]
+		])
+
+		(either find entry/header 'javascript [
+			script-block: ["{{ block.super }}"]
+
+			append-script: func [item [string! url!]] [
+				append script-block either string? item [
+					compose [
+						{<script type="text/javascript">}
+						(item)
+						{</style>}
+					]
+				] [
+					rejoin [
+						{<script type="text/javascript" src=} {"} to string! item {"} {>}
+						{</script>}
+					]
+				]
+			]
+
+			either block? entry/header/javascript [
+				foreach elem entry/header/javascript [
+					append-script elem
+				]
+			] [
+				append-script entry/header/javascript
+			]
+
+			django-block "scripts" script-block
+		] [
+			[]
+		])
+
 		(django-block/inline "keywords" [
 			comma-separated sorted-tags
 		])
@@ -673,23 +668,23 @@ write-entry: function [
 			content-html
 		])
 		
-		(either later-entry [django-block {nexttitle} [
+		(either later-entry [django-block/inline {nexttitle} [
 			later-entry/header/title
 		]] [])
 		
-		(either earlier-entry [django-block {prevtitle} [
+		(either earlier-entry [django-block/inline {prevtitle} [
 			earlier-entry/header/title
 		]] [])
 		
-		(either later-entry [django-block {nexturl} [
+		(either later-entry [django-block/inline {nexturl} [
 			url-for-entry later-entry
 		]] [])
 		
-		(either earlier-entry [django-block {prevurl} [
+		(either earlier-entry [django-block/inline {prevurl} [
 			url-for-entry earlier-entry
 		]] [])
 
-		(django-block/inline "footer" [
+		(django-block "footer" [
 			draem/config/site-footer
 		])
 	]
@@ -719,7 +714,7 @@ make-templates: function [
 
 	index-html: compose [
 		(django-extends %base.html)
-		
+
 		(django-block/inline "title" [
 			draem/config/site-title
 		])
