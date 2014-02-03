@@ -44,16 +44,6 @@ markdown: context [
 		replace/all result ">" "&gt;"
 		replace/all result "<" "&lt;"
 
-		pos: result
-		while [pos: find pos {**}] [
-			replace pos {**} {<b>}
-			unless find pos {**} [
-				print "Unmatched double asterisk in markdown"
-				quit
-			]
-			replace pos {**} {</b>}
-		]
-
 		star-substitution: to char! 2744 ;-- a snowflake...?
 
 		pos: result
@@ -78,6 +68,16 @@ markdown: context [
 				print result
 				quit
 			]
+		]
+
+		pos: result
+		while [pos: find pos {**}] [
+			replace pos {**} {<b>}
+			unless find pos {**} [
+				print "Unmatched double asterisk in markdown"
+				quit
+			]
+			replace pos {**} {</b>}
 		]
 
 		pos: result
@@ -145,6 +145,7 @@ markdown: context [
 							url = find url "http://"
 							url = find url "https://"
 							url = find url "ftp://"
+							url = find url "#" ;-- anchor link on current page
 						]]
 						change/part s rejoin [{<a href="} url {">} label {</a>}] e
 						s: head s

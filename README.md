@@ -84,7 +84,7 @@ Sidenotes are indicated with a block beginning with the word! NOTE:
     [note {I told the dream alien it was the year 2000, but it's
      actually 2013 at the time of this writing.}]
 
-Multi-line notes are also possible, just put the items in a sequence.  They will be considered to be different achieved by instead of having a string as the second argument, putting a block there instead.  In that block, all line formats are legal.  The template generator will wrap that up in a blockquote.
+Multi-line notes are also possible, just put the items in a sequence.  All elements are legal inside the note that would be legal outside, and will be handled as sections within the note.
 
     [note
         {One}

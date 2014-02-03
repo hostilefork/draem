@@ -316,10 +316,10 @@ htmlify: function [
 			] [
 				either word? second e [
 					language: second e
-					code: third e
+					code: copy third e
 				] [
 					language: none
-					code: second e
+					code: copy second e
 				]
 
 				if language = 'text [
@@ -332,26 +332,15 @@ htmlify: function [
 				replace/all code "<" "&lt;"
 				replace/all code ">" "&gt;"
 
-				;-- Trim empty lines on top or bottom
-				;-- (they might make the source easier to read)
-				code-lines: split code lf
-				if "" = trim copy first code-lines [
-					take code-lines
-				]
-				if "" = trim copy last code-lines [
-					take/last code-lines
-				]
-				foreach line code-lines [
-					append line lf
-				]
+				trim-head-tail-lines code
 
-				needs-pre: find [text code] first e
-				needs-code: find [code error] first e 
+				needs-pre-tag: find [text code] first e
+				needs-code-tag: find [code error] first e 
 
 				;-- TODO: work out the right language classes for google code prettify
 				;-- http://stackoverflow.com/q/11742907/211160
 				result: rejoin [
-					either needs-pre [
+					either needs-pre-tag [
 						rejoin [
 							{<pre}
 							either 'code = first e [
@@ -367,10 +356,10 @@ htmlify: function [
 							{>}
 						]
 					] [{}]
-					either needs-code [{<code>}] [{}]
-					rejoin code-lines
-					either needs-code [{</code>}] [{}]
-					either needs-pre [{</pre>}] [{}]
+					either needs-code-tag [{<code>}] [{}]
+					code
+					either needs-code-tag [{</code>}] [{}]
+					either needs-pre-tag [{</pre>}] [{}]
 					lf
 				]
 			]
@@ -427,7 +416,8 @@ htmlify: function [
 					{width="} to integer! first third e {"} space
 					{height="} to integer! second third e {"} space
 					{src="http://www.youtube.com/embed/} video-id {"} space
-					{allowFullScreen="1"}
+					;-- http://www.gtpdesigns.com/design-blog/view/w3c-valid-xthml-and-html5-youtube-iframe-embeds
+					{allowFullScreen}
 					{>}
 					{</iframe>}
 					{</div>}
@@ -537,64 +527,70 @@ write-entry: function [
 	html: compose [
 		(django-extends either is-post [%post.html] [%page.html] )
 		
-		(either find entry/header 'css [
-			css-block: ["{{ block.super }}"]
+		(
+			css-all: append
+				copy in-as-block draem/config 'css
+				in-as-block entry/header 'css
 
-			append-css: func [item [string! url!]] [
-				append css-block either string? item [
-					compose [
-						{<style type="text/css">}
-						(item)
-						{</style>}
-					]
-				] [
-					rejoin [{<link rel="stylesheet" type="text/css" href=} {"} to string! item {"} {>}]
-				]
-			]
-
-			either block? entry/header/css [
-				foreach elem entry/header/css [
-					append-css elem
-				]
+			either empty? css-all [
+				[]
 			] [
-				append-css entry/header/css
-			]
+				css-block: copy ["{{ block.super }}"]
 
-			django-block "css" css-block
-		] [
-			[]
-		])
-
-		(either find entry/header 'javascript [
-			script-block: ["{{ block.super }}"]
-
-			append-script: func [item [string! url!]] [
-				append script-block either string? item [
-					compose [
-						{<script type="text/javascript">}
-						(item)
-						{</style>}
-					]
-				] [
-					rejoin [
-						{<script type="text/javascript" src=} {"} to string! item {"} {>}
-						{</script>}
+				foreach item css-all [
+					append css-block either string? item [
+						trim-head-tail-lines css-text: copy item
+						take/last css-text ;--django-block adds newline
+						compose [
+							{<style type="text/css">}
+							(css-text) 
+							{</style>}
+						]
+					] [
+						rejoin [
+							{<link rel="stylesheet" type="text/css" href=}
+							{"} to string! item {"}
+							{>}
+						]
 					]
 				]
-			]
 
-			either block? entry/header/javascript [
-				foreach elem entry/header/javascript [
-					append-script elem
-				]
+				django-block "css" css-block
+			]
+		)
+
+		(
+			script-all: append
+				copy in-as-block draem/config 'javascript
+				in-as-block entry/header 'javascript
+
+			either empty? script-all [
+				[]
 			] [
-				append-script entry/header/javascript
-			]
+				script-block: copy ["{{ block.super }}"]
 
-			django-block "scripts" script-block
-		] [
-			[]
-		])
+				foreach item script-all [
+					append script-block either string? item [
+						trim-head-tail-lines js-text: copy item
+						take/last js-text ;-- django-block adds newline
+
+						compose [
+							{<script type="text/javascript">}
+							(js-text) 
+							{</script>}
+						]
+					] [
+						rejoin [
+							{<script type="text/javascript" src=}
+							{"} to string! item {"} {>}
+							{</script>}
+						]
+					]
+				]
+
+				django-block "scripts" script-block
+			]
+		)
 
 		(django-block/inline "keywords" [
 			comma-separated sorted-tags

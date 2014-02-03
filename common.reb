@@ -54,6 +54,42 @@ make-sorted-block-from-map: function [map [map!]] [
 	return blk
 ]
 
+;--
+; Small helper for getting an object field as a block; if the
+; field does not exist then it will be an empty block, and if
+; it isn't a block it will be put into one.
+;--
+
+in-as-block: func [obj [object!] key [word!]] [
+	either in obj key [
+		either block? obj/(key) [obj/(key)] [reduce [obj/(key)]]
+	] [
+		[]
+	]
+]
+
+;--
+; We want to trim head and tail lines from code, but not tabs or spaces
+;--
+trim-head-tail-lines: function [code [string!]] [
+	;-- Trim empty lines on top or bottom
+	;-- (they might make the source easier to read)
+	code-lines: split code lf
+	while ["" = trim copy first code-lines] [
+		take code-lines
+	]
+	while ["" = trim copy last code-lines] [
+		take/last code-lines
+	]
+	foreach line code-lines [
+		append line lf
+	]
+	change/part code (rejoin code-lines) tail code
+	exit
+]
+
+
+
 ;---
 ; Delete directory function from:
 ; http://en.wikibooks.org/wiki/REBOL_Programming/delete-dir
