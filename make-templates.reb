@@ -809,9 +809,9 @@ make-templates: function [
 			
 			"{% block entries %}"
 		]
-		
+
 		foreach entry entries [
-			if all [
+			if true or true? all [ ;-- allow pages to appear in the tag list for now
 				draem/next-entry entry/header
 				draem/previous-entry entry/header
 			] [
@@ -880,7 +880,7 @@ make-templates: function [
 		]
 
 		foreach entry entries [
-			if all [
+			if true or true? all [ ;-- allow pages to appear in the character list for now
 				draem/next-entry entry/header
 				draem/previous-entry entry/header
 			] [
