@@ -20,15 +20,6 @@ Rebol [
 	}
 ]
 
-;-- Bridge the as-yet-unmerged to mainline naming change :-/
-changed-function: if 10 = length? spec-of :function [
-	old-function: :function
-	function: :funct
-	unset 'funct
-	true
-]
-
-
 markdown: context [
 	to-html: function [str [string!]] [
 		result: copy str
@@ -190,11 +181,4 @@ markdown: context [
 
 		return result
 	]
-]
-
-
-;-- Restore funct/function expectation of caller
-if changed-function [
-	funct: :function
-	function: :old-function
 ]
