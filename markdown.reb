@@ -36,6 +36,7 @@ markdown: context [
 		replace/all result "<" "&lt;"
 
 		star-substitution: to char! 2744 ;-- a snowflake...?
+		dashdash-substitution: "^(2745)^(2745)" ;-- whatever's next.  :-/
 
 		pos: result
 		while [pos: find pos {`}] [
@@ -52,6 +53,20 @@ markdown: context [
 					]
 					change pos-replace star-substitution
 				]
+
+				;-- do a substitution trick on the asterisks
+				;-- inside the code, so they don't get processed
+				;-- we'll put them back later
+				while [pos-replace: find pos {--}] [
+					unless all [
+						pos-replace
+						(index? pos-replace) < (index? pos-end)
+					] [
+						break
+					]
+					change/part pos-replace dashdash-substitution 2
+				]
+
 				replace pos {`} {<code>}
 				replace pos {`} {</code>}
 			] [
@@ -60,6 +75,9 @@ markdown: context [
 				quit
 			]
 		]
+
+		replace/all result {--} {&mdash;}
+		replace/all result dashdash-substitution {--}
 
 		pos: result
 		while [pos: find pos {**}] [
@@ -147,8 +165,6 @@ markdown: context [
 				skip
 			]
 		]
-
-		replace/all result {--} {&mdash;}
 
 		;-- hacky way to support these known escapes
 		;-- Find general solution...
