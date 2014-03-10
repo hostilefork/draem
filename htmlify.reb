@@ -8,14 +8,14 @@ begin-span-or-div: function [
 	is-span [none! logic!]
 	class [word!]
 ] [
-	rejoin ["<" either is-span ["span"] ["div"] space {class="} to string! class {">}]
+	rejoin [{<} (either is-span {span} {div}) space {class="} to string! class {">}]
 ]
 
 
 end-span-or-div: function [
 	is-span [none! logic!]
 ] [
-	rejoin ["</" either is-span ["span"] ["div"] {>} newline]
+	rejoin ["</" (either is-span {span} {div}) {>} newline]
 ]
 
 
@@ -200,11 +200,13 @@ htmlify: function [
 						{<span class="note-span">Note</span>}
 					] [
 						rejoin [
-							{<span class="update-span">UPDATE} either date [
+							{<span class="update-span">UPDATE}
+							either date [
 								rejoin [space date]
 							] [
 								{}
-							] {</span>}
+							]
+							{</span>}
 						]
 					]
 					space
@@ -259,10 +261,10 @@ htmlify: function [
 							{>}
 						]
 					] [{}]
-					either needs-code-tag [{<code>}] [{}]
+					(either needs-code-tag {<code>} {})
 					code
-					either needs-code-tag [{</code>}] [{}]
-					either needs-pre-tag [{</pre>}] [{}]
+					(either needs-code-tag {</code>} {})
+					(either needs-pre-tag {</pre>} {})
 					newline
 				]
 			)
@@ -276,7 +278,7 @@ htmlify: function [
 			] (
 				append result rejoin [
 					either anchor [
-						{<a href="#} to string! anchor {"></a>}
+						rejoin [{<a href="#} to string! anchor {"></a>}]
 					] [
 						{}
 					]
