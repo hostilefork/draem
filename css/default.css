@@ -7,6 +7,19 @@
 
 /* SPECIAL CLASSES ADDED FOR DRAEM */
 
+/* Center: http://stackoverflow.com/a/14776179/211160 */
+
+html {
+    display: table;
+    margin: auto;
+}
+
+body {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+
 #body .character {
     font-weight: bold;
 }
@@ -176,15 +189,8 @@ hr {
 body {
     margin: 0px;
     padding: 0px;
-    font-family: "Proxima Nova Regular","Helvetica Neue",Calibri,"Droid Sans",Helvetica,Arial,sans-serif;
-    color: #222;
-    background-color: #fff;
-    quotes: "\201C" "\201E" "\2018" "\2019";
-    line-height: 1.5em;
-    color: #333;
-    font-size: 16px; /* too big? */
 
-/*    font-family: "georgia", "times", "times new roman", serif; */
+    background-color: #BBB;
 }
 
 @media screen {
@@ -343,8 +349,30 @@ img {
 /* ----------------------------- Body ---------------------------- */
 
 #body {
-    padding: 10px 10px 10px 10px;
+    /*
+     * I dunno what "the answer" is but if you fill the whole width
+     * it looks ugly.
+     *
+     * https://jdm-digital.com/2012/11/why-max-width-960/
+     */
+    max-width: 960px;
+
+    quotes: "\201C" "\201E" "\2018" "\2019";
+
+    color: #333;
+    background-color: #FFF;
+
+    /* http://cssfontstack.com/ */
+    font-family: "Proxima Nova Regular","Helvetica Neue",Calibri,"Droid Sans",Helvetica,Arial,sans-serif;
+    font-size: 16px;
+    line-height: 1.5em;
+
+    padding: 10px 32px 10px 32px;
     margin: 0px 20px 10px 20px;
+}
+
+#path {
+    margin: 0px -32px 0px -32px;
 }
 
 #body h1,h2,h3,h4 {
@@ -356,7 +384,7 @@ img {
     background-color: #eee;
     border-bottom: 1px solid #ccc;
     padding: 3px 8px 3px 12px;
-    margin: 15px -30px 35px -30px;
+    margin: 15px -32px 35px -32px;
 }
 
 #body h2 {
@@ -395,16 +423,8 @@ img {
 #body pre {
     padding: 10px;
     border: 1px solid #ccc;
+    white-space: pre-wrap;
 }
-
-/*
-#body pre {
-    margin: 20px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    background-color: #eee;
-}
-*/
 
 #body .screenshot {
     text-align: center;
