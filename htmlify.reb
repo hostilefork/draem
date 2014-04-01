@@ -312,7 +312,9 @@ htmlify: function [
 				set html string!
 				end
 			] (
-				append result first args
+				;-- The HTML construct should probably be more versatile, but
+				;-- for the moment let's just limit it to one HTML string
+				append result html
 			)
 		|
 			;-- YOUTUBE
