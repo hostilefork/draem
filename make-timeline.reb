@@ -34,8 +34,8 @@ to-timeline-date: function [d [date!]] [
 	; Not all Rebol dates have times or time zone info
 	; force it for convenience in the parse.
 	unless d/time [
-		d/time: 0:00:00
-		d/zone: -5:00
+		d/time: 10:20:03
+		d/zone: -04:00
 	]
 
 	date-string: to string! d
@@ -43,10 +43,14 @@ to-timeline-date: function [d [date!]] [
 		copy day-string to "-" skip 
 		copy month-string to "-" skip 
 		copy year-string to "/" skip
-		copy time-string to ["+" | "-"]
+		;-- current potential bug that timezone is being omitted...
+		copy time-string to ["+" | "-" | end]
 		copy gmt-string to end
 	]
 	either parse date-string rule [
+		if empty? gmt-string [
+			gmt-string: "-05:00"
+		]
 		rejoin [month-string space day-string space year-string space time-string space "GMT" gmt-string]
 	] [
 		throw make error! form ["Could not convert" date-string "to timeline format."]
