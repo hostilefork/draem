@@ -2,8 +2,6 @@ from django.template import RequestContext, loader
 from draems.models import Poll
 from django.http import HttpResponse
 
-from pyamf.remoting.gateway.django import DjangoGateway
-
 def about(request):
     latest_poll_list = Poll.objects.all().order_by('-pub_date')[:5]
     t = loader.get_template('about.html')
