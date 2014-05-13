@@ -29,76 +29,67 @@ do %markdown.reb
 
 do %htmlify.reb
 
-django-block: func [name [string!] stuff [block!] /inline] [
-	result: compose [
-		(rejoin ["{% block" space name space "%}"])
-		(reduce stuff)
-		(rejoin ["{% endblock" space name space "%}"])
+django-block: function [name [string!] stuff [string! block!] /inline] [
+	combine [
+		"{% block" space name space "%}"
+		unless inline newline
+		stuff
+		unless inline newline
+		"{% endblock" space name space "%}"
+		newline
 	]
-	if inline [
-		result: reduce [rejoin result]
-	]
-	append result {}
 ]
 
-django-path: func [stuff [block!] ] [
-	django-block "path" compose [
-		(rejoin [{<li>
-			<a href="} draem/config/site-url {" title="Home">Home</a>
-		</li>}])
-		(stuff)
-		{}
+django-path: function [stuff [block!] ] [
+	django-block "path" [
+		<li>
+			{<a href="} draem/config/site-url {" title="Home">} {Home} </a>
+		</li>
+		stuff
 	]
 ]
 
 django-google-analytics: function [] [
-	rejoin [
-		django-block/inline "ga_id" compose [
-			(draem/config/google-analytics/tracking-id)
+	combine [
+		django-block "ga_id" [
+			draem/config/google-analytics/tracking-id
 		]
-		django-block/inline "ga_property" compose [
-			(draem/config/google-analytics/property)
+		django-block "ga_property" [
+			draem/config/google-analytics/property
 		]
 	]
 ]
 
-django-extends: func [template [file!]] [
-	compose [
-		(rejoin ["{% extends" space {"} to string! template {"} space "%}"])
-		{}
-		(django-google-analytics)
+django-extends: function [template [file!]] [
+	combine [
+		["{% extends" space {"} to string! template {"} space "%}"]
+		django-google-analytics
 	]	
 ]
 
-open-anchor: func [url [url!]] [
-	rejoin [{<} {a} space {href} {=} {"} to string! url {"} {>}]
-]
-
-close-anchor: {</a>}
-
-link-to-tag: func [tag [word!] /count num] [
-	rejoin [
+link-to-tag: function [tag [word!] /count num] [
+	combine [
 		open-anchor rejoin [
 			draem/config/site-url "tag/" stringify/dashes tag {/}
 		]
 		stringify tag
 		close-anchor
-		either count [
-			rejoin [space {:} space num {<br />}]
-		] [{}]
+		if count [
+			[space {:} space num {<br />}]
+		]
 	]
 ]
 
-link-to-character: func [character [word!] /count num] [
-	rejoin [
+link-to-character: function [character [word!] /count num] [
+	combine [
 		open-anchor rejoin [
 			draem/config/site-url "character/" lowercase stringify/dashes character {/}
 		]
 		stringify character
 		close-anchor
-		either count [
-			rejoin [space {:} space num {<br />}]
-		] [{}]
+		if count [
+			[space {:} space num {<br />}]
+		]
 	]
 ]
 
@@ -117,169 +108,178 @@ write-entry: function [
 	content-html: htmlify entry/content
 
 	sorted-tags: draem/entry-tags-by-popularity entry/header
+	unsorted-characters: select draem/indexes/slug-to-characters entry/header/slug
 	main-tag: first sorted-tags
 
 	is-post: any [earlier-entry later-entry]
 
-	html: compose [
-		(django-extends either is-post [%post.html] [%page.html] )
-		
-		(
-			css-all: append
-				copy in-as-block draem/config 'css
-				in-as-block entry/header 'css
+	;-- Currently we get the site global CSS from the configuration, and then
+	;-- read any added literal CSS or included files from the Draem header
 
-			either empty? css-all [
-				[]
-			] [
-				css-block: copy ["{{ block.super }}"]
+	css-all: append
+		copy in-as-block draem/config 'css
+		in-as-block entry/header 'css
 
-				foreach item css-all [
-					append css-block either string? item [
-						trim-head-tail-lines css-text: copy item
-						take/last css-text ;--django-block adds newline
-						compose [
-							{<style type="text/css">}
-							(css-text) 
-							{</style>}
-						]
-					] [
-						rejoin [
-							{<link rel="stylesheet" type="text/css" href=}
-							{"} to string! item {"}
-							{>}
-						]
-					]
+	either empty? css-all [
+		css-block: none
+	] [
+		css-block: copy ["{{ block.super }}"]
+
+		foreach item css-all [
+			append css-block either string? item [
+				trim-head-tail-lines css-text: copy item
+				take/last css-text ;--django-block adds newline
+				combine [
+					<style type="text/css">
+					css-text
+					</style>
 				]
-
-				django-block "css" css-block
-			]
-		)
-
-		(
-			script-all: append
-				copy in-as-block draem/config 'javascript
-				in-as-block entry/header 'javascript
-
-			either empty? script-all [
-				[]
 			] [
-				script-block: copy ["{{ block.super }}"]
-
-				foreach item script-all [
-					append script-block either string? item [
-						trim-head-tail-lines js-text: copy item
-						take/last js-text ;-- django-block adds newline
-
-						compose [
-							{<script type="text/javascript">}
-							(js-text) 
-							{</script>}
-						]
-					] [
-						rejoin [
-							{<script type="text/javascript" src=}
-							{"} to string! item {"} {>}
-							{</script>}
-						]
-					]
+				combine [
+					{<link rel="stylesheet" type="text/css" href=}
+					{"} to string! item {"}
+					{>}
 				]
-
-				django-block "scripts" script-block
 			]
-		)
+		]
+	]
 
-		(django-block/inline "keywords" [
-			comma-separated sorted-tags
-		])
-		
-		(django-block/inline "description" [
-			comma-separated reduce [
-				{Author: A.E. 1020}
-				rejoin [{Title:} space entry/header/title]
-				rejoin [{Date:} space entry/header/date/date]
-				rejoin [{Length:} space length? (split content-html space) space "words"]
+	;-- Script handling parallels the CSS handling... defaults come from the
+	;-- configuration, added scripts come from the Draem header
+
+	script-all: append
+		copy in-as-block draem/config 'javascript
+		in-as-block entry/header 'javascript
+
+	either empty? script-all [
+		script-block: none
+	] [
+		script-block: copy ["{{ block.super }}"]
+
+		foreach item script-all [
+			append script-block either string? item [
+				trim-head-tail-lines js-text: copy item
+				take/last js-text ;-- django-block adds newline
+
+				combine [
+					<script type="text/javascript">
+					(js-text) 
+					</script>
+				]
+			] [
+				combine [
+					{<script type="text/javascript" src=}
+					{"} to string! item {"} {>}
+					{</script>}
+				]
 			]
-		])
+		]
+	]
+
+	html: combine [
+		django-extends (either is-post %post.html %page.html)
 		
-		(django-block/inline "title" [
-			rejoin [main-tag space ":" space entry/header/title]
-		])
+		if css-block [
+			django-block "css" css-block
+		]
+
+		if script-block [
+			django-block "scripts" script-block
+		]
+
+		;-- <meta name="keywords" ...> information
+		django-block/inline "keywords" [
+			combine/with (map-each tag sorted-tags [stringify tag]) [{,} space]
+		]
 		
-		(django-block/inline "header" [
+		;-- <meta name="description" ...> information
+		django-block "description" [
+			combine/with [
+				[{Author:} space draem/config/site-author]
+				[{Title:} space entry/header/title]
+				[{Date:} space entry/header/date/date]
+				[{Length:} space length? (split content-html space) space "words"]
+			] [{,} space]
+		]
+		
+		django-block/inline "title" [
+			if main-tag [stringify main-tag]
+			space ":"
+			space entry/header/title
+		]
+		
+		django-block/inline "header" [
 			entry/header/title
-		])
+		]
 		
-		(django-path [
-			rejoin [
-				either main-tag [
-					rejoin [
-						{<li>}
-							link-to-tag main-tag
-						{</li>}
-					]
-				] [{}]
-				{<li><span>}
-					entry/header/title
-				{</span></li>}
+		django-path [
+			if main-tag [				
+				<li>
+					link-to-tag main-tag
+				</li>
 			]
-		])
+			<li> <span>
+				entry/header/title
+			</span> </li>
+		]
 		
-		(django-block "date" [
+		django-block "date" [
 			entry/header/date
-		])
+		]
 
-		(django-block "tags" [
+		django-block "tags" [
 			either empty? sorted-tags [
 				"(none)"
 			] [
-				comma-separated/callback sorted-tags function [tag] [
-					rejoin [ 
+				combine/with (map-each tag sorted-tags [
+					combine [
 						{<a href="} draem/config/site-url {tag/}
 						stringify/dashes tag
-						{/" class="post-tag" rel="tag">} stringify tag {</a>}
+						{/" class="post-tag" rel="tag">} stringify tag </a>
 					]
-				]
+				]) {, }
 			]
-		])
+		]
 
-		(django-block "characters" [
-			either empty? select draem/indexes/slug-to-characters entry/header/slug [
+		django-block "characters" [
+			either empty? unsorted-characters [
 				"(none)"
 			] [
-				 comma-separated/callback select draem/indexes/slug-to-characters entry/header/slug function [character] [
-					rejoin [ 
+				 combine/with (map-each character unsorted-characters [
+					combine [
 						{<a href="} draem/config/site-url {character/}
 						stringify/dashes character
 						{/">} stringify character {</a>}
 					]
-				]
+				]) {, }
 			]
-		])
+		]
 
-		(django-block "content" [
+		django-block "content" [
 			content-html
-		])
+		]
 		
-		(either later-entry [django-block/inline {nexttitle} [
-			later-entry/header/title
-		]] [])
-		
-		(either earlier-entry [django-block/inline {prevtitle} [
-			earlier-entry/header/title
-		]] [])
-		
-		(either later-entry [django-block/inline {nexturl} [
-			url-for-entry later-entry
-		]] [])
-		
-		(either earlier-entry [django-block/inline {prevurl} [
-			url-for-entry earlier-entry
-		]] [])
+		if later-entry [
+			django-block/inline {nexttitle} [
+				later-entry/header/title
+			]
+			django-block/inline {nexturl} [
+				url-for-entry later-entry
+			]
+		]
 
-		(django-block "footer" [
+		if earlier-entry [
+			django-block/inline {prevtitle} [
+				earlier-entry/header/title
+			]
+			django-block/inline {prevurl} [
+				url-for-entry earlier-entry
+			]
+		]
+
+		django-block "footer" [
 			draem/config/site-footer
-		])
+		]
 	]
 
 	make-dir/deep first split-path html-file
@@ -305,24 +305,24 @@ make-templates: function [
 
 	draem/stage "MAIN OUTPUT LOOP"
 
-	index-html: compose [
-		(django-extends %base.html)
+	index-html: combine [
+		django-extends %base.html
 
-		(django-block/inline "title" [
+		django-block/inline "title" [
 			draem/config/site-title
-		])
+		]
 
-		(django-block/inline "header" [
+		django-block/inline "header" [
 			draem/config/site-tagline
-		])
+		]
 
-		(django-block/inline "path" [
-			rejoin [{<li><span>} draem/config/site-url {</span></li>}]
-		])		
+		django-block/inline "path" [
+			<li> <span> draem/config/site-url </span> </li>
+		]		
 
 		"{% block main %}"
 
-		(draem/config/site-intro)
+		draem/config/site-intro
 	]
 
 	iter: entries
@@ -345,10 +345,10 @@ make-templates: function [
 
 	append index-html "{% endblock main %}"
 
-	append index-html compose [
-		(django-block/inline "footer" [
+	append index-html combine [
+		django-block/inline "footer" [
 			draem/config/site-footer
-		])		
+		]		
 	]
 
 	write/lines rejoin [templates-dir %index.html] index-html
@@ -358,20 +358,20 @@ make-templates: function [
 	;; GENERATE THE TAG LIST AND A PAGE FOR EACH TAG
 
 	draem/stage "TAG OUTPUT"
-	tag-list-html: compose [
-		(django-extends %taglist.html)
+	tag-list-html: combine [
+		django-extends %taglist.html
 
-		(django-block/inline "title" [
+		django-block/inline "title" [
 			{All Tags}
-		])
+		]
 		
-		(django-block/inline "header" [
-			rejoin ["All Tags for " draem/config/site-name]
-		])
+		django-block/inline "header" [
+			{All Tags for} space draem/config/site-name
+		]
 
-		(django-path [
-			{<li><span> Tag List </span></li>}
-		])
+		django-path [
+			<li> <span> {Tag List} </span> </li>
+		]
 		
 		"{% block tags %}"
 	]
@@ -382,27 +382,31 @@ make-templates: function [
 		assert [word? tag]
 		assert [block? entries]
 
-		directory: to file! rejoin [templates-dir %tags/]
+		directory: rejoin [templates-dir %tags/]
 		if (not exists? directory) [
 			make-dir directory
 		]
 		append tag-list-html link-to-tag/count tag length? entries
 		
-		tag-html: compose [
-			(django-extends %tag.html)
+		tag-html: combine [
+			django-extends %tag.html
 
-			(django-block/inline "title" [
-				rejoin [{tag:} space stringify tag]
-			])
+			django-block/inline "title" [
+				{tag:} space (stringify tag)
+			]
 
-			(django-block/inline "header" [
-				stringify tag
-			])
+			django-block/inline "header" [
+				(stringify tag)
+			]
 		
-			(django-path [
-				{<li><a href="} draem/config/site-url {tag/" title="Tag List">Tag</a></li>}
-				rejoin [{<li><span>} stringify tag {</span></li>}]
-			])
+			django-path [
+				<li>
+					{<a href="} draem/config/site-url {tag/" title="Tag List">}
+						{Tag}
+					</a>
+				</li>
+				<li> <span> (stringify tag) </span> </li>
+			]
 			
 			"{% block entries %}"
 		]
@@ -417,30 +421,30 @@ make-templates: function [
 		]
 		
 		append tag-html "{% endblock entries %}"
-		write/lines rejoin [directory stringify/dashes tag ".html"] tag-html
+		write/lines (rejoin [directory stringify/dashes tag %.html]) tag-html
 	]
 
 	append tag-list-html "{% endblock tags %}"
-	write/lines rejoin [templates-dir %tags.html] tag-list-html
+	write/lines (join templates-dir %tags.html) tag-list-html
 
 
 	;; GENERATE THE CHARACTER LIST AND A PAGE FOR EACH CHARACTER
 
 	draem/stage "CHARACTER OUTPUT"
-	character-list-html: compose [
-		(django-extends %characterlist.html)
+	character-list-html: combine [
+		django-extends %characterlist.html
 
-		(django-block/inline "title" [
+		django-block/inline "title" [
 			{Character List}
-		])
+		]
 
-		(django-block/inline "header" [
+		django-block/inline "header" [
 			{Character List}
-		])
+		]
 
-		(django-path [
-			{<li><span> Character List </span></li>}
-		])
+		django-path [
+			<li> <span> {Character List} </span> </li>
+		]
 
 		"{% block characters %}"
 	]
@@ -451,27 +455,33 @@ make-templates: function [
 		assert [word? character]
 		assert [block? entries]
 
-		directory: to file! rejoin [templates-dir %characters/]
+		directory: to file! (join templates-dir %characters/)
 		unless exists? directory [
 			make-dir directory
 		]
 		append character-list-html link-to-character/count character length? entries
 		
-		character-html: compose [
-			(django-extends %character.html)
+		character-html: combine [
+			django-extends %character.html
 
-			(django-block/inline "title" [
-				rejoin [{character:} space stringify character]
-			])
+			django-block/inline "title" [
+				{character:} space (stringify character)
+			]
 			
-			(django-block/inline "header" [
-				stringify character
-			])
+			django-block/inline "header" [
+				(stringify character)
+			]
 			
-			(django-path [
-				rejoin [{<li><a href="} draem/config/site-url {character/" title="Character List">Character</a></li>}]
-				rejoin [{<li><span>} stringify character {</span></li>}]
-			])
+			django-path [
+				<li>
+					{<a href="} draem/config/site-url {character/" title="Character List">}
+						{Character}
+					</a>
+				</li>
+				<li>
+					<span> (stringify character) </span>
+				</li>
+			]
 			
 			"{% block entries %}"
 		]
@@ -490,5 +500,5 @@ make-templates: function [
 	]
 
 	append character-list-html "{% endblock characters %}"
-	write/lines rejoin [templates-dir %characters.html] character-list-html
+	write/lines (join templates-dir %characters.html) character-list-html
 ]

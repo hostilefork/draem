@@ -47,61 +47,69 @@ to-iso8601-date: function [
 	if timestamp [
 		either the-date/time [
 			; the date has a time
-			insert iso-date rejoin [
+			insert iso-date combine [
 				"T"
 
 				; insert leading zero if needed	            
-				either the-date/time/hour > 9
-					[the-date/time/hour]
-					[join "0" [the-date/time/hour]]
-				":"
-				either the-date/time/minute > 9
-					[the-date/time/minute]
-					[join "0" [the-date/time/minute]]
+				unless (the-date/time/hour > 9) "0"
+				
+				the-date/time/hour
+
 				":"
 
-				; Rebol only returns seconds if non-zero
-				either the-date/time/second > 9 
-					[to-integer the-date/time/second]
-					[join "0" [to-integer the-date/time/second]]
+				; again, leading zero if needed...
+				unless (the-date/time/minute > 9) "0"
 				
-				either the-date/zone = 0:00 [
+				the-date/time/minute
+
+				":"
+
+				; once again zero, note Rebol only returns seconds if non-zero
+				unless (the-date/time/second > 9) "0" 
+					
+				(to integer! the-date/time/second)
+				
+				either/only the-date/zone = 0:00 [
 					; UTC
 					"Z"                           
-				][
-					rejoin [
-						; + or - UTC
-						either the-date/zone/hour > 0
-							["+"]
-							["-"]
-						either  (absolute the-date/zone/hour) < 10
-							[join "0" [absolute the-date/zone/hour]]
-							[absolute the-date/zone/hour]
-						{:}
-						either the-date/zone/minute < 10
-							[join "0" [the-date/zone/minute]]
-							[the-date/zone/minute]
-					]
+				] [
+					; + or - UTC
+					either (the-date/zone/hour > 0) {+} {-}
+
+					if ((absolute the-date/zone/hour) < 10) "0"
+
+					absolute the-date/zone/hour
+
+					{:}
+
+					if (the-date/zone/minute < 10) "0"
+
+					the-date/zone/minute
 				]
-			] ; end insert  
-		][
+			] 
+		] [
 			; the date has no time
 			iso-date: " 00:00:00Z" 
 		]
 	]
 	 
-	insert iso-date rejoin [
-		join copy/part "000" (4 - length? to-string the-date/year)
-			[the-date/year]
+	insert iso-date combine [
+		copy/part "000" (4 - length? to-string the-date/year)
+		
+		the-date/year
+
 		"-"
-		either the-date/month > 9
-			[the-date/month]
-			[join "0" [the-date/month]]
+
+		if (the-date/month > 9) "0"
+		
+		the-date/month
+
 		"-"
-		either the-date/day > 9
-			[the-date/day]
-			[join "0" [the-date/day]]
-	 ] ; end insert
+		
+		if (the-date/day > 9) "0"
+		
+		the-date/day
+	 ]
    
 	return head iso-date   
 ]
@@ -121,15 +129,10 @@ atomid-from-url: function [
 	d [date!]
 		{Date associated with URL, included in atom ID}
 ] [
-	if string? url [
-		print "TEMPORARILY DISABLED!!!"
-		return "atomid-disabled"
-	]
-
 	str: to string! url
 	replace str "http://" {}
 	replace/all str "#" "/"
-	replace str "/" rejoin ["," to-iso8601-date d ":"]
+	replace str "/" combine ["," to-iso8601-date d ":"]
 	insert str "tag:"
 	return str
 ]
@@ -149,20 +152,21 @@ make-atom-feed: function [
 ] [
 	draem/stage "ATOM FEED OUTPUT"
 
-	atom-xml: rejoin compose [{<?xml version="1.0" encoding="utf-8"?>
+	atom-xml: combine [
+		<?xml version="1.0" encoding="utf-8"?>
 		
-	<feed xmlns="http://www.w3.org/2005/Atom">
+		<feed xmlns="http://www.w3.org/2005/Atom">
 	 
-		<title>} draem/config/site-title {</title>
-		<subtitle>} draem/config/site-tagline {</subtitle>
-		<link href="} draem/config/site-url {feed/" rel="self" />
-		<link href="} draem/config/site-url {" />
-		<id>tag:} draem/config/rss-tag {,1975-04-21:</id>
-		<updated>} (to-iso8601-date/timestamp now) {</updated>
+		<title> draem/config/site-title </title>
+		<subtitle> draem/config/site-tagline </subtitle>
+		{<link href="} draem/config/site-url {feed/" rel="self" />}
+		{<link href="} draem/config/site-url {" />}
+		<id> {tag:} draem/config/rss-tag {,1975-04-21:} </id>
+		<updated> to-iso8601-date/timestamp now </updated>
 		<author>
-			<name>} draem/config/site-author {</name>
+			<name> draem/config/site-author </name>
 		</author>
-	}]
+	]
 
 	foreach entry entries [
 		unless any [ ;-- don't allow pages to appear in the rss atom for now
@@ -172,30 +176,29 @@ make-atom-feed: function [
 			continue
 		]
 
-		sorted-tags: draem/entry-tags-by-popularity entry/header
+		sorted-tags: map-each tag draem/entry-tags-by-popularity entry/header [
+			stringify tag
+		]
 		if 0 = atom-length [
 			break
 		]
 		-- atom-length
-		append atom-xml rejoin compose [{
-		<entry>
-			<title>} (entry/header/title) {</title>}
-	;		<link href="} (url-for-entry entry) {" />
-	{
-			<link rel="alternate" type="text/html" href="} (url-for-entry entry) {" />}
-	;		<link rel="edit" href="} ("http://example.org/2003/12/13/atom03/edit") {"/>
-	{
-			<id>} (atomid-from-url url-for-entry entry entry/header/date) {</id>
-			<updated>} (to-iso8601-date/timestamp entry/header/date) {</updated>
-			<summary>}
-				{Tags: } (comma-separated sorted-tags)
-			{</summary>
-		</entry>
-	}
-		]
+		append atom-xml combine/with [
+			<entry>
+				[<title> (entry/header/title) </title>]
+			;	<link href="} (url-for-entry entry) {" />
+				[{<link rel="alternate" type="text/html" href="} url-for-entry entry {" />}]
+			;	<link rel="edit" href="} ("http://example.org/2003/12/13/atom03/edit") {"/>
+				[<id> (atomid-from-url url-for-entry entry entry/header/date) </id>]
+				[<updated> (to-iso8601-date/timestamp entry/header/date) </updated>]
+				<summary>
+				[{Tags: } combine/with sorted-tags [{,} space]]
+				</summary>
+			</entry>
+		] newline
 	 ]
 	 
-	append atom-xml {</feed>}
+	append atom-xml </feed>
 
 	write xml-filename atom-xml
 ]

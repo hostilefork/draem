@@ -84,7 +84,7 @@ trim-head-tail-lines: function [code [string!]] [
 	foreach line code-lines [
 		append line lf
 	]
-	change/part code (rejoin code-lines) tail code
+	change/part code (combine code-lines) tail code
 	exit
 ]
 
@@ -144,22 +144,6 @@ stringify: func [word [set-word! word! file! string!] /dashes] [
 	]
 ]
 
-comma-separated: function [
-	block [block!] 
-	/callback strfunc [function!] 
-] [
-	if (empty? block) [
-		return {}
-	]
-	result: copy {}
-	foreach elem block [
-		append result either callback [strfunc elem] [elem]
-		append result rejoin [{,} space]
-	]
-	remove/part back back tail result 2
-	return result
-]
-
 url-for-entry: function [entry [object!]] [
 	;-- Required hook: produce URL from header
 	assert [function? :draem/config/url-from-header]
@@ -167,12 +151,119 @@ url-for-entry: function [entry [object!]] [
 	draem/config/url-from-header entry/header
 ]
 
-link-to-entry: func [entry [object!]] [
-	rejoin [
+open-anchor: function [url [url!]] [
+	combine [{<} {a} space {href} {=} {"} to string! url {"} {>}]
+]
+
+close-anchor: </a>
+
+link-to-entry: function [entry [object!]] [
+	combine [
 		open-anchor url-for-entry entry
 		entry/header/title
 		close-anchor
 		space {:} space to string! replace/all copy to string! entry/header/date/date {0:00} {}
-		{<br />}
+		<br />
 	]
+]
+
+flatten: func [
+    data
+    /local rule
+] [
+    local: make block! length? data
+    rule: [
+        into [some rule]
+    |
+    	set value skip (append local value)
+    ]
+    parse data [some rule]
+    local
+]
+
+; The COMBINE dialect is intended to assist with the common task of creating
+; a merged string series out of component Rebol values.  Its
+; goal is to be friendlier than REJOIN.
+;
+; Currently in a proposal period, and there are questions about whether the
+; same dialect can.
+;
+; http://curecode.org/rebol3/ticket.rsp?id=2142&cursor=1 
+;
+combine: function [
+    block [block!]
+    /with "Add delimiter between values (will be COMBINEd if a block)"
+        delimiter [block! any-string! char!]
+    /into
+    	out [any-string!]
+] [
+	;-- No good heuristic for string size yet
+	unless into [
+		out: make string! 10
+	]
+
+	if block? delimiter [
+		delimiter: combine delimiter
+	]
+
+	needs-delimiter: false
+	pre-delimit: does [
+		either needs-delimiter [
+			out: append out delimiter
+		] [
+			needs-delimiter: true? with
+		]
+	]
+
+	;-- Do evaluation of the block until a non-none evaluation result
+	;-- is found... or the end of the input is reached.
+	pos: block
+
+	while [not tail? pos] [
+		value: do/next pos 'pos
+
+		;-- Blocks are substituted in evaluation, like the recursive nature
+		;-- of parse rules.
+
+		case [
+			any [
+				function? :value
+				closure? :value
+			] [
+				throw make error! "Evaluation in COMBINE gave function/closure"
+			]
+
+			block? value [
+				pre-delimit
+				out: combine/into value out
+			]
+
+			any-block? value [
+				;-- all other block types as *results* of evaluations throw
+				;-- errors for the moment.  (It's legal to use PAREN! in the
+				;-- COMBINE, but a function invocation that returns a PAREN!
+				;-- will not recursively iterate the way BLOCK! does) 
+				throw make error! "Evaluation in COMBINE gave non-block! block"
+			]
+
+			any-word? value [
+				;-- currently we throw errors on words if that's what an
+				;-- evaluation produces.  Theoretically these could be
+				;-- given behaviors in the dialect, but the potential for
+				;-- bugs probably outweighs the value (of converting implicitly
+				;-- to a string or trying to run an evaluation of a non-block)
+				throw make error! "Evaluation in COMBINE gave symbolic word"
+			]
+
+			none? value [
+				;-- Skip all nones
+			]
+
+			true [
+				pre-delimit
+				out: append out (form :value)
+			]
+		]
+	]
+    either into [out] [head out]
 ]

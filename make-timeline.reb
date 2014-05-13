@@ -40,45 +40,49 @@ to-timeline-date: function [d [date!]] [
 
 	date-string: to string! d
 	rule: [
-		copy day-string to "-" skip 
-		copy month-string to "-" skip 
-		copy year-string to "/" skip
+		copy day-string: to "-" skip 
+		copy month-string: to "-" skip 
+		copy year-string: to "/" skip
 		;-- current potential bug that timezone is being omitted...
-		copy time-string to ["+" | "-" | end]
-		copy gmt-string to end
+		copy time-string: to ["+" | "-" | end]
+		copy gmt-string: to end
 	]
-	either parse date-string rule [
-		if empty? gmt-string [
-			gmt-string: "-05:00"
-		]
-		rejoin [month-string space day-string space year-string space time-string space "GMT" gmt-string]
-	] [
+	unless parse date-string rule [
 		throw make error! form ["Could not convert" date-string "to timeline format."]
+	]
+
+	if empty? gmt-string [
+		gmt-string: "-05:00"
+	]
+
+	combine [
+		month-string space day-string space year-string space
+		time-string space "GMT" gmt-string
 	]
 ]
 
 make-timeline: function [entries [block!] xml-filename [file!]] [
 	draem/stage "TIMELINE OUTPUT"
 
-	timelinexml: reduce [
-		{<data>}
-		rejoin [tab {wiki-url="} draem/config/site-url {"}]
-		rejoin [tab {wiki-section="} draem/config/site-name { Timeline"}]
+	timelinexml: combine [
+		{<data}
+		space {wiki-url="} draem/config/site-url {"}
+		space {wiki-section="} draem/config/site-name { Timeline"}
 		{>}
 	]
 
 	foreach entry entries [
-		append timelinexml reduce [
-			rejoin [tab tab {<event start="} to-timeline-date entry/header/date {"}]
-			rejoin [tab tab tab {title="} stringify entry/header/slug {"}]
-			rejoin [tab tab tab {>}]
+		append timelinexml combine [
+			tab tab {<event start="} to-timeline-date entry/header/date {"}
+			tab tab tab {title="} stringify entry/header/slug {"}
+			tab tab tab {>}
 			entry/header/title
-			rejoin [tab tab tab {</event>}] 
+			tab tab tab </event> 
 		]
 	]
 
 	append timelinexml [
-		{</data>}
+		</data>
 	]
 
 	write/lines xml-filename timelinexml

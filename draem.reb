@@ -120,10 +120,10 @@ draem: context [
 			sub-dir: to file! {}
 		]
 
-		foreach file load rejoin [config/entries-dir sub-dir] [
+		foreach file load (join config/entries-dir sub-dir) [
 			either dir? file [
 				print [{Recursing into:} rejoin [config/entries-dir sub-dir file]]
-				load-entries/recurse rejoin [sub-dir file] entries
+				load-entries/recurse (join sub-dir file) entries
 			] [
 				print [{Pre-processing:} file]
 
@@ -393,9 +393,9 @@ draem: context [
 
 			make-templates entries indexes config/templates-dir
 
-			make-timeline entries rejoin [config/templates-dir %timeline.xml]
+			make-timeline entries (join config/templates-dir %timeline.xml)
 
-			make-atom-feed entries rejoin [config/templates-dir %atom.xml] 20
+			make-atom-feed entries (join config/templates-dir %atom.xml) 20
 
 			none
 		]

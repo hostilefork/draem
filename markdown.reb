@@ -156,7 +156,7 @@ markdown: context [
 							url = find url "ftp://"
 							url = find url "#" ;-- anchor link on current page
 						]]
-						change/part s rejoin [{<a href="} url {">} label {</a>}] e
+						change/part s combine [{<a href="} url {">} label {</a>}] e
 						s: head s
 					)
 					:s
@@ -169,9 +169,9 @@ markdown: context [
 		;-- hacky way to support these known escapes
 		;-- Find general solution...
 		recover-entity: func [entity [word!]] [
-			replace/all result rejoin [
+			replace/all result combine [
 				{&amp;} to string! entity {;}
-			] rejoin [
+			] combine [
 				{&} to string! entity {;}
 			]
 		]

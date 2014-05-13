@@ -8,14 +8,14 @@ begin-span-or-div: function [
 	is-span [none! logic!]
 	class [word!]
 ] [
-	rejoin [{<} (either is-span {span} {div}) space {class="} to string! class {">}]
+	combine [{<} (either is-span {span} {div}) space {class="} to string! class {">}]
 ]
 
 
 end-span-or-div: function [
 	is-span [none! logic!]
 ] [
-	rejoin ["</" (either is-span {span} {div}) {>} newline]
+	combine [{</} (either is-span {span} {div}) {>}]
 ]
 
 
@@ -37,23 +37,23 @@ htmlify: function [
 		;-- starts a block, it's expected that the block is going to be
 		;-- a group of elements; hence there are no parameters.
 		set str string! (
-			append result rejoin [
-				begin-span-or-div span 'exposition
+			append result combine [
+				(begin-span-or-div span 'exposition) newline
 				markdown/to-html str
-				end-span-or-div span
+				(end-span-or-div span) newline
 			]
 		)
 	|
 		;-- DIVIDER
 		;-- Puts in a horizontal line element.
 		['divider | and block! into ['divider end]] (
-			append result rejoin ["<hr />" newline]
+			append result combine [<hr> newline]
 		)
 	|
 		;-- SEPARATOR
 		;-- Adds some spacing, but no line.
 		['separator | and block! into ['separator end]] (
-			append result rejoin ["<span>&nbsp;<br /></span>" newline]
+			append result combine [<span> {&nbsp;} <br /> </span> newline]
 		)
 	|
 		;-- MORE
@@ -61,7 +61,7 @@ htmlify: function [
 		;-- be, with a "read more..." link when summarizing articles.
 		;-- I preserved this information but do not use it yet.
 		['more | and block! into ['more end]] (
-			append result rejoin [{<!-- more -->} newline] 
+			append result combine [<!-- more --> newline]
 		)
 	|
 		;-- URL
@@ -81,12 +81,12 @@ htmlify: function [
 			;-- put in better url encoding logic or decide what should be done
 			replace/all url "&" "&amp;"
 
-			append result rejoin [
-				begin-span-or-div span 'url
+			append result combine [
+				(begin-span-or-div span 'url) newline
 				{<a href="} url {">}
 				anchor-text
-				{</a>}
-				end-span-or-div span
+				</a>
+				(end-span-or-div span) newline
 				newline
 			]
 		)
@@ -101,8 +101,8 @@ htmlify: function [
 				end
 			] (
 			
-				append result rejoin [
-					{<div class="picture">}
+				append result combine [
+					<div class="picture">
 					{<a href="http://s159.photobucket.com/albums/t125/realityhandbook/}
 					to string! picture-file
 					{">}
@@ -110,9 +110,9 @@ htmlify: function [
 					{<img src="http://i159.photobucket.com/albums/t125/realityhandbook/}
 					{th_}
 					to string! picture-file
-					{" />}
-					{</a>}
-					{</div>}
+					{">}
+					</a>
+					</div>
 					newline
 				]
 			)
@@ -126,15 +126,15 @@ htmlify: function [
 				[set caption string!]
 				end
 			] (
-				append result rejoin [
-					{<div class="picture">}
+				append result combine [
+					<div class="picture">
 					{<a href="} url {">}
-					{<img src="} url {"} space
-					{alt="} caption {"} space
-					{width="} to integer! size/1 {"} space
-					{height="} to integer! size/2 {" />}
-					{</a>}
-					{</div>}
+						{<img src="} url {"} space
+						{alt="} caption {"} space
+						{width="} to integer! size/1 {"} space
+						{height="} to integer! size/2 {" />}
+					</a>
+					</div>
 				]
 			)
 		|
@@ -147,15 +147,15 @@ htmlify: function [
 				[set link-url url!]
 				end
 			] (
-				append result rejoin [
-					{<div class="picture">}
+				append result combine [
+					<div class="picture">
 					{<a href="} to string! link-url {">}
-					{<img src="} to string! image-url {"} space
-					{alt="} caption {"} space
-					{width="} to integer! size/1 {"} space
-					{height="} to integer! size/2 {" />}
-					{</a>}
-					{</div>}
+						{<img src="} to string! image-url {"} space
+						{alt="} caption {"} space
+						{width="} to integer! size/1 {"} space
+						{height="} to integer! size/2 {" />}
+					</a>
+					</div>
 				]
 			)
 		|
@@ -170,20 +170,18 @@ htmlify: function [
 					end: tail args
 				]
 
-				append result rejoin [
-					{<blockquote>}
+				append result combine [
+					<blockquote>
 
 					htmlify-range args end
 
 					;-- http://html5doctor.com/blockquote-q-cite/
-					either attribution [
+					if attribution [
 						attribution-blk: append/only copy [] attribution
 						protect attribution
-						rejoin [{<footer>} htmlify/span attribution-blk {</footer>}]
-					] [
-						{}
+						[<footer> htmlify/span attribution-blk </footer>]
 					]
-					{</blockquote>}
+					</blockquote>
 					newline
 				]
 			)
@@ -194,19 +192,17 @@ htmlify: function [
 				(date: none) opt [set date date!]
 				copy args to end
 			] (
-				append result rejoin [
-					{<div class="} either is-note [{note}] [{update}] {">}
+				append result combine [
+					{<div class="} (either is-note {note} {update}) {">}
 					either is-note [
-						{<span class="note-span">Note</span>}
+						[<span class="note-span"> {Note} </span>]
 					] [
-						rejoin [
-							{<span class="update-span">UPDATE}
-							either date [
-								rejoin [space date]
-							] [
-								{}
+						[
+							<span class="update-span"> {UPDATE}
+							if date [
+								[space date]
 							]
-							{</span>}
+							</span>
 						]
 					]
 					space
@@ -215,7 +211,7 @@ htmlify: function [
 					] [
 						htmlify-group args
 					]
-					{</div>}
+					</div>
 					newline
 				]
 			)
@@ -244,27 +240,27 @@ htmlify: function [
 
 				;-- TODO: work out the right language classes for google code prettify
 				;-- http://stackoverflow.com/q/11742907/211160
-				append result rejoin [
-					either needs-pre-tag [
-						rejoin [
+				append result combine [
+					if needs-pre-tag [
+						[
 							{<pre}
-							either verb = 'code [
-								rejoin [
+							if verb = 'code [
+								[
 									space
 									{class="prettyprint}
-									either language [
-										rejoin [space {lang-} to string! language]
-									] [{}]
+									if language [
+										[space {lang-} to string! language]
+									]
 									{"}
 								]
-							] [{}]
+							]
 							{>}
 						]
-					] [{}]
-					(either needs-code-tag {<code>} {})
+					]
+					(if needs-code-tag <code>)
 					code
-					(either needs-code-tag {</code>} {})
-					(either needs-pre-tag {</pre>} {})
+					(if needs-code-tag </code>)
+					(if needs-pre-tag </pre>)
 					newline
 				]
 			)
@@ -276,13 +272,11 @@ htmlify: function [
 				(anchor: none) opt [set anchor file!] 
 				end
 			] (
-				append result rejoin [
-					either anchor [
-						rejoin [{<a href="#} to string! anchor {"></a>}]
-					] [
-						{}
+				append result combine [
+					if anchor [
+						[{<a href="#} to string! anchor {">} </a>]
 					]
-					{<h3>} markdown/to-html heading-text {</h3>}
+					<h3> markdown/to-html heading-text </h3>
 					newline
 				]
 			)
@@ -292,18 +286,18 @@ htmlify: function [
 				'list
 				copy args to end
 			] (
-				append result {<ul>}
+				append result <ul>
 				foreach elem args [
 					elem-blk: append/only copy [] elem
 					protect elem-blk
-					append result rejoin [
-						{<li>}
+					append result combine [
+						<li>
 						htmlify elem-blk
-						{</li>}
+						</li>
 						newline
 					]
 				]
-				append result rejoin [{</ul>} newline]
+				append result combine [</ul> newline]
 			)
 		|
 			;-- HTML
@@ -342,8 +336,8 @@ htmlify: function [
 				]
 
 				;-- http://www.webupd8.org/2010/07/embed-youtube-videos-in-html5-new.html
-				append result rejoin [
-					{<div class="youtube">}
+				append result combine [
+					<div class="youtube">
 					{<iframe class="youtube-player"} space
 
 					;-- Integer conversion needed as first 10x20 returns 10.0 :-/
@@ -353,8 +347,8 @@ htmlify: function [
 					;-- http://www.gtpdesigns.com/design-blog/view/w3c-valid-xthml-and-html5-youtube-iframe-embeds
 					{allowFullScreen}
 					{>}
-					{</iframe>}
-					{</div>}
+					</iframe>
+					</div>
 				]
 			)
 		]
@@ -372,17 +366,15 @@ htmlify: function [
 			[set dialogue-text string!]
 			end
 		] (
-			append result rejoin [
+			append result combine [
 				begin-span-or-div span 'dialogue
-				{<span class="character">} stringify character {</span>} ":" space
-				either parenthetical [
-					rejoin [
-						{<span class="action">}
+				<span class="character"> stringify character </span> ":" space
+				if parenthetical [
+					[
+						<span class="action">
 						"(" to string! parenthetical ")"
-						{</span>} space
+						</span> space
 					]
-				] [
-					{}
 				]
 
 				{"} markdown/to-html dialogue-text {"}
