@@ -6,7 +6,7 @@ Rebol [
 
 	}
 
-	Home: http://realityhandbook.org/
+	Home: http://github.com/hostilefork/draem
 	License: 'mit
 
 	Date: 20-Oct-2010
@@ -153,18 +153,25 @@ make-atom-feed: function [
 		
 	<feed xmlns="http://www.w3.org/2005/Atom">
 	 
-		<title>Brian's Hostilefork Blog Feed</title>
-		<subtitle>Extraordinary Lucid Dream Reports</subtitle>
-		<link href="http://blog.hostilefork.com/brian/feed/" rel="self" />
-		<link href="http://blog.hostilefork.com/brian/" />
-		<id>tag:hostilefork.com,1975-04-21:</id>
+		<title>} draem/config/site-title {</title>
+		<subtitle>} draem/config/site-tagline {</subtitle>
+		<link href="} draem/config/site-url {feed/" rel="self" />
+		<link href="} draem/config/site-url {" />
+		<id>tag:} draem/config/rss-tag {,1975-04-21:</id>
 		<updated>} (to-iso8601-date/timestamp now) {</updated>
 		<author>
-			<name>Realityhandbook</name>
+			<name>} draem/config/site-author {</name>
 		</author>
 	}]
 
 	foreach entry entries [
+		unless any [ ;-- don't allow pages to appear in the rss atom for now
+			draem/next-entry entry/header
+			draem/previous-entry entry/header
+		] [
+			continue
+		]
+
 		sorted-tags: draem/entry-tags-by-popularity entry/header
 		if 0 = atom-length [
 			break
