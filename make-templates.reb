@@ -51,10 +51,10 @@ django-path: function [stuff [block!] ] [
 
 django-google-analytics: function [] [
 	combine [
-		django-block "ga_id" [
+		django-block/inline "ga_id" [
 			draem/config/google-analytics/tracking-id
 		]
-		django-block "ga_property" [
+		django-block/inline "ga_property" [
 			draem/config/google-analytics/property
 		]
 	]
