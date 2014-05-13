@@ -190,12 +190,14 @@ flatten: func [
 ;
 ; http://curecode.org/rebol3/ticket.rsp?id=2142&cursor=1 
 ;
-combine: function [
+combine: func [
     block [block!]
     /with "Add delimiter between values (will be COMBINEd if a block)"
         delimiter [block! any-string! char!]
     /into
     	out [any-string!]
+    /local
+    	needs-delimiter pre-delimit value
 ] [
 	;-- No good heuristic for string size yet
 	unless into [
@@ -217,10 +219,8 @@ combine: function [
 
 	;-- Do evaluation of the block until a non-none evaluation result
 	;-- is found... or the end of the input is reached.
-	pos: block
-
-	while [not tail? pos] [
-		value: do/next pos 'pos
+	while [not tail? block] [
+		value: do/next block 'block
 
 		;-- Blocks are substituted in evaluation, like the recursive nature
 		;-- of parse rules.

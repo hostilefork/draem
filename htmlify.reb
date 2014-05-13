@@ -29,7 +29,8 @@ htmlify: function [
 	/nestlast
 	/span
 ] [
-	result: copy {}
+	;-- Review proposals for constructors...
+	result: make string! 1000
 
 	group-rule: [some [
 		;-- STRING
@@ -176,10 +177,8 @@ htmlify: function [
 					htmlify-range args end
 
 					;-- http://html5doctor.com/blockquote-q-cite/
-					if attribution [
-						attribution-blk: append/only copy [] attribution
-						protect attribution
-						[<footer> htmlify/span attribution-blk </footer>]
+					if/only attribution [
+						<footer> htmlify/span reduce [attribution] </footer>
 					]
 					</blockquote>
 					newline
@@ -194,16 +193,14 @@ htmlify: function [
 			] (
 				append result combine [
 					{<div class="} (either is-note {note} {update}) {">}
-					either is-note [
-						[<span class="note-span"> {Note} </span>]
+					either/only is-note [
+						<span class="note-span"> {Note} </span>
 					] [
-						[
-							<span class="update-span"> {UPDATE}
-							if date [
-								[space date]
-							]
-							</span>
+						<span class="update-span"> {UPDATE}
+						if/only date [
+							space date
 						]
+						</span>
 					]
 					space
 					either 1 = length? args [
@@ -241,21 +238,17 @@ htmlify: function [
 				;-- TODO: work out the right language classes for google code prettify
 				;-- http://stackoverflow.com/q/11742907/211160
 				append result combine [
-					if needs-pre-tag [
-						[
-							{<pre}
-							if verb = 'code [
-								[
-									space
-									{class="prettyprint}
-									if language [
-										[space {lang-} to string! language]
-									]
-									{"}
-								]
+					if/only needs-pre-tag [
+						{<pre}
+						if/only verb = 'code [
+							space
+							{class="prettyprint}
+							if/only language [
+								space {lang-} to string! language
 							]
-							{>}
+							{"}
 						]
+						{>}
 					]
 					(if needs-code-tag <code>)
 					code
@@ -273,8 +266,8 @@ htmlify: function [
 				end
 			] (
 				append result combine [
-					if anchor [
-						[{<a href="#} to string! anchor {">} </a>]
+					if/only anchor [
+						{<a href="#} to string! anchor {">} </a>
 					]
 					<h3> markdown/to-html heading-text </h3>
 					newline
@@ -286,18 +279,22 @@ htmlify: function [
 				'list
 				copy args to end
 			] (
-				append result <ul>
-				foreach elem args [
-					elem-blk: append/only copy [] elem
-					protect elem-blk
-					append result combine [
-						<li>
-						htmlify elem-blk
-						</li>
-						newline
+				append result combine [
+					<ul>
+					map-each elem args [
+						;-- If we return a block and do not compose elem first,
+						;-- then elem will be evaluated incorrectly.  Review
+						;-- the precise problem with doing this...
+						compose/deep/only [
+							<li>
+							htmlify reduce [(elem)]
+							</li>
+							newline
+						]
 					]
+					</ul>
+					newline
 				]
-				append result combine [</ul> newline]
 			)
 		|
 			;-- HTML
@@ -336,18 +333,19 @@ htmlify: function [
 				]
 
 				;-- http://www.webupd8.org/2010/07/embed-youtube-videos-in-html5-new.html
+				;-- http://www.gtpdesigns.com/design-blog/view/w3c-valid-xthml-and-html5-youtube-iframe-embeds
+
 				append result combine [
 					<div class="youtube">
-					{<iframe class="youtube-player"} space
+						{<iframe class="youtube-player"} space
 
-					;-- Integer conversion needed as first 10x20 returns 10.0 :-/
-					{width="} to integer! size/1 {"} space
-					{height="} to integer! size/2 {"} space
-					{src="http://www.youtube.com/embed/} video-id {"} space
-					;-- http://www.gtpdesigns.com/design-blog/view/w3c-valid-xthml-and-html5-youtube-iframe-embeds
-					{allowFullScreen}
-					{>}
-					</iframe>
+						;-- Conversion needed as first 10x20 returns 10.0 :-/
+						{width="} to integer! size/1 {"} space
+						{height="} to integer! size/2 {"} space
+						{src="http://www.youtube.com/embed/} video-id {"} space
+						{allowFullScreen}
+						{>}
+						</iframe>
 					</div>
 				]
 			)
@@ -368,16 +366,16 @@ htmlify: function [
 		] (
 			append result combine [
 				begin-span-or-div span 'dialogue
+
 				<span class="character"> stringify character </span> ":" space
-				if parenthetical [
-					[
-						<span class="action">
-						"(" to string! parenthetical ")"
-						</span> space
-					]
+				if/only parenthetical [
+					<span class="action">
+					"(" to string! parenthetical ")"
+					</span> space
 				]
 
 				{"} markdown/to-html dialogue-text {"}
+
 				end-span-or-div span
 			]
 		)

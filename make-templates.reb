@@ -74,8 +74,8 @@ link-to-tag: function [tag [word!] /count num] [
 		]
 		stringify tag
 		close-anchor
-		if count [
-			[space {:} space num {<br />}]
+		if/only count [
+			space {:} space num <br />
 		]
 	]
 ]
@@ -87,8 +87,8 @@ link-to-character: function [character [word!] /count num] [
 		]
 		stringify character
 		close-anchor
-		if count [
-			[space {:} space num {<br />}]
+		if/only count [
+			space {:} space num <br />
 		]
 	]
 ]
@@ -138,7 +138,7 @@ write-entry: function [
 				combine [
 					{<link rel="stylesheet" type="text/css" href=}
 					{"} to string! item {"}
-					{>}
+					{ />}
 				]
 			]
 		]
@@ -169,8 +169,8 @@ write-entry: function [
 			] [
 				combine [
 					{<script type="text/javascript" src=}
-					{"} to string! item {"} {>}
-					{</script>}
+					{"} to string! item {"} { />}
+					</script>
 				]
 			]
 		]
@@ -213,14 +213,16 @@ write-entry: function [
 		]
 		
 		django-path [
-			if main-tag [				
+			if/only main-tag [				
 				<li>
 					link-to-tag main-tag
 				</li>
 			]
-			<li> <span>
-				entry/header/title
-			</span> </li>
+			<li>
+				<span>
+					entry/header/title
+				</span>
+			</li>
 		]
 		
 		django-block "date" [
@@ -232,12 +234,12 @@ write-entry: function [
 				"(none)"
 			] [
 				combine/with (map-each tag sorted-tags [
-					combine [
+					compose/deep [
 						{<a href="} draem/config/site-url {tag/}
-						stringify/dashes tag
-						{/" class="post-tag" rel="tag">} stringify tag </a>
+						(stringify/dashes tag)
+						{/" class="post-tag" rel="tag">} (stringify tag) </a>
 					]
-				]) {, }
+				]) [{,} space]
 			]
 		]
 
@@ -246,12 +248,12 @@ write-entry: function [
 				"(none)"
 			] [
 				 combine/with (map-each character unsorted-characters [
-					combine [
+				 	compose/deep [
 						{<a href="} draem/config/site-url {character/}
-						stringify/dashes character
-						{/">} stringify character {</a>}
+						(stringify/dashes character)
+						{/">} (stringify character) </a>
 					]
-				]) {, }
+				]) [{,} space]
 			]
 		]
 
@@ -259,7 +261,7 @@ write-entry: function [
 			content-html
 		]
 		
-		if later-entry [
+		if/only later-entry [
 			django-block/inline {nexttitle} [
 				later-entry/header/title
 			]
@@ -268,7 +270,7 @@ write-entry: function [
 			]
 		]
 
-		if earlier-entry [
+		if/only earlier-entry [
 			django-block/inline {prevtitle} [
 				earlier-entry/header/title
 			]
@@ -287,7 +289,7 @@ write-entry: function [
 ]
 
 make-templates: function [
-	{ Generates the django templates from the entries and draem/indexes }
+	{Generates the django templates from the entries and draem/indexes}
 
 	entries [block!]
 	indexes [object!]
