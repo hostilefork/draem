@@ -57,6 +57,16 @@ body {
 
 
 /*
+ * Font smoothing, grabbed from Slate.com
+ */
+html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+
+/*
  * Background color/texture.
  */
 
@@ -247,10 +257,11 @@ img {
  * "EXPOSITION"
  * 
  * Default class for just random writing in a post (such as if you just put
- * a string literal containing markdown in as a paragraph).  Indent these
- * unless they are in lists.
+ * a string literal containing markdown in as a paragraph).  Originally
+ * indented if not in lists but I decided the indentation was distracting.
  */
 
+/*
 #body-div div.exposition {
     text-indent: 1.5em;
 }
@@ -258,6 +269,7 @@ img {
 #body-div li > div.exposition {
     text-indent: 0;
 }
+*/
 
 
 /*
