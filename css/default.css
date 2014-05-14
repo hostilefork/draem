@@ -9,6 +9,73 @@
  */
 
 
+/*  -----------------------------------------------------------------------
+    <BODY> element and surrogate <DIV>
+
+    Not knowing what better to do, I leverage a centering trick from:
+
+    http://stackoverflow.com/a/14776179/211160
+
+    This separates what the page thinks of as the "body" into a DIV with
+    an ID of "body-div".  That div has a maximum width, and as for why
+    to do that...empirically if you fill the whole width it looks ugly
+    on large monitors.  I don't know "the answer" but there's various
+    rationale for why not to just fill the browser space, and pretty
+    much every professional page on the internet limits it in some way.
+
+    https://jdm-digital.com/2012/11/why-max-width-960/
+    
+    Not setting a min-width has the advantage of reflowing to whatever a
+    device supports, up to that (arbitrary-seeming) maximum.  But it has the
+    unfortunate side effect that if there isn't enough content to require a
+    reflow, page sizes may jump around if no content gets up the length.
+
+    A workaround is just to throw enough content on each page to hope it
+    causes the browser to reason to a consistent width across pages.  A
+    long sentence of legalese at the very bottom of the page can do it.
+    -----------------------------------------------------------------------  */
+
+/*
+ * Centering
+ */
+ 
+html {
+    display: table;
+    margin: auto;
+}
+
+body {
+    display: table-cell;
+    vertical-align: middle;
+    margin: 0px;
+    padding: 0px;
+}
+
+#body-div {
+    max-width: 960px;
+}
+
+
+/*
+ * Background color/texture.
+ */
+
+body {
+    background-color: #BBB;
+}
+
+/*
+@media screen {
+    body {
+        background-image: url(/media/no-background-texture-currently.jpg);
+        background-position: left bottom;
+        background-repeat: no-repeat;
+        background-attachment: scroll;
+    }
+}
+*/
+
+
 
 /*  -----------------------------------------------------------------------
     GLOBAL DEFINITIONS
@@ -38,72 +105,38 @@ img {
     border: none;
 }
 
-
-
-/*  -----------------------------------------------------------------------
-    ACTUAL <BODY> ELEMENT
-    -----------------------------------------------------------------------  */
-
 /*
- * Center everything.  Methodology from:
- * http://stackoverflow.com/a/14776179/211160
+ * The default for all divs under body is a vertical margin (10px).  Honestly
+ * I do not remember quite where or why I set this.  Seems reasonable??
  */
-
-html {
-    display: table;
-    margin: auto;
+#body-div div {
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
-
-body {
-    display: table-cell;
-    vertical-align: middle;
-    margin: 0px;
-    padding: 0px;
-}
-
-/*
- * Background color/texture.
- */
-
-body {
-    background-color: #BBB;
-}
-
-/*
-@media screen {
-    body {
-        background-image: url(/media/no-background-texture-currently.jpg);
-        background-position: left bottom;
-        background-repeat: no-repeat;
-        background-attachment: scroll;
-    }
-}
-*/
 
 
 
 /*  ------------------------------------------------------------------------
-    ACTUAL <BODY> ELEMENT
+    PAGE CONTAINER STRUCTURE
 
-    The div with id="body-div" is what's used to do body styling while
-    ignoring the actual <body> element for the most part, which is only
-    used to center and set a background color/texture.
+    The original baseline page container structure came from the fact
+    that I was experimenting with a timeline, and there was CSS for that
+    which was "good enough" at that moment to use for all the pages.  That
+    CSS came from Simile by by Stefano Mazzocchi
+
+        http://simile.mit.edu/styles/default.css
+
+    Though it served well at the time, most of it has been deleted or
+    replaced now, except for the navigation header and basic color scheme
     -----------------------------------------------------------------------  */
 
-#body-div {
-    /*
-     * I dunno what "the answer" is but if you fill the whole width
-     * it looks ugly if you make a really wide layout.
-     *
-     * https://jdm-digital.com/2012/11/why-max-width-960/
-     *
-     * Not setting a min-width has the advantage of reflowing to whatever a
-     * device supports.  But it has the unfortunate side effect that if there
-     * isn't enough content to require a reflow, page sizes may jump around.
-     * A workaround is just to throw enough content on each page to hope it
-     * causes the browser to reason to a consistent width across pages.
-     */
-    max-width: 960px;
+/*
+ * "MAIN" DIV
+ *
+ * The main div currently collects all the content that's not in the
+ * "PROLOGUE" or "EPILOGUE" areas of the surrogate BODY-DIV.  
+ */
+#main {
 
     /* Use customized quotation mark symbols that are "curlier" */
     quotes: "\201C" "\201E" "\2018" "\2019";
@@ -127,35 +160,6 @@ body {
      */
     padding: 0px 32px 0px 32px;
 }
-
-/* The default for all divs under body is a vertical margin (10px) */
-#body-div div {
-    margin-top: 10px;
-    margin-bottom: 10px;
-}
-
-
-
-/*  ------------------------------------------------------------------------
-    PAGE CONTAINER STRUCTURE
-
-    The original baseline page container structure came from the fact
-    that I was experimenting with a timeline, and there was CSS for that
-    which was "good enough" at that moment to use for all the pages.  That
-    CSS came from Simile by by Stefano Mazzocchi
-
-        http://simile.mit.edu/styles/default.css
-
-    Though it served well at the time, most of it has been deleted or
-    replaced now, except for the navigation header and basic color scheme
-    -----------------------------------------------------------------------  */
-
-/*
- * "PROLOGUE" area.
- *
- * No defaults for this as of yet; it's the name for where things are put
- * before the body (hence they don't get the white background)
- */
 
 
 /*

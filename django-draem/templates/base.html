@@ -43,31 +43,36 @@
 	</head>
 <body {% block bodymethods %}{% endblock bodymethods %}>
 
-{% block prologue %}
-{# missing prologue is acceptable #}
-{% endblock prologue %}
+	<div id="body-div">
+		{% block prologue %}
+		{# missing prologue is acceptable #}
+		{% endblock prologue %}
 
-<div id="body-div">
-	<ul id="path">
+		<div id="main">
+			<ul id="path">
 
-	{% block path %}
-		<p>MISSING PATH BLOCK</p>
-	{% endblock path %}
-	</ul>
-	
-    <h1>{% block header %}{% endblock header %}</h1>
-{% block main %}
-    <p>MISSING MAIN BLOCK</p>
-{% endblock main %}
+			{% block path %}
+				<p>MISSING PATH BLOCK</p>
+			{% endblock path %}
+			</ul>
+			
+		    <h1>{% block header %}{% endblock header %}</h1>
+		    
+			{% block main %}
+			    <p>MISSING MAIN BLOCK</p>
+			{% endblock main %}
 
-{% block footer %}
-{# missing footer is acceptable #}
-{% endblock footer %}
-</div>
+			{% block footer %}
+			{# missing footer is acceptable #}
+			{% endblock footer %}
+		</div>
 
-{% block epilogue %}
-{# missing epilogue is acceptable #}
-{% endblock epilogue %}
+		{% block epilogue %}
+		{# missing epilogue is acceptable #}
+		{% endblock epilogue %}
+
+	</div>
+
 
 <!-- This is the Google Universal Analytics Code -->
 
