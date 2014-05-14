@@ -180,7 +180,7 @@ write-entry: function [
 			] [
 				combine [
 					{<script type="text/javascript" src=}
-					{"} to string! item {"} { />}
+					{"} to string! item {"} {>}
 					</script>
 				]
 			]
