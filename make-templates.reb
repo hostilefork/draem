@@ -201,7 +201,11 @@ write-entry: function [
 				[{Length:} space length? (split content-html space) space "words"]
 			] [{,} space]
 		]
-		
+
+		django-block "prologue" [
+			draem/config/site-prologue
+		]
+
 		django-block/inline "title" [
 			if main-tag [stringify main-tag]
 			space ":"

@@ -43,7 +43,11 @@
 	</head>
 <body {% block bodymethods %}{% endblock bodymethods %}>
 
-<div id="body">
+{% block prologue %}
+{# missing prologue is acceptable #}
+{% endblock prologue %}
+
+<div id="body-div">
 	<ul id="path">
 
 	{% block path %}

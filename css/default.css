@@ -1,217 +1,31 @@
-/* Temporary stylesheet borrowed from: Simile Project */
-/* http://simile.mit.edu/styles/default.css */
-
 /*
- * Written by Stefano Mazzocchi <stefanom at mit dot edu>
+ * Kept simple to focus on getting the
+ * content in order as valid HTML5 that search engines will like, as well
+ * as to focus on the main Draem dialecting concerns.
+ *
+ * Hoped transition to use the CSSR dialect and look less boring overall:
+ *
+ *     http://recode.revault.org/wiki/CSSR
  */
 
-/* SPECIAL CLASSES ADDED FOR DRAEM */
-
-/* Center: http://stackoverflow.com/a/14776179/211160 */
-
-html {
-    display: table;
-    margin: auto;
-}
-
-body {
-    display: table-cell;
-    vertical-align: middle;
-}
 
 
-#body .character {
-    font-weight: bold;
-}
+/*  -----------------------------------------------------------------------
+    GLOBAL DEFINITIONS
 
-#body .action {
-    font-style: italic;
-}
-
-#body div {
-    margin-top: 10px;
-    margin-bottom: 10px;
-}
-
-#body .update-span {
-    font-weight: bold;
-}
-
-#body .note {
-    font-style: italic;
-    padding: 10px;
-    border: 1px solid #ccc;
-}
-
-#body .note-span:after {
-    content: ":";
-}
-
-#body .update {
-    margin: 10px;
-    padding: 10px;
-    border: 1px solid #ccc;
-}
-
-#body .update-span:after {
-    content: ":";
-}
-
-#body h1 {
-    line-height: 1em;
-}
-
-#prevnext {
-    text-align: center;
-/*    border: 1px solid lightgray; */
-    width:90%;
-    margin:20px;
-    padding: 20px; 
-    /* font-variant:small-caps; */
-    font-weight: bold;
-}
-
-#prev {
-    text-align: left;
-}
-
-#next {
-    text-align: right;
-}
-
-#next:after {
-    content: "\25B6"
-}
-
-#prev:before {
-    content: "\25C0"
-}
-
-.youtube {
-    text-align: center;
-}
-
-.picture {
-    text-align: center;
-}
-
-blockquote footer {
-    text-align: right;
-    font-weight: bold;
-}
-
-blockquote footer:before {
-    content: "\2014"
-}
-
-/* http://css-tricks.com/snippets/css/simple-and-nice-blockquote-styling/ */
-blockquote {
-  background: #f9f9f9;
-  border-left: 10px solid #ccc;
-  margin: 1.5em 10px;
-  padding: 0.5em 10px;
-  quotes: "\201C""\201D""\2018""\2019";
-}
-blockquote:before {
-  color: #ccc;
-  font-size: 4em;
-  line-height: 0.1em;
-  margin-right: 0.25em;
-  vertical-align: -0.4em;
-
-  /* Patches problem with original article, from comments thread. */
-  /* could also do blockquote:after {content:"\201D";} */
-  content:"\201C";
-}
-blockquote p {
-  display: inline;
-}
-
-/* URL on a line by itself, indent */
-/* (Don't do it to spans, for instance it would mess up the attribution footer in blockquote) */
-#body div.url {
-    text-align: center;
-}
-
-/* Attempt at a hanging indent and to get dialogue in the middle. */
-/* http://demosthenes.info/blog/50/Classic-Typography-Effects-in-CSS-Hanging-Indent */
-#body .dialogue {
-    text-indent: -2em;
-    margin-left: 4em;
-    margin-top: 1em;
-    margin-bottom: 1em;
-    margin-right: 4em;
-}
-
-/* Stolen from StackOverflow's tag CSS */
-#body a.post-tag {
-    color: #3E6D8E;
-    background-color: #E0EAF1;
-    border-bottom: 1px solid #b3cee1;
-    border-right: 1px solid #b3cee1;
-    padding: 3px 4px 3px 4px;
-    margin: 2px 2px 2px 0;
-    text-decoration: none;
-    font-size: 90%;
-    line-height: 1.4;
-    white-space: nowrap;
-    display: inline-block;
-}
-
-#body a.post-tag:hover {
-    background-color: #c4dae9;
-    border-bottom: 1px solid #c4dae9;
-    border-right: 1px solid #c4dae9;
-    text-decoration: none;
-}
-
-/* Indent expositions unless they are in lists. */
-#body div.exposition {
-    text-indent: 1.5em;
-}
-#body li > div.exposition {
-    text-indent: 0;
-}
-
-hr {
-    float: left;
-    width: 100%;
-    height: 1px;
-    color: #BBB;
-    background-color: #BBB;
-    border: 1px solid #BBB;
-    border-bottom: 0px;
-    padding:0;
-}
-
-/* ----------------------------- Global Definitions -------------------- */
-
-body {
-    margin: 0px;
-    padding: 0px;
-
-    background-color: #BBB;
-}
-
-@media screen {
-    body {
-/*        background-image: url(images/stata.jpg);*/
-        background-position: left bottom;
-        background-repeat: no-repeat;
-        background-attachment: scroll;
-    }
-}
+    Probably better to use a more generalized CSS reset
+    -----------------------------------------------------------------------  */
 
 a:link {
-	color: #222;
+    color: #222;
 }
 
 a:visited {
-	color: #666;
+    color: #666;
 }
 
 a:hover {
-	color: #000;
+    color: #000;
 }
 
 a:active {
@@ -221,109 +35,137 @@ a:focus {
 }
 
 img {
-	border: none;
+    border: none;
 }
 
-/* ----------------------------- Sidebar  -------------------------- */
 
-#sidebar {
-	float: right;
-	top: 150px;
-	right: 0px;
-	width: 220px;
-	background-color: white;
-	padding: 0px 0px 0px 0px;
-	margin: 0px 0px 4em 4em;
-	border-left: 1px solid #ccc;
-	border-bottom: 1px solid #ccc;
+
+/*  -----------------------------------------------------------------------
+    ACTUAL <BODY> ELEMENT
+    -----------------------------------------------------------------------  */
+
+/*
+ * Center everything.  Methodology from:
+ * http://stackoverflow.com/a/14776179/211160
+ */
+
+html {
+    display: table;
+    margin: auto;
 }
 
-#sidebar .logo {
-    text-align: center;
-    padding: 2em 0px 1em 0px;
+body {
+    display: table-cell;
+    vertical-align: middle;
     margin: 0px;
+    padding: 0px;
 }
 
-#sidebar h1 {
-    font-family: "verdana", "helvetica", "arial", sans-serif;
-    letter-spacing: 0.15em;
-    font-size: 24px;
+/*
+ * Background color/texture.
+ */
+
+body {
+    background-color: #BBB;
+}
+
+/*
+@media screen {
+    body {
+        background-image: url(/media/no-background-texture-currently.jpg);
+        background-position: left bottom;
+        background-repeat: no-repeat;
+        background-attachment: scroll;
+    }
+}
+*/
+
+
+
+/*  ------------------------------------------------------------------------
+    ACTUAL <BODY> ELEMENT
+
+    The div with id="body-div" is what's used to do body styling while
+    ignoring the actual <body> element for the most part, which is only
+    used to center and set a background color/texture.
+    -----------------------------------------------------------------------  */
+
+#body-div {
+    /*
+     * I dunno what "the answer" is but if you fill the whole width
+     * it looks ugly if you make a really wide layout.
+     *
+     * https://jdm-digital.com/2012/11/why-max-width-960/
+     *
+     * Not setting a min-width has the advantage of reflowing to whatever a
+     * device supports.  But it has the unfortunate side effect that if there
+     * isn't enough content to require a reflow, page sizes may jump around.
+     * A workaround is just to throw enough content on each page to hope it
+     * causes the browser to reason to a consistent width across pages.
+     */
+    max-width: 960px;
+
+    /* Use customized quotation mark symbols that are "curlier" */
+    quotes: "\201C" "\201E" "\2018" "\2019";
+
+    /* Extremely dark grey that's not-quite-black on a white background */
     color: #333;
-    font-weight: normal;
-    text-align: center;
-    padding: 5px;
+    background-color: #FFF;
+
+    /* http://cssfontstack.com/ */
+    font-family: "Proxima Nova Regular","Helvetica Neue",Calibri,"Droid Sans",Helvetica,Arial,sans-serif;
+    font-size: 16px;
+    line-height: 1.5em;
+
+    /*
+     * The body div extends its margins right up against the <body> element's
+     * background, but pads a bit in order to give the text a bit of breathing
+     * room on the left and right.  (This padding must be undone with negative
+     * margins by anything wanting to stretch to the edge and "undo the white"
+     * and there may be a better way to express this so that a page may be
+     * broken into sections.)
+     */
+    padding: 0px 32px 0px 32px;
 }
 
-#sidebar h2 {
-    font-family: "verdana", "helvetica", "arial", sans-serif;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    font-size: 11px;
-    color: #666;
-    font-weight: normal;
-    padding: 2px 0px 2px 4px;
-    margin: 5px 0px 5px 10px;
-    border-top: 1px solid #ccc;
-    border-left: 1px solid #ccc;
-    border-bottom: 1px solid #ccc;
-    border-color: #ccc;
-    color: #666;
+/* The default for all divs under body is a vertical margin (10px) */
+#body-div div {
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
-#sidebar p {
-    font-family: "verdana", "helvetica", "arial", sans-serif;
-    font-size: 10px;
-    padding-left: 20px;
-    padding-right: 5px;
-}
 
-#sidebar ul {
-    margin: 5px 5px 15px 5px;
-    padding-left: 25px;
-}
 
-#sidebar li {
-    margin-left: 0px;
-    font-family: "verdana", "helvetica", "arial", sans-serif;
-    font-size: 10px;
-}
+/*  ------------------------------------------------------------------------
+    PAGE CONTAINER STRUCTURE
 
-#sidebar .important li {
-    font-weight: bold;
-}
+    The original baseline page container structure came from the fact
+    that I was experimenting with a timeline, and there was CSS for that
+    which was "good enough" at that moment to use for all the pages.  That
+    CSS came from Simile by by Stefano Mazzocchi
 
-#sidebar .verbose li {
-    padding: 1px 0px 1px 0px;
-}
+        http://simile.mit.edu/styles/default.css
 
-#sidebar li.current {
-	font-weight: bold;
-}
+    Though it served well at the time, most of it has been deleted or
+    replaced now, except for the navigation header and basic color scheme
+    -----------------------------------------------------------------------  */
 
-#sidebar .news {
-    font-family: "verdana", "helvetica", "arial", sans-serif;
-    font-size: 90%;
-    border-top: 1px solid #ccc;
-    text-align: left;
-    padding: 1em 1em 1em 4em;
-}
+/*
+ * "PROLOGUE" area.
+ *
+ * No defaults for this as of yet; it's the name for where things are put
+ * before the body (hence they don't get the white background)
+ */
 
-#sidebar .prominent {
-    font-family: "verdana", "helvetica", "arial", sans-serif;
-    text-align: center;
-    padding: 1em;
-    padding-top: 0px;
-}
 
-#sidebar .new {
-    color: #ee0000;
-    font-size: smaller;
-    vertical-align: baseline;
-    position: relative;
-    bottom: 0.33em;
-}
-
-/* ----------------------------- Path ---------------------------- */
+/*
+ * PATH
+ * 
+ * This provides a navigation list of "where you are" so you can backtrack
+ * in the hierarchy.  Draem ceased having a hierarchy or category system,
+ * instead adopting the notion that the category comes from the "most popular
+ * tag on the post".  In any case, this is the little bar at the top.
+ */
 
 #path {
     color: #333;
@@ -346,167 +188,274 @@ img {
     font-weight: bold;
 }
 
-/* ----------------------------- Body ---------------------------- */
-
-#body {
-    /*
-     * I dunno what "the answer" is but if you fill the whole width
-     * it looks ugly.
-     *
-     * https://jdm-digital.com/2012/11/why-max-width-960/
-     */
-    max-width: 960px;
-
-    quotes: "\201C" "\201E" "\2018" "\2019";
-
-    color: #333;
-    background-color: #FFF;
-
-    /* http://cssfontstack.com/ */
-    font-family: "Proxima Nova Regular","Helvetica Neue",Calibri,"Droid Sans",Helvetica,Arial,sans-serif;
-    font-size: 16px;
-    line-height: 1.5em;
-
-    padding: 10px 32px 10px 32px;
-    margin: 0px 20px 10px 20px;
-}
-
 #path {
     margin: 0px -32px 0px -32px;
 }
 
-#body h1,h2,h3,h4 {
-    color: #666;
-}
 
-#body h1 {
+/*
+ * PAGE TITLE
+ * 
+ * The page title is done with an H1, and I'm not sure what the value of in
+ * this day and age is of using that instead of a custom class.
+ */
+
+#body-div h1 {
+    line-height: 1em;
     border-top: 1px solid #ccc;
     background-color: #eee;
     border-bottom: 1px solid #ccc;
     padding: 3px 8px 3px 12px;
     margin: 15px -32px 35px -32px;
+    color: #666;
 }
 
-#body h2 {
-    border-bottom: 1px solid #ccc;
-    margin: 30px 0px 0px 0px;
-    padding: 0px;
-}
 
-#body .steps li {
-    padding: 5px;
-}
+/*
+ * PREVIOUS AND NEXT POST BUTTONS
+ */
 
-/* 
-
-#body .note {
-    margin: 3px;
-    padding: 3px;
-    border: 1px solid #ccc;
-    background-color: #eee;
-}
-
-#body .note:before {
-    content: "Note: ";
+#prevnext {
+    text-align: center;
+    width:90%;
+    margin:20px;
+    padding: 20px; 
     font-weight: bold;
 }
-*/
 
-#body .figure {
+#prev {
+    text-align: left;
+}
+
+#next {
+    text-align: right;
+}
+
+#next:after {
+    content: "\25B6"
+}
+
+#prev:before {
+    content: "\25C0"
+}
+
+
+
+/*  ------------------------------------------------------------------------
+    STYLES FOR DRAEM DIALECT CONTENT PRODUCED BY "HTMLIFY"
+    -----------------------------------------------------------------------  */
+
+/*
+ * "EXPOSITION"
+ * 
+ * Default class for just random writing in a post (such as if you just put
+ * a string literal containing markdown in as a paragraph).  Indent these
+ * unless they are in lists.
+ */
+
+#body-div div.exposition {
+    text-indent: 1.5em;
+}
+
+#body-div li > div.exposition {
+    text-indent: 0;
+}
+
+
+/*
+ * DIALOGUE
+ */
+
+#body-div .character {
+    font-weight: bold;
+}
+
+#body-div .action {
+    font-style: italic;
+}
+
+/* Attempt at a hanging indent and to get dialogue in the middle. */
+/* http://demosthenes.info/blog/50/Classic-Typography-Effects-in-CSS-Hanging-Indent */
+#body-div .dialogue {
+    text-indent: -2em;
+    margin-left: 4em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    margin-right: 4em;
+}
+
+
+/*
+ * NOTE
+ */
+
+#body-div .note {
+    font-style: italic;
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+#body-div .note-span:after {
+    content: ":";
+}
+
+
+/*
+ * UPDATE
+ */
+
+#body-div .update {
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+#body-div .update-span {
+    font-weight: bold;
+}
+
+#body-div .update-span:after {
+    content: ":";
+}
+
+
+/*
+ * HEADING
+ *
+ * Currently only one level of heading is supported, but this may be expanded
+ * in the dialect later.
+ */
+
+#body-div h3 {
+    color: #666;
+}
+
+
+/*
+ * YOUTUBE
+ */
+
+#body-div .youtube {
     text-align: center;
 }
 
-#body .figure img {
-    border: 1px solid #ccc;
+
+/*
+ * PICTURE
+ */
+
+#body-div .picture {
+    text-align: center;
 }
 
-#body pre {
+
+/*
+ * QUOTE
+ */
+
+blockquote footer {
+    text-align: right;
+    font-weight: bold;
+}
+
+blockquote footer:before {
+    content: "\2014"
+}
+
+/* http://css-tricks.com/snippets/css/simple-and-nice-blockquote-styling/ */
+blockquote {
+  background: #f9f9f9;
+  border-left: 10px solid #ccc;
+  margin: 1.5em 10px;
+  padding: 0.5em 10px;
+  quotes: "\201C""\201D""\2018""\2019";
+}
+
+blockquote:before {
+  color: #ccc;
+  font-size: 4em;
+  line-height: 0.1em;
+  margin-right: 0.25em;
+  vertical-align: -0.4em;
+
+  /* Patches problem with original article, from comments thread. */
+  /* could also do blockquote:after {content:"\201D";} */
+  content:"\201C";
+}
+
+blockquote p {
+  display: inline;
+}
+
+
+/*
+ * URL
+ * 
+ * Put on a line by itself, indent.  (Don't do this to spans, for instance it
+ * would mess up the attribution footer in blockquote.)
+ */
+
+#body-div div.url {
+    text-align: center;
+}
+
+
+/*
+ * CODE AND TEXT
+ *
+ * Currently the code formatting and syntax-highlighting is done by client-side
+ * scripting with Google Code Prettify, and the CSS in that.
+ */
+
+#body-div pre {
     padding: 10px;
     border: 1px solid #ccc;
     white-space: pre-wrap;
 }
 
-#body .screenshot {
-    text-align: center;
+
+/*
+ * DIVIDER
+ */
+
+hr {
+    float: left;
+    width: 100%;
+    height: 1px;
+    color: #BBB;
+    background-color: #BBB;
+    border: 1px solid #BBB;
+    border-bottom: 0px;
+    padding:0;
 }
 
-#body .notice {
-    margin: 15px;
-    padding: 5px;
-    background-color: #eee;
-    border: 1px solid #ccc;
+
+
+/*  ------------------------------------------------------------------------
+    TAG HANDLING
+
+    Stolen from the simplest case of tags for StackExchange (so no special
+    tag colors or icons).  Should probably do something more creative,
+    but I'm used to it.   
+    -----------------------------------------------------------------------  */
+
+#body-div a.post-tag {
+    color: #3E6D8E;
+    background-color: #E0EAF1;
+    border-bottom: 1px solid #b3cee1;
+    border-right: 1px solid #b3cee1;
+    padding: 3px 4px 3px 4px;
+    margin: 2px 2px 2px 0;
+    text-decoration: none;
+    font-size: 90%;
+    line-height: 1.4;
+    white-space: nowrap;
+    display: inline-block;
 }
 
-#body .notice:before {
-    content: "Notice: ";
-    font-weight: bold;
-}
-
-#body dl dt {
-    font-weight: bold;
-    padding: 5px;
-}
-
-#body p.important { 
-	margin: 40px 0px 40px 0px; 
-	text-align: center; 
-	font-size: 130%; 
-	font-weight: bold; 
-}
-
-#body #slideshow {
-    border: 1px solid #ccc;
-    background-position: top left;
-    background-repeat: repeat-x;
-    margin-left: 30px;
-    margin-right: 250px;
-    height: 14em;
-}
-
-#body #slideshow .item {
-    display: none;
-    margin: 10px;
-}
-
-#body #slideshow .item .icon {
-    margin: 10px;
-    float: right;
-}
-
-#body #slideshow .item .title {
-    margin: 10px;
-    font-size: 300%;
-    font-weight: bold;
-    font-family: "verdana", "helvetica", "arial", sans-serif;
-}
-
-#body #slideshow .item .description {
-    margin: 10px;
-    font-size: 130%;
-    height: 8em;
-}
-
-#body #slideshow .item .logo img {
-    border: 1px solid #ccc;
-}
-
-    
-/* ----------------------------- Footer ---------------------------- */
-
-#footer {
-    margin: 0px 0px 5em 0px;
-    padding: 2px 5px 2px 10px;
-    border-top: 1px solid #aaa;
-    border-bottom: 1px solid #aaa;
-    border-right: 1px solid #aaa;
-    font-family: "verdana", "helvetica", "arial", sans-serif;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    font-size: 10px;
-    text-align: right;
-    background: white;
-}
-
-#footer img {
-    margin: 5px 10px 5px 10px;
+#body-div a.post-tag:hover {
+    background-color: #c4dae9;
+    border-bottom: 1px solid #c4dae9;
+    border-right: 1px solid #c4dae9;
+    text-decoration: none;
 }
