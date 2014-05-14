@@ -151,14 +151,26 @@ img {
     /* Use customized quotation mark symbols that are "curlier" */
     quotes: "\201C" "\201E" "\2018" "\2019";
 
-    /* Extremely dark grey that's not-quite-black on a white background */
-    color: #333;
+    /* Was extremely dark grey that's not-quite-black on a white background,
+     * trying darker value...
+     */
+    /* color: #333; */
+    color: #070707;
+
     background-color: #FFF;
 
     /* http://cssfontstack.com/ */
+    /* Tried for a while, abandoning in favor of serif. */
+/*
     font-family: "Proxima Nova Regular","Helvetica Neue",Calibri,"Droid Sans",Helvetica,Arial,sans-serif;
     font-size: 16px;
     line-height: 1.5em;
+*/
+
+    font-size: 18px;
+    font-family: Georgia, serif;
+    line-height: 1.5;
+    margin-left: 5em;
 
     /*
      * The body div extends its margins right up against the <body> element's
