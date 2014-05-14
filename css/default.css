@@ -188,10 +188,6 @@ img {
     background-position: 1px 5px;
 }
 
-#path span {
-    font-weight: bold;
-}
-
 #path {
     margin: 0px -32px 0px -32px;
 }
@@ -206,12 +202,9 @@ img {
 
 #body-div h1 {
     line-height: 1em;
-    border-top: 1px solid #ccc;
-    background-color: #eee;
-    border-bottom: 1px solid #ccc;
     padding: 3px 8px 3px 12px;
-    margin: 15px -32px 35px -32px;
-    color: #666;
+    margin: 15px 0px 15px 0px;
+    color: #FFF;
 }
 
 
