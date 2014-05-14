@@ -60,9 +60,20 @@ django-google-analytics: function [] [
 	]
 ]
 
+;-- Currently every page gets a prologue, epilogue, and analytics
+;-- The footer which offers the ability to comment and such is only on posts.
 django-extends: function [template [file!]] [
 	combine [
 		["{% extends" space {"} to string! template {"} space "%}"]
+		
+		django-block "prologue" [
+			htmlify draem/config/site-prologue
+		]
+
+		django-block "epilogue" [
+			htmlify draem/config/site-epilogue
+		]
+
 		django-google-analytics
 	]	
 ]
@@ -202,10 +213,6 @@ write-entry: function [
 			] [{,} space]
 		]
 
-		django-block "prologue" [
-			draem/config/site-prologue
-		]
-
 		django-block/inline "title" [
 			if main-tag [stringify main-tag]
 			space ":"
@@ -284,7 +291,7 @@ write-entry: function [
 		]
 
 		django-block "footer" [
-			draem/config/site-footer
+			htmlify draem/config/site-footer
 		]
 	]
 
@@ -328,7 +335,7 @@ make-templates: function [
 
 		"{% block main %}"
 
-		draem/config/site-intro
+		htmlify draem/config/site-intro
 	]
 
 	iter: entries
@@ -353,7 +360,7 @@ make-templates: function [
 
 	append index-html combine [
 		django-block/inline "footer" [
-			draem/config/site-footer
+			htmlify draem/config/site-footer
 		]		
 	]
 
