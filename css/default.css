@@ -261,8 +261,8 @@ pre, code {
 
 #path li {
     display: inline;
-    padding-left: 13px;
-    padding-right: 3px;
+    margin: 0px;
+    padding: 0px;
     background-image: url(images/arrow.gif);
     background-repeat: no-repeat;
     background-position: 1px 5px;
