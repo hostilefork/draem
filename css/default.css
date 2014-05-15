@@ -115,27 +115,9 @@ img {
     border: none;
 }
 
-/*
- * The default for all divs under body is a vertical margin (10px).  Honestly
- * I do not remember quite where or why I set this.  Seems reasonable??
- */
-#body-div div {
-    margin-top: 10px;
-    margin-bottom: 10px;
-}
-
 /* Make all the headings stand out with a sans-serif font */
 #body-div h1, #body-div h2, #body-div h3, #body-div h4, #body-div h5 {
     font-family: Tahoma, Verdana, Segoe, sans-serif;
-}
-
-/*
- * Bulleted lists look obnoxiously uncentered if you don't make a margin
- * on the right that compensates for the indentation caused by the bullet.
- * TODO: research best way to get this compensation.
- */
-#main ul {
-    margin-right: 3em;
 }
 
 
@@ -203,6 +185,24 @@ img {
     padding: 0px 32px 0px 32px;
 }
 
+/*
+ * Bulleted lists look obnoxiously uncentered if you don't make a margin
+ * on the right that compensates for the indentation caused by the bullet.
+ * TODO: research best way to get this compensation.
+ */
+#main ul {
+    margin-right: 3em;
+}
+
+/*
+ * The default for all divs in the article is a vertical margin (10px).
+ * I do not remember quite when or why I set this.  Seems reasonable??
+ */
+#main div {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
 
 /*
  * PATH
@@ -217,7 +217,7 @@ img {
     color: #333;
     background-color: #f8f8f8;
     border-bottom: 1px solid #ccc;
-    padding: 2px 8px 2px 4px;
+    padding: 8px;
     margin: 0px;
 }
 
@@ -235,7 +235,10 @@ img {
  * PAGE TITLE
  * 
  * The page title is done with an H1, and I'm not sure what the value of in
- * this day and age is of using that instead of a custom class.
+ * this day and age is of using that instead of a custom class.  Getting the
+ * title to align to the bottom is annoying:
+ *
+ *     http://stackoverflow.com/questions/7420324/
  */
 
 #title h1 {
@@ -243,6 +246,8 @@ img {
     padding: 3px 8px 3px 12px;
     margin: 15px 0px 15px 0px;
     color: #F8F8F8;
+    position: absolute;
+    bottom: 0;
 }
 
 #title {
@@ -250,6 +255,7 @@ img {
     background-image: url(http://hostilefork.com/media/peeking-fork-100x75.png);
     background-repeat: no-repeat;
     background-position: right bottom;
+    position: relative;
 }
 
 
