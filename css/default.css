@@ -258,11 +258,11 @@ img {
 
 #title {
     display: table;
-    vertical-align: bottom;
 }
 
 #title h1 {
     display: table-cell;
+    vertical-align: bottom;
 }
 
 /* now back to your regularly scheduled CSS... */
@@ -275,14 +275,14 @@ img {
      * Don't cover the logo, although on small displays like a vertical cell
      * phone this gives very little room for the title!
      */
-    padding-right: 100px;
+    padding-right: 80px;
     padding-left: 8px;
     padding-bottom: 8px;
 }
 
 #title {
     min-height: 75px;
-    background-image: url(http://hostilefork.com/media/peeking-fork-100x75.png);
+    background-image: url(http://hostilefork.com/media/peeking-fork-80x75.png);
     background-repeat: no-repeat;
     background-position: right bottom;
     position: relative;
