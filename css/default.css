@@ -93,16 +93,18 @@ body {
     Probably better to use a more generalized CSS reset
     -----------------------------------------------------------------------  */
 
-a:link {
-    color: #222;
+a {
+    color: #07c;
+    text-decoration: none;
+    cursor: pointer;
 }
 
 a:visited {
-    color: #666;
+    color: #4a6b82;
 }
 
 a:hover {
-    color: #000;
+    text-decoration: underline;
 }
 
 a:active {
@@ -172,7 +174,7 @@ img {
     font-size: 18px;
     /* font-family: Georgia, serif; */
     font-family: "Proxima Nova Regular","Helvetica Neue",Calibri,"Droid Sans",Helvetica,Arial,sans-serif;
-    line-height: 1.5em;
+    line-height: 1.7em;
 
     /*
      * The body div extends its margins right up against the <body> element's
@@ -196,18 +198,18 @@ img {
 }
 
 /*
- * The default for all divs in the article is a vertical margin (10px) to
+ * The default for all divs in the article is a vertical margin (1em) to
  * keep a collapsible-yet-healthy distance between things.  This value must
  * be compensated for by a padding in main to prevent the margin pushing
  * outside and making a "gap"!
  */
 #main div {
-    margin-top: 10px;
-    margin-bottom: 10px;
+    margin-top: 1em;
+    margin-bottom: 1em;
 }
 #main {
-    padding-top: 10px; 
-    padding-bottom: 10px;
+    padding-top: 1em; 
+    padding-bottom: 1em;
 }
 
 
@@ -258,6 +260,7 @@ img {
 
 #title {
     display: table;
+    width: 100%;
 }
 
 #title h1 {
@@ -277,7 +280,7 @@ img {
      */
     padding-right: 80px;
     padding-left: 8px;
-    padding-bottom: 8px;
+    padding-bottom: 16px;
 }
 
 #title {
@@ -285,7 +288,6 @@ img {
     background-image: url(http://hostilefork.com/media/peeking-fork-80x75.png);
     background-repeat: no-repeat;
     background-position: right bottom;
-    position: relative;
 }
 
 
@@ -295,8 +297,8 @@ img {
 
 #prevnext {
     text-align: center;
-    width:90%;
-    margin:20px;
+    width: 90%;
+    margin: 20px;
     padding: 20px; 
     font-weight: bold;
 }
@@ -467,27 +469,27 @@ blockquote footer:before {
 
 /* http://css-tricks.com/snippets/css/simple-and-nice-blockquote-styling/ */
 blockquote {
-  background: #f9f9f9;
-  border-left: 10px solid #ccc;
-  margin: 1.5em 10px;
-  padding: 0.5em 10px;
-  quotes: "\201C""\201D""\2018""\2019";
+    background: #f9f9f9;
+    border-left: 10px solid #ccc;
+    margin: 1.5em 10px;
+    padding: 0.5em 10px;
+    quotes: "\201C""\201D""\2018""\2019";
 }
 
 blockquote:before {
-  color: #ccc;
-  font-size: 4em;
-  line-height: 0.1em;
-  margin-right: 0.25em;
-  vertical-align: -0.4em;
+    color: #ccc;
+    font-size: 4em;
+    line-height: 0.1em;
+    margin-right: 0.25em;
+    vertical-align: -0.4em;
 
-  /* Patches problem with original article, from comments thread. */
-  /* could also do blockquote:after {content:"\201D";} */
-  content:"\201C";
+    /* Patches problem with original article, from comments thread. */
+    /* could also do blockquote:after {content:"\201D";} */
+    content:"\201C";
 }
 
 blockquote p {
-  display: inline;
+    display: inline;
 }
 
 
@@ -524,6 +526,7 @@ blockquote p {
     white-space: pre-wrap;
     background: #f7f7f7;
     font-size: 14px;
+    line-height: 1.4em;
 }
 
 
@@ -539,7 +542,7 @@ hr {
     background-color: #BBB;
     border: 1px solid #BBB;
     border-bottom: 0px;
-    padding:0;
+    padding: 0;
 }
 
 
