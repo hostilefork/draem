@@ -124,6 +124,11 @@ img {
     margin-bottom: 10px;
 }
 
+/* Make all the headings stand out with a sans-serif font */
+#body-div h1, #body-div h2, #body-div h3, #body-div h4, #body-div h5 {
+    font-family: Tahoma, Verdana, Segoe, sans-serif;
+}
+
 
 
 /*  ------------------------------------------------------------------------
@@ -226,7 +231,6 @@ img {
     padding: 3px 8px 3px 12px;
     margin: 15px 0px 15px 0px;
     color: #EEE;
-    font-family: Tahoma, Verdana, Segoe, sans-serif;
 }
 
 
@@ -307,28 +311,37 @@ img {
 
 
 /*
- * NOTE
+ * NOTE and UPDATE
+ *
+ * Whether notes should theme as a sticky-note yellow style, a blue info-box,
+ * or otherwise is a matter of aesthetics.  "Good enough" for now is sticky
+ * note yellow.  Used to be italic but seems better to make it a smaller
+ * and different font instead. 
  */
 
-#body-div .note {
-    font-style: italic;
+#body-div .note, #body-div .update {
     padding: 10px;
-    border: 1px solid #ccc;
+    border-top: 1px solid #e8e8e8;
+    border-bottom: 1px solid #e8e8e8;
+    margin-left: -32px;
+    margin-right: -32px;
+    padding-left: 24px;
+    padding-right: 24px;
+    background: #ffffb8;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    font-family: "Proxima Nova Regular","Helvetica Neue",Calibri,"Droid Sans",Helvetica,Arial,sans-serif;
+    color: #333;
+    font-size: 16px;
+}
+
+/* Found the bold annoying on ordinary notes.  Try italics? */
+#body-div .update-span {
+    font-style: italic;
 }
 
 #body-div .note-span:after {
     content: ":";
-}
-
-
-/*
- * UPDATE
- */
-
-#body-div .update {
-    margin: 10px;
-    padding: 10px;
-    border: 1px solid #ccc;
 }
 
 #body-div .update-span {
@@ -344,11 +357,22 @@ img {
  * HEADING
  *
  * Currently only one level of heading is supported, but this may be expanded
- * in the dialect later.
+ * in the dialect later.  I chose h3 when I first made it because that's what
+ * I had been using in WordPress.  Perhaps the logic should be that the page
+ * title not be using h1 but rather a class, and then the headings use the
+ * html elements?  The philosophy of H# elements eludes me...
  */
 
 #body-div h3 {
     color: #666;
+    font-size: 1.4em;
+    border-top: 2px dotted #ccc;
+    padding-top: 16px;
+    margin-left: -24px;
+    margin-right: -24px;
+    padding-left: 24px;
+    padding-right: 24px;
+    margin-bottom: 16px;
 }
 
 
@@ -425,13 +449,16 @@ blockquote p {
  * CODE AND TEXT
  *
  * Currently the code formatting and syntax-highlighting is done by client-side
- * scripting with Google Code Prettify, and the CSS in that.
+ * scripting with Google Code Prettify, and the CSS in that.  These override
+ * those settings.
  */
 
 #body-div pre {
     padding: 10px;
-    border: 1px solid #ccc;
+    border: none;
     white-space: pre-wrap;
+    background: #f7f7f7;
+    font-size: 16px;
 }
 
 
