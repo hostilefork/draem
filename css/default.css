@@ -122,6 +122,16 @@ img {
     font-family: Tahoma, Verdana, Segoe, sans-serif;
 }
 
+/*
+ * Insane bug work around.  Browsers will default to monospace fonts being
+ * a different default size unless you do this rather particular voodoo.
+ *
+ *    http://meyerweb.com/eric/thoughts/2010/02/12/fixed-monospace-sizing/ 
+ */
+pre, code {
+    font-family: "Courier New", monospace, serif; font-size: 1em;
+}
+
 
 
 /*  ------------------------------------------------------------------------
