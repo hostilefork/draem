@@ -256,13 +256,18 @@ pre, code {
 }
 
 #trailer {
-    border-bottom: 1px solid #ccc;
+    border-top: 1px solid #ccc;
+}
+
+#path {
+    padding: 0px;
+    margin: 0px;
 }
 
 #path li {
     display: inline;
-    margin: 0px;
-    padding: 0px;
+    padding-left: 13px;
+    padding-right: 3px;
     background-image: url(images/arrow.gif);
     background-repeat: no-repeat;
     background-position: 1px 5px;
