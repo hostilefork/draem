@@ -293,20 +293,8 @@ pre, code {
     line-height: 1em;
     color: #F8F8F8;
 
-    /*
-     * Don't cover the logo, although on small displays like a vertical cell
-     * phone this gives very little room for the title!
-     */
-    padding-right: 80px;
     padding-left: 8px;
     padding-bottom: 16px;
-}
-
-#title {
-    min-height: 75px;
-    background-image: url(http://hostilefork.com/media/peeking-fork-80x75.png);
-    background-repeat: no-repeat;
-    background-position: right bottom;
 }
 
 
@@ -541,11 +529,14 @@ pre, code {
 
 
 #main pre {
-    padding: 10px;
-    border: none;
+    padding: 0.6em;
     white-space: pre-wrap;
     background: #f7f7f7;
     line-height: 1.5em;
+
+    /* I thought this created a nice effect, but maybe there's better... */
+    border: 1px solid #F0F0F0;
+    border-left: 2px dotted #bbb;
 }
 
 
