@@ -129,6 +129,15 @@ img {
     font-family: Tahoma, Verdana, Segoe, sans-serif;
 }
 
+/*
+ * Bulleted lists look obnoxiously uncentered if you don't make a margin
+ * on the right that compensates for the indentation caused by the bullet.
+ * TODO: research best way to get this compensation.
+ */
+#body-div ul {
+    margin-right: 3em;
+}
+
 
 
 /*  ------------------------------------------------------------------------
@@ -332,16 +341,17 @@ img {
     padding: 10px;
     border-top: 1px solid #e8e8e8;
     border-bottom: 1px solid #e8e8e8;
-    margin-left: -32px;
-    margin-right: -32px;
     padding-left: 24px;
     padding-right: 24px;
-    background: #ffffb8;
+    background: #ffffc0;
     margin-top: 20px;
     margin-bottom: 20px;
     font-family: Georgia, serif;
     color: #333;
     font-size: 16px;
+
+    /* http://css-tricks.com/the-css-overflow-property/ */ 
+    overflow: hidden;
 }
 
 /* Found the bold annoying on ordinary notes.  Try italics? */
