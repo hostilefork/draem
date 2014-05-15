@@ -176,9 +176,12 @@ img {
     line-height: 1.7em;
 
     /*
-     * Trying a 1em pad for now.
+     * This just seems to look good, no science behind it.  :-/
      */
-    padding: 1em 1em 1em 1em;
+    padding-left: 1.8em;
+    padding-right: 1.8em;
+    padding-top: 1.5em;
+    padding-bottom: 1.5em;
 }
 
 /*
@@ -433,12 +436,12 @@ img {
     color: #666;
     font-size: 1.4em;
     border-top: 2px dotted #ccc;
-    padding-top: 16px;
-    margin-left: -24px;
-    margin-right: -24px;
-    padding-left: 24px;
-    padding-right: 24px;
-    margin-bottom: 16px;
+    padding-top: 1em;
+    margin-left: -1.2em;
+    margin-right: -1.2em;
+    padding-left: 1.2em;
+    padding-right: 1.2em;
+    margin-bottom: 1em;
 }
 
 
