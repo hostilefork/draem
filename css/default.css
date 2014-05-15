@@ -182,7 +182,8 @@ img {
      * and there may be a better way to express this so that a page may be
      * broken into sections.)
      */
-    padding: 0px 32px 0px 32px;
+    padding-left: 32px;
+    padding-right: 32px;
 }
 
 /*
@@ -195,12 +196,18 @@ img {
 }
 
 /*
- * The default for all divs in the article is a vertical margin (10px).
- * I do not remember quite when or why I set this.  Seems reasonable??
+ * The default for all divs in the article is a vertical margin (10px) to
+ * keep a collapsible-yet-healthy distance between things.  This value must
+ * be compensated for by a padding in main to prevent the margin pushing
+ * outside and making a "gap"!
  */
 #main div {
     margin-top: 10px;
     margin-bottom: 10px;
+}
+#main {
+    padding-top: 10px; 
+    padding-bottom: 10px;
 }
 
 
@@ -243,11 +250,16 @@ img {
 
 #title h1 {
     line-height: 1em;
-    padding: 3px 8px 3px 12px;
-    margin: 15px 0px 15px 0px;
     color: #F8F8F8;
     position: absolute;
     bottom: 0;
+
+    /*
+     * Don't cover the logo, although on small displays like a vertical cell
+     * phone this gives very little room for the title!
+     */
+    padding-right: 100px;
+    padding-left: 3px;
 }
 
 #title {
