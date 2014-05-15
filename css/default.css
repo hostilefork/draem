@@ -243,23 +243,41 @@ img {
  * 
  * The page title is done with an H1, and I'm not sure what the value of in
  * this day and age is of using that instead of a custom class.  Getting the
- * title to align to the bottom is annoying:
+ * title to align to the bottom is annoying at first I tried using absolute
+ * and relative div positioning:
  *
  *     http://stackoverflow.com/questions/7420324/
+ *
+ * But that doesn't work if you want to determine the height of the outer
+ * div based on the child content.  More ingenious design from the people who
+ * brought you HTML/CSS/JavaScript.  <sigh>  The only way to do it is with...
+ * tables (reincarnated with display: table; "but it's not bad if it's CSS"
+ *
+ *     http://stackoverflow.com/a/16360114/211160
  */
+
+#title {
+    display: table;
+    vertical-align: bottom;
+}
+
+#title h1 {
+    display: table-cell;
+}
+
+/* now back to your regularly scheduled CSS... */
 
 #title h1 {
     line-height: 1em;
     color: #F8F8F8;
-    position: absolute;
-    bottom: 0;
 
     /*
      * Don't cover the logo, although on small displays like a vertical cell
      * phone this gives very little room for the title!
      */
     padding-right: 100px;
-    padding-left: 3px;
+    padding-left: 8px;
+    padding-bottom: 8px;
 }
 
 #title {
