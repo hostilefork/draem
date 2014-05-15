@@ -240,12 +240,13 @@ htmlify: function [
 				append result combine [
 					if/only needs-pre-tag [
 						{<pre}
-						if/only verb = 'code [
+						if/only all [
+							verb = 'code
+							language
+						] [
 							space
 							{class="prettyprint}
-							if/only language [
-								space {lang-} to string! language
-							]
+							space {lang-} to string! language
 							{"}
 						]
 						{>}

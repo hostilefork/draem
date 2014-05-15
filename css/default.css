@@ -552,6 +552,9 @@ pre, code {
     /* I thought this created a nice effect, but maybe there's better... */
     border: 1px solid #F0F0F0;
     border-left: 2px dotted #bbb;
+
+    /* We make the code just a tad smaller than the surrounding text */
+    font-size: 0.9em;
 }
 
 
