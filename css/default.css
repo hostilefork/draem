@@ -343,11 +343,11 @@ img {
  */
 
 /*
-#body-div div.exposition {
+#main div.exposition {
     text-indent: 1.5em;
 }
 
-#body-div li > div.exposition {
+#main li > div.exposition {
     text-indent: 0;
 }
 */
@@ -357,18 +357,18 @@ img {
  * DIALOGUE
  */
 
-#body-div .character {
+#main .character {
     font-weight: bold;
 }
 
-#body-div .action {
+#main .action {
     /* font-style: italic; */
     color: #666;
 }
 
 /* Attempt at a hanging indent and to get dialogue in the middle. */
 /* http://demosthenes.info/blog/50/Classic-Typography-Effects-in-CSS-Hanging-Indent */
-#body-div .dialogue {
+#main .dialogue {
     text-indent: -2em;
     margin-left: 3em;
     margin-top: 1em;
@@ -387,7 +387,7 @@ img {
  * and different font instead. 
  */
 
-#body-div .note, #body-div .update {
+#main .note, #main .update {
     padding: 10px;
     border-top: 1px solid #e8e8e8;
     border-bottom: 1px solid #e8e8e8;
@@ -405,19 +405,19 @@ img {
 }
 
 /* Found the bold annoying on ordinary notes.  Try italics? */
-#body-div .update-span {
+#main .update-span {
     font-style: italic;
 }
 
-#body-div .note-span:after {
+#main .note-span:after {
     content: ":";
 }
 
-#body-div .update-span {
+#main .update-span {
     font-weight: bold;
 }
 
-#body-div .update-span:after {
+#main .update-span:after {
     content: ":";
 }
 
@@ -432,7 +432,7 @@ img {
  * html elements?  The philosophy of H# elements eludes me...
  */
 
-#body-div h3 {
+#main h3 {
     color: #666;
     font-size: 1.4em;
     border-top: 2px dotted #ccc;
@@ -449,7 +449,7 @@ img {
  * YOUTUBE
  */
 
-#body-div .youtube {
+#main .youtube {
     text-align: center;
 }
 
@@ -458,7 +458,7 @@ img {
  * PICTURE
  */
 
-#body-div .picture {
+#main .picture {
     text-align: center;
 }
 
@@ -467,17 +467,17 @@ img {
  * QUOTE
  */
 
-blockquote footer {
+#main blockquote footer {
     text-align: right;
     font-weight: bold;
 }
 
-blockquote footer:before {
+#main blockquote footer:before {
     content: "\2014"
 }
 
 /* http://css-tricks.com/snippets/css/simple-and-nice-blockquote-styling/ */
-blockquote {
+#main blockquote {
     background: #f9f9f9;
     border-left: 10px solid #ccc;
     margin: 1.5em 10px;
@@ -485,7 +485,7 @@ blockquote {
     quotes: "\201C""\201D""\2018""\2019";
 }
 
-blockquote:before {
+#main blockquote:before {
     color: #ccc;
     font-size: 4em;
     line-height: 0.1em;
@@ -497,7 +497,7 @@ blockquote:before {
     content:"\201C";
 }
 
-blockquote p {
+#main blockquote p {
     display: inline;
 }
 
@@ -512,11 +512,11 @@ blockquote p {
  * generalization of such a solution?)
  */
 
-#body-div div.url {
+#main div.url {
     text-align: center;
 }
 
-#body-div li > div.url {
+#main li > div.url {
     text-align: left;
 }
 
@@ -529,12 +529,12 @@ blockquote p {
  * those settings.
  */
 
-#body-div pre {
+
+#main pre {
     padding: 10px;
     border: none;
     white-space: pre-wrap;
     background: #f7f7f7;
-    font-size: 0.9em;
     line-height: 1.5em;
 }
 
@@ -543,7 +543,7 @@ blockquote p {
  * DIVIDER
  */
 
-hr {
+#main hr {
     float: left;
     width: 100%;
     height: 1px;
