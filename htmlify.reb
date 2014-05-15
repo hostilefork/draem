@@ -267,7 +267,8 @@ htmlify: function [
 			] (
 				append result combine [
 					if/only anchor [
-						{<a href="#} to string! anchor {">} </a>
+						; http://stackoverflow.com/a/484781/211160
+						{<a id="} to string! anchor {">} </a>
 					]
 					<h3> markdown/to-html heading-text </h3>
 					newline
