@@ -172,6 +172,8 @@ pre, code {
      * basic text size on a website.  I keep going back and forth on whether
      * I think serifs are more or less readable.  And the spacing is a big
      * one, there are some relatively convincing arguments made here:
+     *
+     *     http://ia.net/blog/100e2r/
      * 
      * ...but I don't know that is a good fit for what I am doing.  Time will
      * tell, though mostly I just want to make it easy for archiving, searching
@@ -241,12 +243,20 @@ pre, code {
  * tag on the post".  In any case, this is the little bar at the top.
  */
 
-#path {
+#leader, #trailer {
     color: #333;
     background-color: #f8f8f8;
-    border-bottom: 1px solid #ccc;
+    min-height: 1em;
     padding: 8px;
     margin: 0px;
+}
+
+#leader {
+    border-bottom: 1px solid #ccc;
+}
+
+#trailer {
+    border-bottom: 1px solid #ccc;
 }
 
 #path li {

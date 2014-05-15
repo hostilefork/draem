@@ -44,19 +44,23 @@
 <body {% block bodymethods %}{% endblock bodymethods %}>
 
 	<div id="body-div">
-		{% block prologue %}
-		{# missing prologue is acceptable #}
-		{% endblock prologue %}
+		<div id="prologue">
+			{% block prologue %}
+			{# missing prologue is acceptable #}
+			{% endblock prologue %}
+		</div>
 
 		<div id="title">
 			<h1>{% block header %}{% endblock header %}</h1>
 		</div>
 
-		<ul id="path">
-			{% block path %}
-				<p>MISSING PATH BLOCK</p>
-			{% endblock path %}
-		</ul>
+		<div id="leader">
+			<ul id="path">
+				{% block path %}
+					<p>MISSING PATH BLOCK</p>
+				{% endblock path %}
+			</ul>
+		</div>
 		
 		<div id="main">			
 			{% block main %}
@@ -68,9 +72,17 @@
 			{% endblock footer %}
 		</div>
 
-		{% block epilogue %}
-		{# missing epilogue is acceptable #}
-		{% endblock epilogue %}
+		<div id="trailer">
+			{% block trailer %}
+			{# missing trailer is acceptable #}
+			{% endblock trailer %}
+		</div>
+
+		<div id="epilogue">
+			{% block epilogue %}
+			{# missing epilogue is acceptable #}
+			{% endblock epilogue %}
+		</div>
 
 	</div>
 

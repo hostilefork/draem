@@ -60,18 +60,114 @@ django-google-analytics: function [] [
 	]
 ]
 
+
+django-css: function [/with entry] [
+	;-- Currently we get the site global CSS from the configuration, and then
+	;-- read any added literal CSS or included files from the Draem header
+
+	css-all: copy in-as-block draem/config 'css
+
+	if with [
+		append css-all (in-as-block entry/header 'css)
+	]
+
+	if empty? css-all [
+		return none
+	]
+
+	css-block: copy ["{{ block.super }}"]
+
+	foreach item css-all [
+		append css-block either string? item [
+			trim-head-tail-lines css-text: copy item
+			take/last css-text ;--django-block adds newline
+			combine [
+				<style type="text/css">
+				css-text
+				</style>
+			]
+		] [
+			combine [
+				{<link rel="stylesheet" type="text/css" href=}
+				{"} to string! item {"}
+				{ />}
+			]
+		]
+	]
+
+	django-block "css" css-block
+]
+
+django-scripts: function [/with entry [object!]] [
+	;-- Script handling parallels the CSS handling... defaults come from the
+	;-- configuration, added scripts come from the Draem header
+
+	script-all: copy in-as-block draem/config 'javascript
+
+	if with [
+		append script-all (in-as-block entry/header 'javascript)
+	]
+
+	if empty? script-all [
+		return none
+	]
+
+	script-block: copy ["{{ block.super }}"]
+
+	foreach item script-all [
+		append script-block either string? item [
+			trim-head-tail-lines js-text: copy item
+			take/last js-text ;-- django-block adds newline
+
+			combine [
+				<script type="text/javascript">
+				(js-text) 
+				</script>
+			]
+		] [
+			combine [
+				{<script type="text/javascript" src=}
+				{"} to string! item {"} {>}
+				</script>
+			]
+		]
+	]
+
+	django-block "scripts" script-block
+]
+
 ;-- Currently every page gets a prologue, epilogue, and analytics
+;-- also there are scripts and css that are added globally, and per entry
+;-- if that is applicable
+
 ;-- The footer which offers the ability to comment and such is only on posts.
-django-extends: function [template [file!]] [
+django-extends: function [template [file!] /with entry [object!]] [
 	combine [
 		["{% extends" space {"} to string! template {"} space "%}"]
 		
+		either/only with [
+
+			django-css/with entry
+
+			django-scripts/with entry
+
+		] [
+
+			django-css
+
+			django-scripts
+		]
+
 		django-block "prologue" [
-			htmlify draem/config/site-prologue
+			draem/config/site-prologue-html
+		]
+
+		django-block "trailer" [
+			draem/config/site-trailer-html
 		]
 
 		django-block "epilogue" [
-			htmlify draem/config/site-epilogue
+			draem/config/site-epilogue-html
 		]
 
 		django-google-analytics
@@ -124,79 +220,8 @@ write-entry: function [
 
 	is-post: any [earlier-entry later-entry]
 
-	;-- Currently we get the site global CSS from the configuration, and then
-	;-- read any added literal CSS or included files from the Draem header
-
-	css-all: append
-		copy in-as-block draem/config 'css
-		in-as-block entry/header 'css
-
-	either empty? css-all [
-		css-block: none
-	] [
-		css-block: copy ["{{ block.super }}"]
-
-		foreach item css-all [
-			append css-block either string? item [
-				trim-head-tail-lines css-text: copy item
-				take/last css-text ;--django-block adds newline
-				combine [
-					<style type="text/css">
-					css-text
-					</style>
-				]
-			] [
-				combine [
-					{<link rel="stylesheet" type="text/css" href=}
-					{"} to string! item {"}
-					{ />}
-				]
-			]
-		]
-	]
-
-	;-- Script handling parallels the CSS handling... defaults come from the
-	;-- configuration, added scripts come from the Draem header
-
-	script-all: append
-		copy in-as-block draem/config 'javascript
-		in-as-block entry/header 'javascript
-
-	either empty? script-all [
-		script-block: none
-	] [
-		script-block: copy ["{{ block.super }}"]
-
-		foreach item script-all [
-			append script-block either string? item [
-				trim-head-tail-lines js-text: copy item
-				take/last js-text ;-- django-block adds newline
-
-				combine [
-					<script type="text/javascript">
-					(js-text) 
-					</script>
-				]
-			] [
-				combine [
-					{<script type="text/javascript" src=}
-					{"} to string! item {"} {>}
-					</script>
-				]
-			]
-		]
-	]
-
 	html: combine [
-		django-extends (either is-post %post.html %page.html)
-		
-		if css-block [
-			django-block "css" css-block
-		]
-
-		if script-block [
-			django-block "scripts" script-block
-		]
+		django-extends/with (either is-post %post.html %page.html) entry
 
 		;-- <meta name="keywords" ...> information
 		django-block/inline "keywords" [
