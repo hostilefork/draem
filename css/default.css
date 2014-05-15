@@ -456,11 +456,18 @@ blockquote p {
  * URL
  * 
  * Put on a line by itself, indent.  (Don't do this to spans, for instance it
- * would mess up the attribution footer in blockquote.)
+ * would mess up the attribution footer in blockquote.)  Also do not do it
+ * if the URL is directly under a bullet in a list... because the list
+ * entries would be centered differently based on length.  (Is there a
+ * generalization of such a solution?)
  */
 
 #body-div div.url {
     text-align: center;
+}
+
+#body-div li > div.url {
+    text-align: left;
 }
 
 
