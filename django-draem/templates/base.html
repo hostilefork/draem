@@ -32,7 +32,7 @@
 	</script>
 
 {% block css %}
-    <link rel='stylesheet' href='{{ MEDIA_URL }}default.css' type='text/css' />
+	<link rel='stylesheet' href='{{ MEDIA_URL }}default.css' type='text/css' />
 {% endblock css %}
 
 
@@ -49,17 +49,16 @@
 		{% endblock prologue %}
 
 		<h1>{% block header %}{% endblock header %}</h1>
-		
-		<div id="main">
-			<ul id="path">
 
+		<ul id="path">
 			{% block path %}
 				<p>MISSING PATH BLOCK</p>
 			{% endblock path %}
-			</ul>
-			
+		</ul>
+		
+		<div id="main">			
 			{% block main %}
-			    <p>MISSING MAIN BLOCK</p>
+				<p>MISSING MAIN BLOCK</p>
 			{% endblock main %}
 
 			{% block footer %}

@@ -134,7 +134,7 @@ img {
  * on the right that compensates for the indentation caused by the bullet.
  * TODO: research best way to get this compensation.
  */
-#body-div ul {
+#main ul {
     margin-right: 3em;
 }
 
@@ -228,10 +228,6 @@ img {
     background-image: url(images/arrow.gif);
     background-repeat: no-repeat;
     background-position: 1px 5px;
-}
-
-#path {
-    margin: 0px -32px 0px -32px;
 }
 
 
@@ -484,7 +480,7 @@ blockquote p {
     border: none;
     white-space: pre-wrap;
     background: #f7f7f7;
-    font-size: 16px;
+    font-size: 14px;
 }
 
 
