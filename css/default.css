@@ -238,11 +238,18 @@ img {
  * this day and age is of using that instead of a custom class.
  */
 
-#body-div h1 {
+#title h1 {
     line-height: 1em;
     padding: 3px 8px 3px 12px;
     margin: 15px 0px 15px 0px;
-    color: #EEE;
+    color: #F8F8F8;
+}
+
+#title {
+    min-height: 75px;
+    background-image: url(http://hostilefork.com/media/peeking-fork-100x75.png);
+    background-repeat: no-repeat;
+    background-position: right bottom;
 }
 
 

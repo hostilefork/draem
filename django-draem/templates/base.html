@@ -48,7 +48,9 @@
 		{# missing prologue is acceptable #}
 		{% endblock prologue %}
 
-		<h1>{% block header %}{% endblock header %}</h1>
+		<div id="title">
+			<h1>{% block header %}{% endblock header %}</h1>
+		</div>
 
 		<ul id="path">
 			{% block path %}
