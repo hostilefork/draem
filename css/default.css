@@ -164,17 +164,24 @@ img {
 
     background-color: #FFF;
 
-    /* http://cssfontstack.com/ */
-    /* Tried for a while, abandoning in favor of serif. */
-/*
-    font-family: "Proxima Nova Regular","Helvetica Neue",Calibri,"Droid Sans",Helvetica,Arial,sans-serif;
-    font-size: 16px;
-    line-height: 1.5em;
-*/
+    /*
+     * There's no one-size-fits-all answer to how to format the fonts and
+     * basic text size on a website.  I keep going back and forth on whether
+     * I think serifs are more or less readable.  And the spacing is a big
+     * one, there are some relatively convincing arguments made here:
+     * 
+     * ...but I don't know that is a good fit for what I am doing.  Time will
+     * tell, though mostly I just want to make it easy for archiving, searching
+     * etc.  Helpful link in any case:
+     *
+     *    http://cssfontstack.com/
+     */
 
+    /* font-size: 16px; */
     font-size: 18px;
-    font-family: Georgia, serif;
-    line-height: 1.5;
+    /* font-family: Georgia, serif; */
+    font-family: "Proxima Nova Regular","Helvetica Neue",Calibri,"Droid Sans",Helvetica,Arial,sans-serif;
+    line-height: 1.5em;
 
     /*
      * The body div extends its margins right up against the <body> element's
@@ -296,17 +303,19 @@ img {
 }
 
 #body-div .action {
-    font-style: italic;
+    /* font-style: italic; */
+    color: #666;
 }
 
 /* Attempt at a hanging indent and to get dialogue in the middle. */
 /* http://demosthenes.info/blog/50/Classic-Typography-Effects-in-CSS-Hanging-Indent */
 #body-div .dialogue {
-    text-indent: -2em;
-    margin-left: 4em;
+    text-indent: -32px;
+    margin-left: 48px;
     margin-top: 1em;
     margin-bottom: 1em;
-    margin-right: 4em;
+    margin-right: 32px;
+    color: #282828;
 }
 
 
@@ -330,7 +339,7 @@ img {
     background: #ffffb8;
     margin-top: 20px;
     margin-bottom: 20px;
-    font-family: "Proxima Nova Regular","Helvetica Neue",Calibri,"Droid Sans",Helvetica,Arial,sans-serif;
+    font-family: Georgia, serif;
     color: #333;
     font-size: 16px;
 }
