@@ -170,22 +170,15 @@ img {
      *    http://cssfontstack.com/
      */
 
-    /* font-size: 16px; */
-    font-size: 18px;
+    font-size: 1.1em;
     /* font-family: Georgia, serif; */
     font-family: "Proxima Nova Regular","Helvetica Neue",Calibri,"Droid Sans",Helvetica,Arial,sans-serif;
     line-height: 1.7em;
 
     /*
-     * The body div extends its margins right up against the <body> element's
-     * background, but pads a bit in order to give the text a bit of breathing
-     * room on the left and right.  (This padding must be undone with negative
-     * margins by anything wanting to stretch to the edge and "undo the white"
-     * and there may be a better way to express this so that a page may be
-     * broken into sections.)
+     * Trying a 1em pad for now.
      */
-    padding-left: 32px;
-    padding-right: 32px;
+    padding: 1em 1em 1em 1em;
 }
 
 /*
@@ -199,18 +192,31 @@ img {
 
 /*
  * The default for all divs in the article is a vertical margin (1em) to
- * keep a collapsible-yet-healthy distance between things.  This value must
- * be compensated for by a padding in main to prevent the margin pushing
- * outside and making a "gap"!
+ * keep a collapsible-yet-healthy distance between things.  Yet the first
+ * and last divs should not have this margin.
  */
 #main div {
     margin-top: 1em;
     margin-bottom: 1em;
 }
-#main {
-    padding-top: 1em; 
-    padding-bottom: 1em;
+#main > div:first-child {
+    margin-top: 0em;
 }
+#main > div:last-child {
+    margin-bottom: 0em;
+}
+
+
+/*
+ * Since I'm managing all the layouts and margins with divs I don't want
+ * the <p> paragraphs inside of them overriding things and expanding outside
+ * of their parent divs if the margins are supposed to be 0.
+ */
+
+#main p {
+    margin: 0px 0px 0px 0px;
+}
+
 
 
 /*
@@ -360,11 +366,11 @@ img {
 /* Attempt at a hanging indent and to get dialogue in the middle. */
 /* http://demosthenes.info/blog/50/Classic-Typography-Effects-in-CSS-Hanging-Indent */
 #body-div .dialogue {
-    text-indent: -32px;
-    margin-left: 48px;
+    text-indent: -2em;
+    margin-left: 3em;
     margin-top: 1em;
     margin-bottom: 1em;
-    margin-right: 32px;
+    margin-right: 2em;
     color: #282828;
 }
 
@@ -385,11 +391,11 @@ img {
     padding-left: 24px;
     padding-right: 24px;
     background: #ffffc0;
-    margin-top: 20px;
-    margin-bottom: 20px;
+    margin-top: 2em;
+    margin-bottom: 2em;
     font-family: Georgia, serif;
     color: #333;
-    font-size: 16px;
+    font-size: 0.95em;
 
     /* http://css-tricks.com/the-css-overflow-property/ */ 
     overflow: hidden;
@@ -525,8 +531,8 @@ blockquote p {
     border: none;
     white-space: pre-wrap;
     background: #f7f7f7;
-    font-size: 14px;
-    line-height: 1.4em;
+    font-size: 0.9em;
+    line-height: 1.5em;
 }
 
 
