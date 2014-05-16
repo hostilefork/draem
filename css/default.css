@@ -448,13 +448,21 @@ pre, code {
 #main h3 {
     color: #666;
     font-size: 1.4em;
-    border-top: 2px dotted #ccc;
     padding-top: 1em;
+    margin-bottom: 1em;
+}
+
+/*
+ * Put a dotted separator on top level headings to make them stand out.
+ * (looks disruptive inside of blockquote etc.)
+ */
+
+#entry-content > h3 {
     margin-left: -1.2em;
     margin-right: -1.2em;
     padding-left: 1.2em;
     padding-right: 1.2em;
-    margin-bottom: 1em;
+    border-top: 2px dotted #ccc;
 }
 
 
