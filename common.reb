@@ -6,7 +6,7 @@ rebol [
 
 	}
 
-	Home: http://realityhandbook.org/
+	Home: http://draem.hostilefork.com
 	License: 'mit
 
 	Date: 20-Oct-2010

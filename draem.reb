@@ -8,7 +8,7 @@ Rebol [
 		to rewrite them using arbitrary meta-programming.
 	}
 
-	Home: https://github.com/hostilefork/draem
+	Home: http://draem.hostilefork.com
 	License: 'mit
 
 	Date: 13-Jan-2014

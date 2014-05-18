@@ -2,7 +2,7 @@ Rebol [
 	Title: "Make Django Templates"
 	Description: {
 
-	Currently the way the realityhandbook website works is that there is
+	Currently the way a Draem website works is that there is
 	no database, just a bunch of templates... one generated for each
 	article, and then for each tag + category + character.  These 
 	templates participate in Django's inheritance model... so each one
@@ -11,7 +11,7 @@ Rebol [
 
 	}
 
-	Home: http://realityhandbook.org/
+	Home: http://draem.hostilefork.com
 	License: 'mit
 
 	Date: 20-Oct-2010
@@ -291,21 +291,35 @@ write-entry: function [
 			content-html
 		]
 		
-		if/only later-entry [
+		either/only later-entry [
 			django-block/inline {nexttitle} [
 				later-entry/header/title
 			]
 			django-block/inline {nexturl} [
 				url-for-entry later-entry
 			]
+		] [
+			django-block/inline {nexttitle} [
+				{Home}
+			]
+			django-block/inline {nexturl} [
+				draem/config/site-url
+			]
 		]
 
-		if/only earlier-entry [
+		either/only earlier-entry [
 			django-block/inline {prevtitle} [
 				earlier-entry/header/title
 			]
 			django-block/inline {prevurl} [
 				url-for-entry earlier-entry
+			]
+		] [
+			django-block/inline {prevtitle} [
+				{Home}
+			]
+			django-block/inline {prevurl} [
+				draem/config/site-url
 			]
 		]
 

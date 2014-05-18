@@ -6,7 +6,7 @@ Rebol [
 
 	}
 
-	Home: http://github.com/hostilefork/draem
+	Home: http://draem.hostilefork.com
 	License: 'mit
 
 	Date: 20-Oct-2010
