@@ -32,13 +32,20 @@ htmlify: function [
 	;-- Review proposals for constructors...
 	result: make string! 1000
 
+	last-append: none
+	append-result: func [html [string!]] [
+		append result html
+		last-append: html
+		exit
+	]
+
 	group-rule: [some [
 		;-- STRING
 		;-- Strings bottom out as being handled by markdown.  If a string
 		;-- starts a block, it's expected that the block is going to be
 		;-- a group of elements; hence there are no parameters.
 		set str string! (
-			append result combine [
+			append-result combine [
 				(begin-span-or-div span 'exposition) newline
 				markdown/to-html str
 				(end-span-or-div span) newline
@@ -48,13 +55,13 @@ htmlify: function [
 		;-- DIVIDER
 		;-- Puts in a horizontal line element.
 		['divider | and block! into ['divider end]] (
-			append result combine [<hr> newline]
+			append-result combine [<hr> newline]
 		)
 	|
 		;-- SEPARATOR
 		;-- Adds some spacing, but no line.
 		['separator | and block! into ['separator end]] (
-			append result combine [<span> {&nbsp;} <br /> </span> newline]
+			append-result combine [<span> {&nbsp;} <br /> </span> newline]
 		)
 	|
 		;-- MORE
@@ -62,7 +69,7 @@ htmlify: function [
 		;-- be, with a "read more..." link when summarizing articles.
 		;-- I preserved this information but do not use it yet.
 		['more | and block! into ['more end]] (
-			append result combine [<!-- more --> newline]
+			append-result combine [<!-- more --> newline]
 		)
 	|
 		;-- URL
@@ -82,7 +89,7 @@ htmlify: function [
 			;-- put in better url encoding logic or decide what should be done
 			replace/all url "&" "&amp;"
 
-			append result combine [
+			append-result combine [
 				(begin-span-or-div span 'url) newline
 				{<a href="} url {">}
 				anchor-text
@@ -102,7 +109,7 @@ htmlify: function [
 				end
 			] (
 			
-				append result combine [
+				append-result combine [
 					<div class="picture">
 					{<a href="http://s159.photobucket.com/albums/t125/realityhandbook/}
 					to string! picture-file
@@ -127,7 +134,7 @@ htmlify: function [
 				[set caption string!]
 				end
 			] (
-				append result combine [
+				append-result combine [
 					<div class="picture">
 					{<a href="} url {">}
 						{<img src="} url {"} space
@@ -148,7 +155,7 @@ htmlify: function [
 				[set link-url url!]
 				end
 			] (
-				append result combine [
+				append-result combine [
 					<div class="picture">
 					{<a href="} to string! link-url {">}
 						{<img src="} to string! image-url {"} space
@@ -171,7 +178,7 @@ htmlify: function [
 					end: tail args
 				]
 
-				append result combine [
+				append-result combine [
 					<blockquote>
 
 					htmlify-range args end
@@ -191,7 +198,7 @@ htmlify: function [
 				(date: none) opt [set date date!]
 				copy args to end
 			] (
-				append result combine [
+				append-result combine [
 					{<div class="} (either is-note {note} {update}) {">}
 					either/only is-note [
 						<span class="note-span"> {Note} </span>
@@ -237,7 +244,7 @@ htmlify: function [
 
 				;-- TODO: work out the right language classes for google code prettify
 				;-- http://stackoverflow.com/q/11742907/211160
-				append result combine [
+				append-result combine [
 					if/only needs-pre-tag [
 						{<pre}
 						if/only all [
@@ -266,7 +273,7 @@ htmlify: function [
 				(anchor: none) opt [set anchor file!] 
 				end
 			] (
-				append result combine [
+				append-result combine [
 					if/only anchor [
 						; http://stackoverflow.com/a/484781/211160
 						{<a id="} to string! anchor {">} </a>
@@ -281,7 +288,7 @@ htmlify: function [
 				'list
 				copy args to end
 			] (
-				append result combine [
+				append-result combine [
 					<ul>
 					map-each elem args [
 						;-- If we return a block and do not compose elem first,
@@ -307,7 +314,7 @@ htmlify: function [
 			] (
 				;-- The HTML construct should probably be more versatile, but
 				;-- for the moment let's just limit it to one HTML string
-				append result html
+				append-result html
 			)
 		|
 			;-- YOUTUBE
@@ -337,7 +344,7 @@ htmlify: function [
 				;-- http://www.webupd8.org/2010/07/embed-youtube-videos-in-html5-new.html
 				;-- http://www.gtpdesigns.com/design-blog/view/w3c-valid-xthml-and-html5-youtube-iframe-embeds
 
-				append result combine [
+				append-result combine [
 					<div class="youtube">
 						{<iframe class="youtube-player"} space
 
@@ -366,7 +373,7 @@ htmlify: function [
 			[set dialogue-text string!]
 			end
 		] (
-			append result combine [
+			append-result combine [
 				begin-span-or-div span 'dialogue
 
 				<span class="character"> stringify character </span> ":" space
@@ -389,7 +396,10 @@ htmlify: function [
 
 	unless parse blk group-rule [
 		print "INVALID DRAEM DATA - PARSE RETURNED FALSE"
-		probe blk
+		print "BLOCK WAS"
+		print mold blk
+		print "LAST APPEND WAS"
+		print mold last-append
 		quit
 	]
 

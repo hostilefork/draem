@@ -151,17 +151,11 @@ url-for-entry: function [entry [object!]] [
 	draem/config/url-from-header entry/header
 ]
 
-open-anchor: function [url [url!]] [
-	combine [{<} {a} space {href} {=} {"} to string! url {"} {>}]
-]
-
-close-anchor: </a>
-
 link-to-entry: function [entry [object!]] [
 	combine [
-		open-anchor url-for-entry entry
+		{<a href="} url-for-entry entry {">}
 		entry/header/title
-		close-anchor
+		</a>
 		space {:} space to string! replace/all copy to string! entry/header/date/date {0:00} {}
 		<br />
 	]

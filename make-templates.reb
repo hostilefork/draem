@@ -176,11 +176,11 @@ django-extends: function [template [file!] /with entry [object!]] [
 
 link-to-tag: function [tag [word!] /count num] [
 	combine [
-		open-anchor rejoin [
-			draem/config/site-url "tag/" stringify/dashes tag {/}
-		]
-		stringify tag
-		close-anchor
+		{<a href="} 
+		draem/config/site-url "tag/" stringify/dashes tag {/}
+		{" class="post-tag" rel="tag">}
+			stringify tag
+		</a>
 		if/only count [
 			space {:} space num <br />
 		]
@@ -189,11 +189,11 @@ link-to-tag: function [tag [word!] /count num] [
 
 link-to-character: function [character [word!] /count num] [
 	combine [
-		open-anchor rejoin [
-			draem/config/site-url "character/" lowercase stringify/dashes character {/}
-		]
-		stringify character
-		close-anchor
+		{<a href="}
+		draem/config/site-url "character/" lowercase stringify/dashes character {/}
+		{">}
+			stringify character
+		</a>
 		if/only count [
 			space {:} space num <br />
 		]
@@ -270,11 +270,7 @@ write-entry: function [
 				"(none)"
 			] [
 				combine/with (map-each tag sorted-tags [
-					compose/deep [
-						{<a href="} draem/config/site-url {tag/}
-						(stringify/dashes tag)
-						{/" class="post-tag" rel="tag">} (stringify tag) </a>
-					]
+					link-to-tag tag
 				]) [{,} space]
 			]
 		]
@@ -285,9 +281,7 @@ write-entry: function [
 			] [
 				 combine/with (map-each character unsorted-characters [
 				 	compose/deep [
-						{<a href="} draem/config/site-url {character/}
-						(stringify/dashes character)
-						{/">} (stringify character) </a>
+				 		link-to-character character
 					]
 				]) [{,} space]
 			]
