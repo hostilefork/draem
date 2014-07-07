@@ -135,7 +135,7 @@ draem: context [
 					'Draem == first+ pos
 					block? first pos
 				] [
-					throw make error! "Entry must start with Draem header"
+					do make error! "Entry must start with Draem header"
 				]
 
 				header: make object! first+ pos
@@ -144,21 +144,21 @@ draem: context [
 					in header 'date
 					date? header/date
 				] [
-					throw make error! "Header requires valid date field"
+					do make error! "Header requires valid date field"
 				]
 
 				unless all [
 					in header 'slug
 					file? header/slug
 				] [
-					throw make error! "Header requires a file! slug field"
+					do make error! "Header requires a file! slug field"
 				]
 
 				unless all [
 					in header 'title
 					string? header/title
 				] [
-					throw make error! "Header requires a string! title field"
+					do make error! "Header requires a string! title field"
 				]
 
 				unless all [
@@ -166,7 +166,7 @@ draem: context [
 					block? header/tags
 					does [foreach tag header/tags [unless word? tag return false] true] 
 				] [
-					throw make error! "Header requires a tags block containing words"
+					do make error! "Header requires a tags block containing words"
 				]
 
 				if in config 'check-header [
@@ -183,7 +183,10 @@ draem: context [
 					rejoin [sub-dir file]
 				]
 
-				append entries entry
+				;-- Hacky
+				unless find header/tags 'draft [
+					append entries entry
+				]
 			]
 		]
 

@@ -20,11 +20,9 @@ rebol [
 
 
 ;---
-; Bridge TO and FUNCTION behavior for which there are pull requests,
-; but not integrated into the mainline yet.
+; Bridge TO behavior for which there are pull requests, but not integrated
+; into the mainline yet.
 ;---
-
-function: :funct
 
 unless value? 'old-to [
     old-to: :to
@@ -187,7 +185,7 @@ flatten: func [
 combine: func [
     block [block!]
     /with "Add delimiter between values (will be COMBINEd if a block)"
-        delimiter [block! any-string! char!]
+        delimiter [block! any-string! char! any-function!]
     /into
     	out [any-string!]
     /local
@@ -214,17 +212,18 @@ combine: func [
 	;-- Do evaluation of the block until a non-none evaluation result
 	;-- is found... or the end of the input is reached.
 	while [not tail? block] [
-		value: do/next block 'block
+		set/any 'value do/next block 'block
 
 		;-- Blocks are substituted in evaluation, like the recursive nature
 		;-- of parse rules.
 
 		case [
-			any [
-				function? :value
-				closure? :value
-			] [
-				throw make error! "Evaluation in COMBINE gave function/closure"
+			unset? :value [
+				;-- Ignore unset! (precedent: any, all, compose)
+			]
+
+			any-function? :value [
+				do make error! "Evaluation in COMBINE gave function/closure"
 			]
 
 			block? value [
@@ -237,7 +236,7 @@ combine: func [
 				;-- errors for the moment.  (It's legal to use PAREN! in the
 				;-- COMBINE, but a function invocation that returns a PAREN!
 				;-- will not recursively iterate the way BLOCK! does) 
-				throw make error! "Evaluation in COMBINE gave non-block! block"
+				do make error! "Evaluation in COMBINE gave non-block! block"
 			]
 
 			any-word? value [
@@ -246,7 +245,7 @@ combine: func [
 				;-- given behaviors in the dialect, but the potential for
 				;-- bugs probably outweighs the value (of converting implicitly
 				;-- to a string or trying to run an evaluation of a non-block)
-				throw make error! "Evaluation in COMBINE gave symbolic word"
+				do make error! "Evaluation in COMBINE gave symbolic word"
 			]
 
 			none? value [

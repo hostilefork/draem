@@ -280,9 +280,7 @@ write-entry: function [
 				"(none)"
 			] [
 				 combine/with (map-each character unsorted-characters [
-				 	compose/deep [
-				 		link-to-character character
-					]
+				 	link-to-character character
 				]) [{,} space]
 			]
 		]
