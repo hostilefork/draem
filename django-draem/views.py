@@ -1,6 +1,9 @@
-from django.template import RequestContext, loader
+from django.template import RequestContext, loader, TemplateDoesNotExist
 from draems.models import Poll
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
+
+# Leaving the poll/object in just to remind me of what that would
+# look like if I were using the database for something
 
 def about(request):
     latest_poll_list = Poll.objects.all().order_by('-pub_date')[:5]
@@ -26,11 +29,14 @@ def index(request):
 
 def entry(request, category, slug):
 	latest_poll_list = Poll.objects.all().order_by('-pub_date')[:5]
-	t = loader.get_template(category + '/' + slug + '.html')
-	c = RequestContext(request, {
-        	'latest_poll_list': latest_poll_list,
-	})
-	return HttpResponse(t.render(c));
+	try:
+		t = loader.get_template(category + '/' + slug + '.html')
+		c = RequestContext(request, {
+	      	'latest_poll_list': latest_poll_list,
+		})
+		return HttpResponse(t.render(c));
+        except TemplateDoesNotExist:
+		raise Http404
 
 def lucid_dream(request, slug):
 	return entry(request, "lucid-dream", slug);
@@ -58,10 +64,13 @@ def hypnosis(request, slug):
 	return entry(request, "hypnosis", slug);
 
 def character(request, slug):
-	t = loader.get_template('characters/' + slug + '.html')
-	c = RequestContext(request, {
-	})
-	return HttpResponse(t.render(c));
+	try:
+		t = loader.get_template('characters/' + slug + '.html')
+		c = RequestContext(request, {
+		})
+		return HttpResponse(t.render(c));
+        except TemplateDoesNotExist:
+		raise Http404
 
 def character_list(request):
 	t = loader.get_template('characters.html')
@@ -69,11 +78,14 @@ def character_list(request):
 	})
 	return HttpResponse(t.render(c));
 
-def tag(request, slug):
-	t = loader.get_template('tags/' + slug + '.html')
-	c = RequestContext(request, {
-	})
-	return HttpResponse(t.render(c));
+def tag(request, slug):	
+	try:
+		t = loader.get_template('tags/' + slug + '.html')
+		c = RequestContext(request, {
+		})
+		return HttpResponse(t.render(c));
+        except TemplateDoesNotExist:
+		raise Http404
 
 def tag_list(request): 
 	t = loader.get_template('tags.html')
@@ -82,10 +94,13 @@ def tag_list(request):
 	return HttpResponse(t.render(c));
 
 def category(request, slug):
-	t = loader.get_template('categories/' + slug + '.html')
-	c = RequestContext(request, {
-	})
-	return HttpResponse(t.render(c));
+	try:
+		t = loader.get_template('categories/' + slug + '.html')
+		c = RequestContext(request, {
+		})
+		return HttpResponse(t.render(c));
+        except TemplateDoesNotExist:
+		raise Http404
 
 def category_list(request):
 	t = loader.get_template('categories.html')
