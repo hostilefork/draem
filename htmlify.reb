@@ -40,51 +40,55 @@ htmlify: function [
 	]
 
 	group-rule: [some [
+		;-- FEEDER
+		;-- we only do this for PRINT now.  Lest would generalize it.
+		['print '<< set paragraphs block!] (
+			foreach str paragraphs [
+				append-result combine [
+					(begin-span-or-div span 'exposition) newline
+					markdown str
+					(end-span-or-div span) newline
+				]
+			]
+		)
+	|
 		;-- STRING
 		;-- Strings bottom out as being handled by markdown.  If a string
 		;-- starts a block, it's expected that the block is going to be
 		;-- a group of elements; hence there are no parameters.
-		set str string! (
+		['print set str string!] (
 			append-result combine [
 				(begin-span-or-div span 'exposition) newline
-				markdown/to-html str
+				markdown str
 				(end-span-or-div span) newline
 			]
 		)
 	|
 		;-- DIVIDER
 		;-- Puts in a horizontal line element.
-		['divider | and block! into ['divider end]] (
+		['divider] (
 			append-result combine [<hr> newline]
 		)
 	|
 		;-- SEPARATOR
 		;-- Adds some spacing, but no line.
-		['separator | and block! into ['separator end]] (
+		['separator] (
 			append-result combine [<span> {&nbsp;} <br /> </span> newline]
-		)
-	|
-		;-- MORE
-		;-- WordPress has a feature for showing where the "cut" should
-		;-- be, with a "read more..." link when summarizing articles.
-		;-- I preserved this information but do not use it yet.
-		['more | and block! into ['more end]] (
-			append-result combine [<!-- more --> newline]
 		)
 	|
 		;-- URL
 		;-- Can be either lone URL, or block with URL and anchor label.
 		;-- If lone URL, the URL is used as the anchor text also.
 		[
-			[set url url!] (
-				anchor-text: url
+			['link set url url!] (
+				anchor-text: to-string url
 			)
 		|
-			into [
+			['link and block! into [
 				[set url url!]
 				[set anchor-text string!]
 				end
-			]
+			]]
 		] (
 			;-- put in better url encoding logic or decide what should be done
 			replace/all url "&" "&amp;"
@@ -99,14 +103,12 @@ htmlify: function [
 			]
 		)
 	|
-		and block! into [
 			;-- PICTURE
 			;-- Hack for dream journal, need to revisit a generalized
 			;-- site-wide way of locating media.  See also IMAGE.
 			[
 				'picture
 				set picture-file file!
-				end
 			] (
 			
 				append-result combine [
@@ -127,13 +129,12 @@ htmlify: function [
 		|
 			;-- IMAGE
 			;-- See also PICTURE (hack)
-			[
-				'image
+			['image and block! into [
 				[set url url!]
 				[set size pair!]
 				[set caption string!]
 				end
-			] (
+			]] (
 				append-result combine [
 					<div class="picture">
 					{<a href="} url {">}
@@ -147,8 +148,7 @@ htmlify: function [
 			)
 		|
 			;-- BUTTON
-			[
-				'button 
+			['button and block! into [
 				[set image-url url!]
 				[set size pair!]
 				[set caption string!]
@@ -168,27 +168,55 @@ htmlify: function [
 			)
 		|
 			;-- QUOTE
-			['quote copy args to end] (
-				attribution: none
-
-				either end: find args /source [
-					assert [2 = length? end]
-					attribution: second end
-				] [
-					end: tail args
-				]
-
+			['quote set args [string! | block!]] (
 				append-result combine [
 					<blockquote>
 
-					htmlify-range args end
-
-					;-- http://html5doctor.com/blockquote-q-cite/
-					if/only attribution [
-						<footer> htmlify/span reduce [attribution] </footer>
+					either string? args [
+						[
+							begin-span-or-div true 'exposition newline
+							markdown args
+							end-span-or-div true newline
+						]
+					] [
+						htmlify args
 					]
+
 					</blockquote>
+
 					newline
+				]
+			)
+		|
+			['attribution set url url!] (
+				;-- http://html5doctor.com/blockquote-q-cite/
+				append-result combine [
+					<footer> {<a href="} url {">} url {/a>} </footer>
+				]
+			)
+		|
+			['attribution set str string!] (
+				;-- http://html5doctor.com/blockquote-q-cite/
+				append-result combine [
+					<footer> markdown str </footer>
+				]
+			)
+		|
+			['attribution set arg block!] (
+				;-- http://html5doctor.com/blockquote-q-cite/
+				append-result combine [
+					<footer> htmlify/span arg </footer>
+				]
+			)
+		|
+			['attribution set string! str] (
+				;-- http://html5doctor.com/blockquote-q-cite/
+				append-result combine [
+					<footer>
+					(begin-span-or-div span 'exposition) newline
+					markdown str
+					(end-span-or-div span) newline
+					</footer>
 				]
 			)
 		|
@@ -196,7 +224,7 @@ htmlify: function [
 			[
 				['note (is-note: true) | 'update (is-note: false)]
 				(date: none) opt [set date date!]
-				copy args to end
+				set args [block! | string!]
 			] (
 				append-result combine [
 					{<div class="} (either is-note {note} {update}) {">}
@@ -210,10 +238,18 @@ htmlify: function [
 						</span>
 					]
 					space
-					either 1 = length? args [
-						htmlify/span args
+					either string? args [
+						combine [
+							(begin-span-or-div true 'exposition) newline
+							markdown args
+							(end-span-or-div true) newline
+						]
 					] [
-						htmlify-group args
+						either 1 = length? args [
+							htmlify/span args
+						] [
+							htmlify args
+						]
 					]
 					</div>
 					newline
@@ -222,11 +258,12 @@ htmlify: function [
 		|
 			;-- CODE, TEXT, ERROR
 			[
-				and ['code | 'text | 'error] [set verb word!]
-				(language: none) opt [set language word!]
+				'source
+				(language: none) opt [set language lit-word!]
 				[set code string!]
-				end
 			] (
+				language: if language [to-word language]
+
 				if language = 'text [
 					language: none
 				]
@@ -239,8 +276,8 @@ htmlify: function [
 
 				trim-head-tail-lines code
 
-				needs-pre-tag: find [text code] verb
-				needs-code-tag: find [code error] verb 
+				needs-pre-tag: language <> 'error
+				needs-code-tag: language <> none 
 
 				;-- TODO: work out the right language classes for google code prettify
 				;-- http://stackoverflow.com/q/11742907/211160
@@ -248,7 +285,6 @@ htmlify: function [
 					if/only needs-pre-tag [
 						{<pre}
 						if/only all [
-							verb = 'code
 							language
 						] [
 							space
@@ -269,48 +305,61 @@ htmlify: function [
 			;-- HEADING
 			[
 				'heading
-				[set heading-text string!]
 				(anchor: none) opt [set anchor file!] 
-				end
+				set heading-text string!
 			] (
 				append-result combine [
 					if/only anchor [
 						; http://stackoverflow.com/a/484781/211160
 						{<a id="} to string! anchor {">} </a>
 					]
-					<h3> markdown/to-html heading-text </h3>
+					<h3> markdown heading-text </h3>
 					newline
 				]
 			)
 		|
 			;-- LIST
 			[
-				'list
-				copy args to end
-			] (
-				append-result combine [
-					<ul>
-					map-each elem args [
-						;-- If we return a block and do not compose elem first,
-						;-- then elem will be evaluated incorrectly.  Review
-						;-- the precise problem with doing this...
-						compose/deep/only [
-							<li>
-							htmlify reduce [(elem)]
-							</li>
-							newline
-						]
-					]
-					</ul>
-					newline
+				'list and block! into [
+					'item '<< set args block!
 				]
+			] (
+				;-- First I tried using map-each
+				;-- If we return a block and do not compose elem first,
+				;-- then elem will be evaluated incorrectly.  Review
+				;-- the precise problem with doing this...
+
+				append-result combine [<ul> newline]
+
+				foreach elem args [
+					append result combine [
+						<li>
+						either string? elem [
+							[
+								begin-span-or-div false 'exposition newline
+								markdown elem
+								end-span-or-div false newline
+							]
+						] [
+							either word? elem [
+								htmlify reduce [elem]
+							] [
+								htmlify elem
+							]
+						]
+
+						</li>
+						newline
+					]
+				]
+
+				append-result combine [</ul> newline]
 			)
 		|
 			;-- HTML
 			[
 				'html
 				set html string!
-				end
 			] (
 				;-- The HTML construct should probably be more versatile, but
 				;-- for the moment let's just limit it to one HTML string
@@ -320,9 +369,10 @@ htmlify: function [
 			;-- YOUTUBE
 			[
 				'youtube
-				[set url url!]
-				[set size pair!]
-				end
+				and block! into [
+					[set url url!]
+					[set size pair!]
+				]
 			] (
 				;-- I like the idea of being able to put actual working youtube URLs in
 				;-- without having to extract the stupid ID, so I can just click on the
@@ -351,7 +401,7 @@ htmlify: function [
 						;-- Conversion needed as first 10x20 returns 10.0 :-/
 						{width="} to integer! size/1 {"} space
 						{height="} to integer! size/2 {"} space
-						{src="http://www.youtube.com/embed/} video-id {"} space
+						{src="https://www.youtube.com/embed/} video-id {"} space
 						{allowFullScreen}
 						{>}
 						</iframe>
@@ -366,32 +416,30 @@ htmlify: function [
 		;-- challenges a generalized system, yet shows great value of a
 		;-- dialect... and handling this case points a direction to what
 		;-- Rebol does that systems like Django/Rails cannot.
-		and block! into [
-			[set character set-word!]
-			(parenthetical: none)
-			opt [set parenthetical tag!]
-			[set dialogue-text string!]
-			end
-		] (
-			append-result combine [
-				begin-span-or-div span 'dialogue
+		'dialog and block! into [
+			some [
+				[set character set-word!]
+				(parenthetical: none)
+				opt [set parenthetical tag!]
+				[set dialogue-text string!]
+				(
+					append-result combine [
+						begin-span-or-div span 'dialogue
 
-				<span class="character"> stringify character </span> ":" space
-				if/only parenthetical [
-					<span class="action">
-					"(" to string! parenthetical ")"
-					</span> space
-				]
+						<span class="character"> stringify character </span> ":" space
+						if/only parenthetical [
+							<span class="action">
+							"(" to string! parenthetical ")"
+							</span> space
+						]
 
-				{"} markdown/to-html dialogue-text {"}
+						{"} markdown dialogue-text {"}
 
-				end-span-or-div span
+						end-span-or-div span
+					]
+				)
 			]
-		)
-	|
-		;-- Should we meet a block that does not match the above,
-		;-- try to recurse with the group-rule
-		and block! into group-rule
+		]
 	]]
 
 	unless parse blk group-rule [

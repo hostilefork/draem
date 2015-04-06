@@ -347,23 +347,28 @@ draem: context [
 			characters: copy []
 			repend indexes/slug-to-characters [entry/header/slug characters]
 
-			collect-characters: func [blk [block!] /local pos line] [
-
-				pos: head blk
-				while [not tail? pos] [
-					line: first+ pos
-
-					if block? line [
-						either all [
-							set-word? first line
-							not find characters to word! first line
-						] [
-							append characters to word! first line
-						] [
-							collect-characters line
-						]
-					]
+			collect-characters: function [blk [block!]] [
+				dialog-rule: [
+					any [
+						set who set-word! (
+							if not find characters to-word who [
+								append characters to-word who
+							]
+						)
+					|
+						skip
+					] 
 				]
+
+				rule: [any [
+					'dialog and block! into dialog-rule
+				|
+					and block! into rule
+				|
+					skip
+				]]
+
+				parse blk rule
 			]
 
 			collect-characters content

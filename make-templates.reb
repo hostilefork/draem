@@ -25,7 +25,7 @@ Rebol [
 
 do %common.reb
 
-do %markdown.reb
+do %md.reb
 
 do %htmlify.reb
 

@@ -175,88 +175,129 @@ flatten: func [
 
 ; The COMBINE dialect is intended to assist with the common task of creating
 ; a merged string series out of component Rebol values.  Its
-; goal is to be friendlier than REJOIN.
+; goal is to be friendlier than REJOIN, and to hopefully become the
+; behavior backing PRINT.
 ;
 ; Currently in a proposal period, and there are questions about whether the
-; same dialect can.
+; same dialect can be meaningful for blocks or not.
 ;
-; http://curecode.org/rebol3/ticket.rsp?id=2142&cursor=1 
+; http://blog.hostilefork.com/combine-alternative-rebol-red-rejoin/ 
 ;
 combine: func [
     block [block!]
     /with "Add delimiter between values (will be COMBINEd if a block)"
         delimiter [block! any-string! char! any-function!]
     /into
-    	out [any-string!]
+        out [any-string!]
     /local
-    	needs-delimiter pre-delimit value
+        needs-delimiter pre-delimit value temp
+    ; hidden way of passing depth after /local, review...
+    /level depth
 ] [
-	;-- No good heuristic for string size yet
-	unless into [
-		out: make string! 10
-	]
+    ;-- No good heuristic for string size yet
+    unless into [
+        out: make string! 10
+    ]
 
-	if block? delimiter [
-		delimiter: combine delimiter
-	]
+    unless any-function? :delimiter [
+        unless block? delimiter [
+            delimiter: compose [(delimiter)]
+        ]
+        delimiter: func [depth [integer!]] compose/only/deep [
+            combine (delimiter)
+        ]
+    ]
 
-	needs-delimiter: false
-	pre-delimit: does [
-		either needs-delimiter [
-			out: append out delimiter
-		] [
-			needs-delimiter: true? with
-		]
-	]
+    unless depth [
+        depth: 1
+    ]
 
-	;-- Do evaluation of the block until a non-none evaluation result
-	;-- is found... or the end of the input is reached.
-	while [not tail? block] [
-		set/any 'value do/next block 'block
+    needs-delimiter: false
+    pre-delimit: does [
+        either needs-delimiter [
+            set/any 'temp delimiter depth
+            if all [
+                value? 'temp
+                (not none? temp) or (block? out)
+            ] [ 
+                out: append out temp
+            ]
+        ] [
+            needs-delimiter: true? with
+        ]
+    ]
 
-		;-- Blocks are substituted in evaluation, like the recursive nature
-		;-- of parse rules.
+    ;-- Do evaluation of the block until a non-none evaluation result
+    ;-- is found... or the end of the input is reached.
+    while [not tail? block] [
+        set/any 'value do/next block 'block
 
-		case [
-			unset? :value [
-				;-- Ignore unset! (precedent: any, all, compose)
-			]
+        ;-- Blocks are substituted in evaluation, like the recursive nature
+        ;-- of parse rules.
 
-			any-function? :value [
-				do make error! "Evaluation in COMBINE gave function/closure"
-			]
+        case [
+            unset? :value [
+                ;-- Ignore unset! (precedent: any, all, compose)
+            ]
 
-			block? value [
-				pre-delimit
-				out: combine/into value out
-			]
+            any-function? :value [
+                do make error! "Evaluation in COMBINE gave function/closure"
+            ]
 
-			any-block? value [
-				;-- all other block types as *results* of evaluations throw
-				;-- errors for the moment.  (It's legal to use PAREN! in the
-				;-- COMBINE, but a function invocation that returns a PAREN!
-				;-- will not recursively iterate the way BLOCK! does) 
-				do make error! "Evaluation in COMBINE gave non-block! block"
-			]
+            block? value [
+                pre-delimit
+                out: combine/with/into/level value :delimiter out depth + 1
+            ]
 
-			any-word? value [
-				;-- currently we throw errors on words if that's what an
-				;-- evaluation produces.  Theoretically these could be
-				;-- given behaviors in the dialect, but the potential for
-				;-- bugs probably outweighs the value (of converting implicitly
-				;-- to a string or trying to run an evaluation of a non-block)
-				do make error! "Evaluation in COMBINE gave symbolic word"
-			]
+            ; This is an idea that was not met with much enthusiasm, which was
+            ; to allow COMBINE ['X] to mean the same as COMBINE [MOLD X]
+            ;any [
+            ;    word? value
+            ;    path? value
+            ;] [
+            ;    pre-delimit ;-- overwrites temp!
+            ;    temp: get value
+            ;    out: append out (mold :temp)
+            ;]
 
-			none? value [
-				;-- Skip all nones
-			]
+            refinement? value [
+                case [
+                    value = /+ [
+                        needs-delimiter: false
+                    ]
 
-			true [
-				pre-delimit
-				out: append out (form :value)
-			]
-		]
-	]
+                    true [
+                        do make error! "COMBINE refinement other than /+ used"
+                    ]
+                ]
+            ]
+
+            any-block? value [
+                ;-- all other block types as *results* of evaluations throw
+                ;-- errors for the moment.  (It's legal to use PAREN! in the
+                ;-- COMBINE, but a function invocation that returns a PAREN!
+                ;-- will not recursively iterate the way BLOCK! does) 
+                do make error! "Evaluation in COMBINE gave non-block! or path! block"
+            ]
+
+            any-word? value [
+                ;-- currently we throw errors on words if that's what an
+                ;-- evaluation produces.  Theoretically these could be
+                ;-- given behaviors in the dialect, but the potential for
+                ;-- bugs probably outweighs the value (of converting implicitly
+                ;-- to a string or trying to run an evaluation of a non-block)
+                do make error! "Evaluation in COMBINE gave symbolic word"
+            ]
+
+            none? value [
+                ;-- Skip all nones
+            ]
+
+            true [
+                pre-delimit
+                out: append out (form :value)
+            ]
+        ]
+    ]
     either into [out] [head out]
 ]

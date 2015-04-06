@@ -3,7 +3,7 @@
 <head>
 	<meta charset=utf-8>
 	<meta name="google-site-verification" content="eoQP3nJ2qyDceZYAYN6-XaF24JZ2DVrzC6penYi8Rnc" />
-	<meta name="viewport" content="width=device-width">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	
 <!--
 {# This is a django-templated HTML file #}
@@ -94,7 +94,7 @@
   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
   })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-  ga('create', '{% block ga_id %}!!!ERROR-google-analytics-tracking-id-MISSING!!!{% endblock ga_id %}', '{% block ga_property %}!!!ERROR-google-analytics-property-MMISSING!!!{% endblock ga_property %}');
+  ga('create', '{% block ga_id %}!!!ERROR-google-analytics-tracking-id-MISSING!!!{% endblock ga_id %}', '{% block ga_property %}!!!ERROR-google-analytics-property-MISSING!!!{% endblock ga_property %}');
   ga('send', 'pageview');
 
 </script>
