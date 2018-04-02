@@ -30,14 +30,14 @@ set [open-para close-para] either para? [[<p></p>]][["" ""]]
 value: copy "" ; FIXME: leak?
 
 emit: func [data] [
-;	print "***wrong emit***" 
+;	print "***wrong emit***"
 	append md-buffer data
 ]
 close-tag: func [tag] [head insert copy tag #"/"]
 
 start-para: does [
 	if start-para? [
-		start-para?: false 
+		start-para?: false
 		end-para?: true
 		emit open-para
 	]
@@ -71,7 +71,7 @@ gt: #">"
 
 header-underscore: use [text tag] [
 	[
-		copy text to newline 
+		copy text to newline
 		newline
 		some [eq (tag: <h1>) | minus (tag: <h2>)]
 		[newline | end]
@@ -91,19 +91,19 @@ header-hash: use [value continue trailing mark tag] [
 		)
 		continue
 		copy mark some hash
-		space 
+		space
 		(emit tag: to tag! compose [h (length? mark)])
 		some [
 			[
 				(trailing: "")
 				[[any space mark] | [opt [2 space (trailing: join newline newline)]]]
-				[newline | end] 
+				[newline | end]
 				(end-para?: false)
 				(start-para?: true)
 				(emit ajoin [close-tag tag trailing])
 			]
 			break
-		|	set value skip (emit value)	
+		|	set value skip (emit value)
 		]
 	]
 ]
@@ -127,7 +127,7 @@ entity-rule: [
 	]
 	";"
 	finish:
-	(emit copy/part start finish) 
+	(emit copy/part start finish)
 ]
 
 tag-rule: [
@@ -151,7 +151,7 @@ tag-rule: [
 
 header-rule: [
 	header-underscore
-|	header-hash	
+|	header-hash
 ]
 
 ;autolink-rule: use [address] [
@@ -192,7 +192,7 @@ link-rule: use [text address value title] [
 			start-para
 			title: either title [ajoin [space {title="} title {"}]][""]
 			emit ajoin [
-				{<a href="} address {"} title {>} 
+				{<a href="} address {"} title {>}
 				either xml? [markdown/xml text] [markdown text]
 				</a>
 			]
@@ -210,7 +210,7 @@ em-rule: use [mark text] [
 			start-para
 			mark: either equal? length? mark 1 <em> <strong>
 			emit ajoin [
-				mark 
+				mark
 				either xml? [markdown/xml text] [markdown text]
 				close-tag mark
 			]
@@ -315,7 +315,7 @@ blockquote-rule: use [continue] [
 inline-code-rule: use [code value] [
 	[
 		[
-			"``" 
+			"``"
 			(start-para)
 			(emit <code>)
 			some [
@@ -333,7 +333,7 @@ inline-code-rule: use [code value] [
 			|	entities
 			|	set value skip (emit value)
 			]
-		]	
+		]
 	]
 ]
 
@@ -342,7 +342,7 @@ code-line: use [value][
 		some [
 			entities
 		|	[newline | end] (emit newline) break
-		|	set value skip (emit value)	
+		|	set value skip (emit value)
 		]
 	]
 ]
@@ -364,15 +364,15 @@ code-rule: use [text] [
 asterisk-rule: ["\*" (emit "*")]
 
 newline-rule: [
-	newline 
-	any [space | tab] 
-	some newline 
+	newline
+	any [space | tab]
+	some newline
 	any [space | tab]
 	(
 		emit ajoin [close-para newline newline]
 		start-para?: true
 	)
-|	newline (emit newline)	
+|	newline (emit newline)
 ]
 
 line-break-rule: [
@@ -430,7 +430,7 @@ rules: [
 	|	set value skip (
 			start-para
 			emit value
-		)	
+		)
 	]
 ]
 
@@ -456,7 +456,7 @@ markdown: func [
 
 ;	probe rules
 	parse data [some rules]
-	
+
 	start-para?: old-start-para?
 	end-para?: old-end-para?
 	para?: old-para?

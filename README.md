@@ -31,12 +31,11 @@ Whitespace between items is ignored, per Rebol's rules.  So a series of items ar
 
     {One} {Two} {Three}
 
-Blocks can be used to group items in places where a single item would be expected.  So for instance, this is ia legitimate way of passing two "groups" to Foo: 
+Blocks can be used to group items in places where a single item would be expected.  So for instance, this is ia legitimate way of passing two "groups" to Foo:
 
     [Foo [{Baz} {Bar}] [{Mumble} {Frotz}]]
 
 This is applicable to cases like bulleted lists, where you might want to put multiple sections under a single bullet.  But most constructs do not require the blocks.
-
 
 
 ### Exposition
@@ -114,7 +113,7 @@ In the future, an optional number could indicate the level of heading, e.g. `[he
 The picture facility is a little bit half-baked at the moment, but what it does is lets you specify a URL and a caption.  So for instance:
 
     [picture http://example.com/image.jpg {Example image}]
-    
+
 
 ### URLs
 

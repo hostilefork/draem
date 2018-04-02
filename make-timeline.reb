@@ -1,16 +1,14 @@
 Rebol [
 	Title: "Make Timeline"
 	Description: {
+	    This is a small experiment which builds the XML file needed so that
+	    the entries can be shown on a SIMILE timeline:
 
-	This is a small experiment which builds the XML file needed so that 
-	the dreams can be shown on a SIMILE timeline:
+        http://www.simile-widgets.org/timeline/
 
-		http://www.simile-widgets.org/timeline/
-
-	More modern timeline codebases now exist for JavaScript and HTML5,
-	and it would probably be a good idea to update to another solution,
-	as the SIMILE widgets seem to have not had any updates for some time.
-
+	   More modern timeline codebases now exist for JavaScript and HTML5,
+	   and it would probably be a good idea to update to another solution,
+	   as the SIMILE widgets seem to have not had any updates for some time.
 	}
 
 	Home: http://draem.hostilefork.com
@@ -40,8 +38,8 @@ to-timeline-date: function [d [date!]] [
 
 	date-string: to string! d
 	rule: [
-		copy day-string: to "-" skip 
-		copy month-string: to "-" skip 
+		copy day-string: to "-" skip
+		copy month-string: to "-" skip
 		copy year-string: to "/" skip
 		;-- current potential bug that timezone is being omitted...
 		copy time-string: to ["+" | "-" | end]
@@ -77,7 +75,7 @@ make-timeline: function [entries [block!] xml-filename [file!]] [
 			tab tab tab {title="} stringify entry/header/slug {"}
 			tab tab tab {>}
 			entry/header/title
-			tab tab tab </event> 
+			tab tab tab </event>
 		]
 	]
 

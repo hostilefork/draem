@@ -24,7 +24,7 @@
     much every professional page on the internet limits it in some way.
 
     https://jdm-digital.com/2012/11/why-max-width-960/
-    
+
     Not setting a min-width has the advantage of reflowing to whatever a
     device supports, up to that (arbitrary-seeming) maximum.  But it has the
     unfortunate side effect that if there isn't enough content to require a
@@ -38,7 +38,7 @@
 /*
  * Centering
  */
- 
+
 html {
     display: table;
     margin: auto;
@@ -126,7 +126,7 @@ img {
  * Insane bug work around.  Browsers will default to monospace fonts being
  * a different default size unless you do this rather particular voodoo.
  *
- *    http://meyerweb.com/eric/thoughts/2010/02/12/fixed-monospace-sizing/ 
+ *    http://meyerweb.com/eric/thoughts/2010/02/12/fixed-monospace-sizing/
  */
 pre, code {
     font-family: "Courier New", monospace, serif; font-size: 1em;
@@ -152,7 +152,7 @@ pre, code {
  * "MAIN" DIV
  *
  * The main div currently collects all the content that's not in the
- * "PROLOGUE" or "EPILOGUE" areas of the surrogate BODY-DIV.  
+ * "PROLOGUE" or "EPILOGUE" areas of the surrogate BODY-DIV.
  */
 #main {
 
@@ -174,7 +174,7 @@ pre, code {
      * one, there are some relatively convincing arguments made here:
      *
      *     http://ia.net/blog/100e2r/
-     * 
+     *
      * ...but I don't know that is a good fit for what I am doing.  Time will
      * tell, though mostly I just want to make it easy for archiving, searching
      * etc.  Helpful link in any case:
@@ -236,7 +236,7 @@ pre, code {
 
 /*
  * PATH
- * 
+ *
  * This provides a navigation list of "where you are" so you can backtrack
  * in the hierarchy.  Draem ceased having a hierarchy or category system,
  * instead adopting the notion that the category comes from the "most popular
@@ -276,7 +276,7 @@ pre, code {
 
 /*
  * PAGE TITLE
- * 
+ *
  * The page title is done with an H1, and I'm not sure what the value of in
  * this day and age is of using that instead of a custom class.  Getting the
  * title to align to the bottom is annoying at first I tried using absolute
@@ -322,7 +322,7 @@ pre, code {
     text-align: center;
     width: 90%;
     margin: 20px;
-    padding: 20px; 
+    padding: 20px;
     font-weight: bold;
 }
 
@@ -350,7 +350,7 @@ pre, code {
 
 /*
  * "EXPOSITION"
- * 
+ *
  * Default class for just random writing in a post (such as if you just put
  * a string literal containing markdown in as a paragraph).  Originally
  * indented if not in lists but I decided the indentation was distracting.
@@ -398,7 +398,7 @@ pre, code {
  * Whether notes should theme as a sticky-note yellow style, a blue info-box,
  * or otherwise is a matter of aesthetics.  "Good enough" for now is sticky
  * note yellow.  Used to be italic but seems better to make it a smaller
- * and different font instead. 
+ * and different font instead.
  */
 
 #main .note, #main .update {
@@ -414,7 +414,7 @@ pre, code {
     color: #333;
     font-size: 0.95em;
 
-    /* http://css-tricks.com/the-css-overflow-property/ */ 
+    /* http://css-tricks.com/the-css-overflow-property/ */
     overflow: hidden;
 }
 
@@ -526,7 +526,7 @@ pre, code {
 
 /*
  * URL
- * 
+ *
  * Put on a line by itself, indent.  (Don't do this to spans, for instance it
  * would mess up the attribution footer in blockquote.)  Also do not do it
  * if the URL is directly under a bullet in a list... because the list
@@ -589,7 +589,7 @@ pre, code {
 
     Stolen from the simplest case of tags for StackExchange (so no special
     tag colors or icons).  Should probably do something more creative,
-    but I'm used to it.   
+    but I'm used to it.
     -----------------------------------------------------------------------  */
 
 #body-div a.post-tag {

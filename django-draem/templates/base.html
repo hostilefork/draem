@@ -1,35 +1,35 @@
 <!doctype html>
 <html lang=en>
 <head>
-	<meta charset=utf-8>
-	<meta name="google-site-verification" content="eoQP3nJ2qyDceZYAYN6-XaF24JZ2DVrzC6penYi8Rnc" />
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	
+    <meta charset=utf-8>
+    <meta name="google-site-verification" content="eoQP3nJ2qyDceZYAYN6-XaF24JZ2DVrzC6penYi8Rnc" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
 <!--
 {# This is a django-templated HTML file #}
 {# http://docs.djangoproject.com/en/dev/topics/templates/#topics-templates #}
 
-	Greets to Cerul, SkyNet, and the rest of my peeps :P
+    Greets to Cerul, SkyNet, and the rest of my peeps :P
 
 {% comment %}
 
 {% endcomment %}
 -->
 {% block meta %}
-		<meta name="keywords" content="{% block keywords %}lucid dreaming, astral projection, matrix{% endblock keywords %}" />
-		<meta name="description" content="{% block description %}{% endblock description %}" />
+        <meta name="keywords" content="{% block keywords %}lucid dreaming, astral projection, matrix{% endblock keywords %}" />
+        <meta name="description" content="{% block description %}{% endblock description %}" />
 {% endblock meta %}
 
-		<title>{% block title %}MISSING TITLE BLOCK{% endblock title %}</title>
+        <title>{% block title %}MISSING TITLE BLOCK{% endblock title %}</title>
 
-	<!-- Django allows us to pass parameters into our templates, good to have as javascript vars -->
-	<!-- http://lethain.com/entry/2008/sep/21/intro-to-unintrusive-javascript-with-django/ -->
-	<script>
+    <!-- Django allows us to pass parameters into our templates, good to have as javascript vars -->
+    <!-- http://lethain.com/entry/2008/sep/21/intro-to-unintrusive-javascript-with-django/ -->
+    <script>
 {% block params-javascript %}
-		PARAMS = {};
-		PARAMS.libs_url = "{{ LIBS_URL }}"; 
+        PARAMS = {};
+        PARAMS.libs_url = "{{ LIBS_URL }}";
 {% endblock params-javascript %}
-	</script>
+    </script>
 
 {% block css %}
 {% endblock css %}
@@ -38,52 +38,52 @@
 {% block scripts %}
 {% endblock scripts %}
 
-	
-	</head>
+
+    </head>
 <body {% block bodymethods %}{% endblock bodymethods %}>
 
-	<div id="body-div">
-		<div id="prologue">
-			{% block prologue %}
-			{# missing prologue is acceptable #}
-			{% endblock prologue %}
-		</div>
+    <div id="body-div">
+        <div id="prologue">
+            {% block prologue %}
+            {# missing prologue is acceptable #}
+            {% endblock prologue %}
+        </div>
 
-		<div id="title">
-			<h1>{% block header %}{% endblock header %}</h1>
-		</div>
+        <div id="title">
+            <h1>{% block header %}{% endblock header %}</h1>
+        </div>
 
-		<div id="leader">
-			<ul id="path">
-				{% block path %}
-					<p>MISSING PATH BLOCK</p>
-				{% endblock path %}
-			</ul>
-		</div>
-		
-		<div id="main">			
-			{% block main %}
-				<p>MISSING MAIN BLOCK</p>
-			{% endblock main %}
+        <div id="leader">
+            <ul id="path">
+                {% block path %}
+                    <p>MISSING PATH BLOCK</p>
+                {% endblock path %}
+            </ul>
+        </div>
 
-			{% block footer %}
-			{# missing footer is acceptable #}
-			{% endblock footer %}
-		</div>
+        <div id="main">
+            {% block main %}
+                <p>MISSING MAIN BLOCK</p>
+            {% endblock main %}
 
-		<div id="trailer">
-			{% block trailer %}
-			{# missing trailer is acceptable #}
-			{% endblock trailer %}
-		</div>
+            {% block footer %}
+            {# missing footer is acceptable #}
+            {% endblock footer %}
+        </div>
 
-		<div id="epilogue">
-			{% block epilogue %}
-			{# missing epilogue is acceptable #}
-			{% endblock epilogue %}
-		</div>
+        <div id="trailer">
+            {% block trailer %}
+            {# missing trailer is acceptable #}
+            {% endblock trailer %}
+        </div>
 
-	</div>
+        <div id="epilogue">
+            {% block epilogue %}
+            {# missing epilogue is acceptable #}
+            {% endblock epilogue %}
+        </div>
+
+    </div>
 
 
 <!-- This is the Google Universal Analytics Code -->
