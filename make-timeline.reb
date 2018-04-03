@@ -29,9 +29,17 @@ do %common.reb
 ; Rebol is close "13-Oct-2009/19:51:30-7:00"
 to-timeline-date: function [d [date!]] [
 
-	; Not all Rebol dates have times or time zone info
-	; force it for convenience in the parse.
-	unless d/time [
+	; Not all Rebol dates have times or time zone info.  Force it for
+    ; convenience in the parse.
+    ;
+    ; !!! Rebol2 and R3-Alpha allow D/TIME to come back as BLANK!, while Ren-C
+    ; treats a missing date the same way other missing "active" (potentially
+    ; function-dispatching) items are, which is an error if missing.  While
+    ; PICK D 'TIME would give blank in Ren-C, this is not supported in either
+    ; Rebol2 or R3-Alpha.  ANY [:D/TIME FALSE] will be blank in the case of
+    ; a missing time component in all, since Ren-C makes :D/TIME void.
+    ;
+	unless any [:d/time false] [
 		d/time: 10:20:03
 		d/zone: -04:00
 	]

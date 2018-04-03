@@ -86,8 +86,8 @@ header-underscore: use [text tag] [
 header-hash: use [value continue trailing mark tag] [
 	[
 		(
-			continue: either/only start-para? [not space] [fail]
-			mark: clear ""
+			continue: either start-para? [[not space]] [[fail]]
+			mark: ""
 		)
 		continue
 		copy mark some hash
@@ -173,7 +173,7 @@ link-rule: use [text address value title] [
 		to #"]" skip
 		#"("
 		(
-			address: clear ""
+			address: copy ""
 			title: none
 		)
 		any [
@@ -208,7 +208,7 @@ em-rule: use [mark text] [
 		to mark mark
 		(
 			start-para
-			mark: either equal? length? mark 1 <em> <strong>
+			mark: either equal? length? mark 1 [<em>] [<strong>]
 			emit ajoin [
 				mark
 				either xml? [markdown/xml text] [markdown text]
@@ -292,7 +292,7 @@ list-rule: use [continue tag item] [
 blockquote-rule: use [continue] [
 	[
 		(
-			continue: either/only start-para? [gt any space] [fail]
+			continue: either start-para? [[gt any space]] [[fail]]
 		)
 		continue
 		(emit ajoin [<blockquote> newline])
@@ -379,12 +379,12 @@ line-break-rule: [
 	space
 	some space
 	newline
-	(emit ajoin [either xml? <br /> <br> newline])
+	(emit ajoin [either xml? [<br />] [<br>] newline])
 ]
 
 leading-spaces: use [continue] [
 	[
-		(continue: either/only start-para? [some space] [fail])
+		(continue: either start-para? [[some space]] [[fail]])
 		continue
 		(start-para)
 	]

@@ -30,9 +30,9 @@ do %htmlify.reb
 django-block: function [name [string!] stuff [string! block!] /inline] [
     combine [
         "{% block" space name space "%}"
-        unless inline newline
+        unless inline [newline]
         stuff
-        unless inline newline
+        unless inline [newline]
         "{% endblock" space name space "%}"
         newline
     ]
@@ -143,14 +143,18 @@ django-extends: function [template [file!] /with entry [object!]] [
     combine [
         ["{% extends" space {"} to string! template {"} space "%}"]
 
-        either/only with [
-            django-css/with entry
+        either with [
+            [
+                django-css/with entry
 
-            django-scripts/with entry
+                django-scripts/with entry
+            ]
         ][
-            django-css
+            [
+                django-css
 
-            django-scripts
+                django-scripts
+            ]
         ]
 
         django-block "prologue" [
@@ -176,8 +180,8 @@ link-to-tag: function [tag [word!] /count num] [
         {" class="post-tag" rel="tag">}
             stringify tag
         </a>
-        if/only count [
-            space {:} space num <br />
+        if count [
+            [space {:} space num <br />]
         ]
     ]
 ]
@@ -189,8 +193,8 @@ link-to-character: function [character [word!] /count num] [
         {">}
             stringify character
         </a>
-        if/only count [
-            space {:} space num <br />
+        if count [
+            [space {:} space num <br />]
         ]
     ]
 ]
@@ -212,7 +216,7 @@ write-entry: function [
     is-post: any [earlier-entry later-entry]
 
     html: combine [
-        django-extends/with (either is-post %post.html %page.html) entry
+        django-extends/with (either is-post [%post.html] [%page.html]) entry
 
         ;-- <meta name="keywords" ...> information
         django-block/inline "keywords" [
@@ -240,10 +244,12 @@ write-entry: function [
         ]
 
         django-path [
-            if/only main-tag [
-                <li>
-                    link-to-tag main-tag
-                </li>
+            if main-tag [
+                [
+                    <li>
+                        link-to-tag main-tag
+                    </li>
+                ]
             ]
             <li>
                 <span>
@@ -280,35 +286,43 @@ write-entry: function [
             content-html
         ]
 
-        either/only later-entry [
-            django-block/inline {nexttitle} [
-                later-entry/header/title
-            ]
-            django-block/inline {nexturl} [
-                url-for-entry later-entry
+        either later-entry [
+            [
+                django-block/inline {nexttitle} [
+                    later-entry/header/title
+                ]
+                django-block/inline {nexturl} [
+                    url-for-entry later-entry
+                ]
             ]
         ][
-            django-block/inline {nexttitle} [
-                {Home}
-            ]
-            django-block/inline {nexturl} [
-                draem/config/site-url
+            [
+                django-block/inline {nexttitle} [
+                    {Home}
+                ]
+                django-block/inline {nexturl} [
+                    draem/config/site-url
+                ]
             ]
         ]
 
-        either/only earlier-entry [
-            django-block/inline {prevtitle} [
-                earlier-entry/header/title
-            ]
-            django-block/inline {prevurl} [
-                url-for-entry earlier-entry
+        either earlier-entry [
+            [
+                django-block/inline {prevtitle} [
+                    earlier-entry/header/title
+                ]
+                django-block/inline {prevurl} [
+                    url-for-entry earlier-entry
+                ]
             ]
         ][
-            django-block/inline {prevtitle} [
-                {Home}
-            ]
-            django-block/inline {prevurl} [
-                draem/config/site-url
+            [
+                django-block/inline {prevtitle} [
+                    {Home}
+                ]
+                django-block/inline {prevurl} [
+                    draem/config/site-url
+                ]
             ]
         ]
 
@@ -447,10 +461,11 @@ make-templates: function [
         ]
 
         foreach entry entries [
-            if true or true? all [ ;-- allow pages to appear in the tag list for now
+            if true or (true? all [
+                ;-- allow pages to appear in the tag list for now
                 draem/next-entry entry/header
                 draem/previous-entry entry/header
-            ][
+            ])[
                 append tag-html link-to-entry entry
             ]
         ]
@@ -522,10 +537,11 @@ make-templates: function [
         ]
 
         foreach entry entries [
-            if true or true? all [ ;-- allow pages to appear in the character list for now
+            if true or (true? all [
+                ;-- allow pages to appear in the character list for now
                 draem/next-entry entry/header
                 draem/previous-entry entry/header
-            ][
+            ])[
                 append character-html link-to-entry entry
             ]
         ]

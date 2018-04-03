@@ -216,7 +216,7 @@ draem: context [
                 ][
                     pos: next pos
                 ]
-                return pos/1
+                return first pos
             ]
             pos: next pos
         ]

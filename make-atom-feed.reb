@@ -48,40 +48,48 @@ to-iso8601-date: function [
                 "T"
 
                 ; insert leading zero if needed
-                unless (the-date/time/hour > 9) "0"
+                unless (the-date/time/hour > 9) ["0"]
 
                 the-date/time/hour
 
                 ":"
 
                 ; again, leading zero if needed...
-                unless (the-date/time/minute > 9) "0"
+                unless (the-date/time/minute > 9) ["0"]
 
                 the-date/time/minute
 
                 ":"
 
                 ; once again zero, note Rebol only returns seconds if non-zero
-                unless (the-date/time/second > 9) "0"
+                unless (the-date/time/second > 9) ["0"]
 
                 (to integer! the-date/time/second)
 
-                either/only the-date/zone = 0:00 [
+                ; !!! Rebol2 and R3-Alpha gave back 0:00 as the time zone
+                ; of dates with no zone component.  Ren-C considers the zone
+                ; to be missing, and will generate an error with regular path
+                ; picking, or a void if using GET-PATH!.  This ANY glosses
+                ; the difference.
+                ;
+                either (any [:the-date/zone 0:00] = 0:00) [
                     ; UTC
                     "Z"
-                ] [
-                    ; + or - UTC
-                    either (the-date/zone/hour > 0) {+} {-}
+                ][
+                    [
+                        ; + or - UTC
+                        either (the-date/zone/hour > 0) [{+}] [{-}]
 
-                    if ((absolute the-date/zone/hour) < 10) "0"
+                        if ((absolute the-date/zone/hour) < 10) ["0"]
 
-                    absolute the-date/zone/hour
+                        absolute the-date/zone/hour
 
-                    {:}
+                        {:}
 
-                    if (the-date/zone/minute < 10) "0"
+                        if (the-date/zone/minute < 10) ["0"]
 
-                    the-date/zone/minute
+                        the-date/zone/minute
+                    ]
                 ]
             ]
         ] [
@@ -97,13 +105,13 @@ to-iso8601-date: function [
 
         "-"
 
-        if (the-date/month > 9) "0"
+        if (the-date/month > 9) ["0"]
 
         the-date/month
 
         "-"
 
-        if (the-date/day > 9) "0"
+        if (the-date/day > 9) ["0"]
 
         the-date/day
      ]
@@ -179,7 +187,7 @@ make-atom-feed: function [
         if 0 = atom-length [
             break
         ]
-        -- atom-length
+        atom-length: atom-length - 1
         append atom-xml combine/with [
             <entry>
                 [<title> (entry/header/title) </title>]

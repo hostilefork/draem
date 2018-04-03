@@ -8,14 +8,20 @@ begin-span-or-div: function [
     is-span [none! logic!]
     class [word!]
 ][
-    combine [{<} (either is-span {span} {div}) space {class="} to string! class {">}]
+    combine [
+        {<}
+            (either is-span [{span}] [{div}])
+            space
+            {class="} to string! class {"}
+        {>}
+    ]
 ]
 
 
 end-span-or-div: function [
     is-span [none! logic!]
 ][
-    combine [{</} (either is-span {span} {div}) {>}]
+    combine [{</} (either is-span [{span}] [{div}]) {>}]
 ]
 
 
@@ -227,15 +233,17 @@ htmlify: function [
                 set args [block! | string!]
             ] (
                 append-result combine [
-                    {<div class="} (either is-note {note} {update}) {">}
-                    either/only is-note [
-                        <span class="note-span"> {Note} </span>
+                    {<div class="} (either is-note [{note}] [{update}]) {">}
+                    either is-note [
+                        [<span class="note-span"> {Note} </span>]
                     ][
-                        <span class="update-span"> {UPDATE}
-                        if/only date [
-                            space date
+                        [
+                            <span class="update-span"> {UPDATE}
+                            if date [
+                                [space date]
+                            ]
+                            </span>
                         ]
-                        </span>
                     ]
                     space
                     either string? args [
@@ -282,22 +290,26 @@ htmlify: function [
                 ;-- TODO: work out the right language classes for google code prettify
                 ;-- http://stackoverflow.com/q/11742907/211160
                 append-result combine [
-                    if/only needs-pre-tag [
-                        {<pre}
-                        if/only all [
-                            language
-                        ][
-                            space
-                            {class="prettyprint}
-                            space {lang-} to string! language
-                            {"}
+                    if needs-pre-tag [
+                        [
+                            {<pre}
+                            if all [
+                                language
+                            ][
+                                [
+                                    space
+                                    {class="prettyprint}
+                                    space {lang-} to string! language
+                                    {"}
+                                ]
+                            ]
+                            {>}
                         ]
-                        {>}
                     ]
-                    (if needs-code-tag <code>)
+                    (if needs-code-tag [<code>])
                     code
-                    (if needs-code-tag </code>)
-                    (if needs-pre-tag </pre>)
+                    (if needs-code-tag [</code>])
+                    (if needs-pre-tag [</pre>])
                     newline
                 ]
             )
@@ -309,9 +321,9 @@ htmlify: function [
                 set heading-text string!
             ] (
                 append-result combine [
-                    if/only anchor [
+                    if anchor [
                         ; http://stackoverflow.com/a/484781/211160
-                        {<a id="} to string! anchor {">} </a>
+                        [{<a id="} to string! anchor {">} </a>]
                     ]
                     <h3> markdown heading-text </h3>
                     newline
@@ -427,10 +439,12 @@ htmlify: function [
                         begin-span-or-div span 'dialogue
 
                         <span class="character"> stringify character </span> ":" space
-                        if/only parenthetical [
-                            <span class="action">
-                            "(" to string! parenthetical ")"
-                            </span> space
+                        if parenthetical [
+                            [
+                                <span class="action">
+                                "(" to string! parenthetical ")"
+                                </span> space
+                            ]
                         ]
 
                         {"} markdown dialogue-text {"}
