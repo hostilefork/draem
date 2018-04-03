@@ -189,6 +189,18 @@ link-rule: use [text address value title] [
 		]
 		skip
 		(
+			; While ( and ) are technically legal in URL!, they make MarkDown
+			; confusing.
+			;
+			; https://stackoverflow.com/q/13824669/#comment86250449_40076454
+			;
+			if any [
+				find address "("
+				find address ")"
+			][
+				print address
+				do make error! "( or ) in markdown URL, use %28 and %29"
+			]
 			start-para
 			title: either title [ajoin [space {title="} title {"}]][""]
 			emit ajoin [

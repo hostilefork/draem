@@ -225,12 +225,12 @@ write-entry: function [
 
         ;-- <meta name="description" ...> information
         django-block "description" [
-            combine/with [
-                [{Author:} space draem/config/site-author]
-                [{Title:} space entry/header/title]
-                [{Date:} space entry/header/date/date]
-                [{Length:} space length? (split content-html space) space "words"]
-            ] [{,} space]
+            combine [
+                {Author:} space draem/config/site-author "," space
+                {Title:} space entry/header/title "," space
+                {Date:} space entry/header/date/date "," space
+                {Length:} space length? (split content-html space) space "words"
+            ]
         ]
 
         django-block/inline "title" [
