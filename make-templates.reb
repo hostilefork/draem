@@ -41,7 +41,7 @@ django-block: function [name [string!] stuff [string! block!] /inline] [
 django-path: function [stuff [block!]] [
     django-block "path" [
         <li>
-            {<a href="} draem/config/site-url {" title="Home">} {Home} </a>
+            {<a href="} draem.config.site-url {" title="Home">} {Home} </a>
         </li>
         stuff
     ]
@@ -50,10 +50,10 @@ django-path: function [stuff [block!]] [
 django-google-analytics: function [] [
     combine [
         django-block/inline "ga_id" [
-            draem/config/google-analytics/tracking-id
+            draem.config.google-analytics.tracking-id
         ]
         django-block/inline "ga_property" [
-            draem/config/google-analytics/property
+            draem.config.google-analytics.property
         ]
     ]
 ]
@@ -63,10 +63,10 @@ django-css: function [/with entry] [
     ;-- Currently we get the site global CSS from the configuration, and then
     ;-- read any added literal CSS or included files from the Draem header
 
-    css-all: copy in-as-block draem/config 'css
+    css-all: copy in-as-block draem.config 'css
 
     if with [
-        append css-all (in-as-block entry/header 'css)
+        append css-all (in-as-block entry.header 'css)
     ]
 
     if empty? css-all [
@@ -100,10 +100,10 @@ django-scripts: function [/with entry [object!]] [
     ;-- Script handling parallels the CSS handling... defaults come from the
     ;-- configuration, added scripts come from the Draem header
 
-    script-all: copy in-as-block draem/config 'javascript
+    script-all: copy in-as-block draem.config 'javascript
 
     if with [
-        append script-all (in-as-block entry/header 'javascript)
+        append script-all (in-as-block entry.header 'javascript)
     ]
 
     if empty? script-all [
@@ -158,15 +158,15 @@ django-extends: function [template [file!] /with entry [object!]] [
         ]
 
         django-block "prologue" [
-            draem/config/site-prologue-html
+            draem.config.site-prologue-html
         ]
 
         django-block "trailer" [
-            draem/config/site-trailer-html
+            draem.config.site-trailer-html
         ]
 
         django-block "epilogue" [
-            draem/config/site-epilogue-html
+            draem.config.site-epilogue-html
         ]
 
         django-google-analytics
@@ -176,7 +176,7 @@ django-extends: function [template [file!] /with entry [object!]] [
 link-to-tag: function [tag [word!] /count num] [
     combine [
         {<a href="}
-        draem/config/site-url "tag/" stringify/dashes tag {/}
+        draem.config.site-url "tag/" stringify/dashes tag {/}
         {" class="post-tag" rel="tag">}
             stringify tag
         </a>
@@ -189,7 +189,7 @@ link-to-tag: function [tag [word!] /count num] [
 link-to-character: function [character [word!] /count num] [
     combine [
         {<a href="}
-        draem/config/site-url "character/" lowercase stringify/dashes character {/}
+        draem.config.site-url "character/" lowercase stringify/dashes character {/}
         {">}
             stringify character
         </a>
@@ -207,10 +207,10 @@ write-entry: function [
 ][
     print [{write-entry} html-file]
 
-    content-html: htmlify entry/content
+    content-html: htmlify entry.content
 
-    sorted-tags: draem/entry-tags-by-popularity entry/header
-    unsorted-characters: select draem/indexes/slug-to-characters entry/header/slug
+    sorted-tags: draem/entry-tags-by-popularity entry.header
+    unsorted-characters: select draem.indexes.slug-to-characters entry.header.slug
     main-tag: first sorted-tags
 
     is-post: any [earlier-entry later-entry]
@@ -226,9 +226,9 @@ write-entry: function [
         ;-- <meta name="description" ...> information
         django-block "description" [
             combine [
-                {Author:} space draem/config/site-author "," space
-                {Title:} space entry/header/title "," space
-                {Date:} space entry/header/date/date "," space
+                {Author:} space draem.config.site-author "," space
+                {Title:} space entry.header.title "," space
+                {Date:} space entry.header.date.date "," space
                 {Length:} space length? (split content-html space) space "words"
             ]
         ]
@@ -236,11 +236,11 @@ write-entry: function [
         django-block/inline "title" [
             if main-tag [stringify main-tag]
             space ":"
-            space entry/header/title
+            space entry.header.title
         ]
 
         django-block/inline "header" [
-            entry/header/title
+            entry.header.title
         ]
 
         django-path [
@@ -253,13 +253,13 @@ write-entry: function [
             ]
             <li>
                 <span>
-                    entry/header/title
+                    entry.header.title
                 </span>
             </li>
         ]
 
         django-block "date" [
-            entry/header/date
+            entry.header.date
         ]
 
         django-block "tags" [
@@ -289,7 +289,7 @@ write-entry: function [
         either later-entry [
             [
                 django-block/inline {nexttitle} [
-                    later-entry/header/title
+                    later-entry.header.title
                 ]
                 django-block/inline {nexturl} [
                     url-for-entry later-entry
@@ -301,7 +301,7 @@ write-entry: function [
                     {Home}
                 ]
                 django-block/inline {nexturl} [
-                    draem/config/site-url
+                    draem.config.site-url
                 ]
             ]
         ]
@@ -309,7 +309,7 @@ write-entry: function [
         either earlier-entry [
             [
                 django-block/inline {prevtitle} [
-                    earlier-entry/header/title
+                    earlier-entry.header.title
                 ]
                 django-block/inline {prevurl} [
                     url-for-entry earlier-entry
@@ -321,13 +321,13 @@ write-entry: function [
                     {Home}
                 ]
                 django-block/inline {prevurl} [
-                    draem/config/site-url
+                    draem.config.site-url
                 ]
             ]
         ]
 
         django-block "footer" [
-            htmlify draem/config/site-footer
+            htmlify draem.config.site-footer
         ]
     ]
 
@@ -336,7 +336,7 @@ write-entry: function [
 ]
 
 make-templates: function [
-    {Generates the django templates from the entries and draem/indexes}
+    {Generates the django templates from the entries and draem.indexes}
 
     entries [block!]
     indexes [object!]
@@ -358,29 +358,31 @@ make-templates: function [
         django-extends %base.html
 
         django-block/inline "title" [
-            draem/config/site-title
+            draem.config.site-title
         ]
 
         django-block/inline "header" [
-            draem/config/site-tagline
+            draem.config.site-tagline
         ]
 
         django-block/inline "path" [
-            <li> <span> draem/config/site-url </span> </li>
+            <li> <span> draem.config.site-url </span> </li>
         ]
 
         "{% block main %}"
 
-        htmlify draem/config/site-intro
+        htmlify draem.config.site-intro
     ]
 
     iter: entries
     while [not tail? iter] [
         entry: first iter
-        earlier-entry: draem/previous-entry entry/header ;-- maybe null
-        later-entry: draem/next-entry entry/header ;-- maybe null
+        earlier-entry: draem/previous-entry entry.header ;-- maybe null
+        later-entry: draem/next-entry entry.header ;-- maybe null
 
-        write-entry entry earlier-entry later-entry (draem/config/file-for-template entry/header)
+        write-entry entry earlier-entry later-entry (
+            draem.config/file-for-template entry.header
+        )
         unless all [
             null? earlier-entry
             null? later-entry
@@ -396,7 +398,7 @@ make-templates: function [
 
     append index-html combine [
         django-block/inline "footer" [
-            htmlify draem/config/site-footer
+            htmlify draem.config.site-footer
         ]
     ]
 
@@ -415,7 +417,7 @@ make-templates: function [
         ]
 
         django-block/inline "header" [
-            {All Tags for} space draem/config/site-name
+            {All Tags for} space draem.config.site-name
         ]
 
         django-path [
@@ -425,7 +427,7 @@ make-templates: function [
         "{% block tags %}"
     ]
 
-    taglist-sorted: make-sorted-block-from-map draem/indexes/tag-to-entries
+    taglist-sorted: make-sorted-block-from-map draem.indexes.tag-to-entries
 
     foreach [tag entries] taglist-sorted [
         assert [word? tag]
@@ -450,7 +452,7 @@ make-templates: function [
 
             django-path [
                 <li>
-                    {<a href="} draem/config/site-url {tag/" title="Tag List">}
+                    {<a href="} draem.config.site-url {tag/" title="Tag List">}
                         {Tag}
                     </a>
                 </li>
@@ -463,8 +465,8 @@ make-templates: function [
         foreach entry entries [
             if true or (true? all [
                 ;-- allow pages to appear in the tag list for now
-                draem/next-entry entry/header
-                draem/previous-entry entry/header
+                draem/next-entry entry.header
+                draem/previous-entry entry.header
             ])[
                 append tag-html link-to-entry entry
             ]
@@ -499,7 +501,7 @@ make-templates: function [
         "{% block characters %}"
     ]
 
-    characterlist-sorted: make-sorted-block-from-map draem/indexes/character-to-entries
+    characterlist-sorted: make-sorted-block-from-map draem.indexes.character-to-entries
 
     foreach [character entries] characterlist-sorted [
         assert [word? character]
@@ -524,7 +526,7 @@ make-templates: function [
 
             django-path [
                 <li>
-                    {<a href="} draem/config/site-url {character/" title="Character List">}
+                    {<a href="} draem.config.site-url {character/" title="Character List">}
                         {Character}
                     </a>
                 </li>
@@ -539,8 +541,8 @@ make-templates: function [
         foreach entry entries [
             if true or (true? all [
                 ;-- allow pages to appear in the character list for now
-                draem/next-entry entry/header
-                draem/previous-entry entry/header
+                draem/next-entry entry.header
+                draem/previous-entry entry.header
             ])[
                 append character-html link-to-entry entry
             ]

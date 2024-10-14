@@ -142,17 +142,17 @@ stringify: func [word [set-word! word! file! string!] /dashes] [
 
 url-for-entry: function [entry [object!]] [
     ;-- Required hook: produce URL from header
-    assert [function? :draem/config/url-from-header]
+    assert [action? draem.config.url-from-header/]
 
-    draem/config/url-from-header entry/header
+    draem.config/url-from-header entry.header
 ]
 
 link-to-entry: function [entry [object!]] [
     combine [
         {<a href="} url-for-entry entry {">}
-        entry/header/title
+        entry.header.title
         </a>
-        space {:} space to string! replace/all copy to string! entry/header/date/date {0:00} {}
+        space {:} space to string! replace/all copy to string! entry.header.date.date {0:00} {}
         <br />
     ]
 ]

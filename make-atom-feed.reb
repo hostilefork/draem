@@ -36,35 +36,35 @@ to-iso8601-date: function [
     ; from http://www.rebol.org/view-script.r?script=iso-8601-date.r
     comment [
         unless timestamp [
-            return to string! join date/year
-            ["-" copy/part tail join "0" [date/month] -2 "-" copy/part tail join "0" [date/day] -2 ]
+            return to string! join date.year
+            ["-" copy/part tail join "0" [date.month] -2 "-" copy/part tail join "0" [date.day] -2 ]
         ]
     ]
 
     if timestamp [
-        either the-date/time [
+        either the-date.time [
             ; the date has a time
             insert iso-date combine [
                 "T"
 
                 ; insert leading zero if needed
-                unless (the-date/time/hour > 9) ["0"]
+                unless (the-date.time.hour > 9) ["0"]
 
-                the-date/time/hour
+                the-date.time.hour
 
                 ":"
 
                 ; again, leading zero if needed...
-                unless (the-date/time/minute > 9) ["0"]
+                unless (the-date.time.minute > 9) ["0"]
 
-                the-date/time/minute
+                the-date.time.minute
 
                 ":"
 
                 ; once again zero, note Rebol only returns seconds if non-zero
-                unless (the-date/time/second > 9) ["0"]
+                unless (the-date.time.second > 9) ["0"]
 
-                (to integer! the-date/time/second)
+                (to integer! the-date.time.second)
 
                 ; !!! Rebol2 and R3-Alpha gave back 0:00 as the time zone
                 ; of dates with no zone component.  Ren-C considers the zone
@@ -72,23 +72,23 @@ to-iso8601-date: function [
                 ; picking, or a void if using GET-PATH!.  This ANY glosses
                 ; the difference.
                 ;
-                either (any [:the-date/zone 0:00] = 0:00) [
+                either (any [:the-date.zone 0:00] = 0:00) [
                     ; UTC
                     "Z"
                 ][
                     [
                         ; + or - UTC
-                        either (the-date/zone/hour > 0) [{+}] [{-}]
+                        either (the-date.zone.hour > 0) [{+}] [{-}]
 
-                        if ((absolute the-date/zone/hour) < 10) ["0"]
+                        if ((absolute the-date.zone.hour) < 10) ["0"]
 
-                        absolute the-date/zone/hour
+                        absolute the-date.zone.hour
 
                         {:}
 
-                        if (the-date/zone/minute < 10) ["0"]
+                        if (the-date.zone.minute < 10) ["0"]
 
-                        the-date/zone/minute
+                        the-date.zone.minute
                     ]
                 ]
             ]
@@ -99,21 +99,21 @@ to-iso8601-date: function [
     ]
 
     insert iso-date combine [
-        copy/part "000" (4 - length? to-string the-date/year)
+        copy/part "000" (4 - length? to-string the-date.year)
 
-        the-date/year
-
-        "-"
-
-        if (the-date/month > 9) ["0"]
-
-        the-date/month
+        the-date.year
 
         "-"
 
-        if (the-date/day > 9) ["0"]
+        if (the-date.month > 9) ["0"]
 
-        the-date/day
+        the-date.month
+
+        "-"
+
+        if (the-date.day > 9) ["0"]
+
+        the-date.day
      ]
 
     return head iso-date
@@ -162,26 +162,26 @@ make-atom-feed: function [
 
         <feed xmlns="http://www.w3.org/2005/Atom">
 
-        <title> draem/config/site-title </title>
-        <subtitle> draem/config/site-tagline </subtitle>
-        {<link href="} draem/config/site-url {feed/" rel="self" />}
-        {<link href="} draem/config/site-url {" />}
-        <id> {tag:} draem/config/rss-tag {,1975-04-21:} </id>
+        <title> draem.config.site-title </title>
+        <subtitle> draem.config.site-tagline </subtitle>
+        {<link href="} draem.config.site-url {feed/" rel="self" />}
+        {<link href="} draem.config.site-url {" />}
+        <id> {tag:} draem.config.rss-tag {,1975-04-21:} </id>
         <updated> to-iso8601-date/timestamp now </updated>
         <author>
-            <name> draem/config/site-author </name>
+            <name> draem.config.site-author </name>
         </author>
     ]
 
     foreach entry entries [
         unless any [ ;-- don't allow pages to appear in the rss atom for now
-            draem/next-entry entry/header
-            draem/previous-entry entry/header
+            draem/next-entry entry.header
+            draem/previous-entry entry.header
         ][
             continue
         ]
 
-        sorted-tags: map-each tag draem/entry-tags-by-popularity entry/header [
+        sorted-tags: map-each tag draem/entry-tags-by-popularity entry.header [
             stringify tag
         ]
         if 0 = atom-length [
@@ -190,12 +190,12 @@ make-atom-feed: function [
         atom-length: atom-length - 1
         append atom-xml combine/with [
             <entry>
-                [<title> (entry/header/title) </title>]
+                [<title> (entry.header.title) </title>]
             ;   <link href="} (url-for-entry entry) {" />
                 [{<link rel="alternate" type="text/html" href="} url-for-entry entry {" />}]
             ;   <link rel="edit" href="} ("http://example.org/2003/12/13/atom03/edit") {"/>
-                [<id> (atomid-from-url url-for-entry entry entry/header/date) </id>]
-                [<updated> (to-iso8601-date/timestamp entry/header/date) </updated>]
+                [<id> (atomid-from-url url-for-entry entry entry.header.date) </id>]
+                [<updated> (to-iso8601-date/timestamp entry.header.date) </updated>]
                 <summary>
                 [{Tags: } combine/with sorted-tags [{,} space]]
                 </summary>

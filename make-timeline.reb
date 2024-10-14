@@ -32,16 +32,9 @@ to-timeline-date: function [d [date!]] [
     ; Not all Rebol dates have times or time zone info.  Force it for
     ; convenience in the parse.
     ;
-    ; !!! Rebol2 and R3-Alpha allow D/TIME to come back as BLANK!, while Ren-C
-    ; treats a missing date the same way other missing "active" (potentially
-    ; function-dispatching) items are, which is an error if missing.  While
-    ; PICK D 'TIME would give blank in Ren-C, this is not supported in either
-    ; Rebol2 or R3-Alpha.  ANY [:D/TIME FALSE] will be blank in the case of
-    ; a missing time component in all, since Ren-C makes :D/TIME void.
-    ;
-    unless any [:d/time false] [
-        d/time: 10:20:03
-        d/zone: -04:00
+    if not d.time false [
+        d.time: 10:20:03
+        d.zone: -04:00
     ]
 
     date-string: to string! d
@@ -72,17 +65,17 @@ make-timeline: function [entries [block!] xml-filename [file!]] [
 
     timelinexml: combine [
         {<data}
-        space {wiki-url="} draem/config/site-url {"}
-        space {wiki-section="} draem/config/site-name { Timeline"}
+        space {wiki-url="} draem.config.site-url {"}
+        space {wiki-section="} draem.config.site-name { Timeline"}
         {>}
     ]
 
     foreach entry entries [
         append timelinexml combine [
-            tab tab {<event start="} to-timeline-date entry/header/date {"}
-            tab tab tab {title="} stringify entry/header/slug {"}
+            tab tab {<event start="} to-timeline-date entry.header.date {"}
+            tab tab tab {title="} stringify entry.header.slug {"}
             tab tab tab {>}
-            entry/header/title
+            entry.header.title
             tab tab tab </event>
         ]
     ]

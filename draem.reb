@@ -44,19 +44,19 @@ draem: context [
         assert [null? config]
         assert [all [
             ;-- Required properties
-            string? cfg/site-name
-            url? cfg/site-url
-            dir? cfg/entries-dir
-            dir? cfg/templates-dir
-            block? cfg/site-toplevel-slugs
+            string? cfg.site-name
+            url? cfg.site-url
+            dir? cfg.entries-dir
+            dir? cfg.templates-dir
+            block? cfg.site-toplevel-slugs
 
             ;-- Required hooks
-            function? :cfg/url-from-header
-            function? :cfg/file-for-template
+            function? cfg.url-from-header/
+            function? cfg.file-for-template/
 
             ;-- Optional hooks
             either in cfg 'check-header [
-                function? :cfg/check-header
+                function? cfg.check-header/
             ][
                 true
             ]
@@ -117,14 +117,14 @@ draem: context [
             sub-dir: to file! {}
         ]
 
-        foreach file load (join config/entries-dir sub-dir) [
+        foreach file load (join config.entries-dir sub-dir) [
             either dir? file [
-                print [{Recursing into:} rejoin [config/entries-dir sub-dir file]]
+                print [{Recursing into:} rejoin [config.entries-dir sub-dir file]]
                 load-entries/recurse (join sub-dir file) entries
             ][
                 print [{Pre-processing:} file]
 
-                data: load rejoin [config/entries-dir sub-dir file]
+                data: load rejoin [config.entries-dir sub-dir file]
 
                 pos: data
 
@@ -139,29 +139,29 @@ draem: context [
 
                 unless all [
                     in header 'date
-                    date? header/date
+                    date? header.date
                 ][
                     do make error! "Header requires valid date field"
                 ]
 
                 unless all [
                     in header 'slug
-                    file? header/slug
+                    file? header.slug
                 ][
                     do make error! "Header requires a file! slug field"
                 ]
 
                 unless all [
                     in header 'title
-                    string? header/title
+                    string? header.title
                 ][
                     do make error! "Header requires a string! title field"
                 ]
 
                 unless all [
                     in header 'tags
-                    block? header/tags
-                    does [foreach tag header/tags [unless word? tag return false] true]
+                    block? header.tags
+                    does [foreach tag header.tags [unless word? tag return false] true]
                 ][
                     do make error! "Header requires a tags block containing words"
                 ]
@@ -176,18 +176,18 @@ draem: context [
                 ]
 
                 append slug-to-source-path reduce [
-                    entry/header/slug
+                    entry.header.slug
                     rejoin [sub-dir file]
                 ]
 
                 ;-- Hacky
-                unless find header/tags 'draft [
+                unless find header.tags 'draft [
                     append entries entry
                 ]
             ]
         ]
 
-        sort/compare entries func [a b] [a/header/date > b/header/date]
+        sort/compare entries func [a b] [a.header.date > b.header.date]
 
         unless recurse [
             set-entries entries
@@ -199,18 +199,18 @@ draem: context [
     ;-- Next and previous entry logic; slow and bad
 
     previous-entry: function [header [object!]] [
-        if find config/site-toplevel-slugs header/slug [
+        if find config.site-toplevel-slugs header.slug [
             return null
         ]
 
         pos: entries
         while [not tail? pos] [
-            if pos/1/header = header [
+            if pos.1.header = header [
                 pos: next pos
                 while [
                     all [
                         not tail? pos
-                        find config/site-toplevel-slugs pos/1/header/slug
+                        find config.site-toplevel-slugs pos.1.header.slug
                     ]
                 ][
                     pos: next pos
@@ -223,18 +223,18 @@ draem: context [
     ]
 
     next-entry: function [header [object!]] [
-        if find config/site-toplevel-slugs header/slug [
+        if find config.site-toplevel-slugs header.slug [
             return null
         ]
 
         result: null
         pos: entries
         while [not tail? pos] [
-            if pos/1/header = header [
+            if pos.1.header = header [
                 return result
             ]
-            unless find config/site-toplevel-slugs pos/1/header/slug [
-                result: pos/1
+            unless find config.site-toplevel-slugs pos.1.header.slug [
+                result: pos.1
             ]
             pos: next pos
         ]
@@ -259,22 +259,22 @@ draem: context [
         prompt-delete-dir-if-exists target-dir
 
         foreach entry entries [
-            target-file: rejoin [target-dir (select slug-to-source-path entry/header/slug)]
+            target-file: rejoin [target-dir (select slug-to-source-path entry.header.slug)]
             make-dir/deep first split-path target-file
 
             out: copy {Draem }
 
-            foreach w words-of entry/header [
-                if word? select entry/header w [
-                    entry/header/(w): to lit-word! select entry/header w
+            foreach w words-of entry.header [
+                if word? select entry.header w [
+                    entry.header.(w): to lit-word! select entry.header w
                 ]
             ]
 
-            append out mold body-of entry/header
+            append out mold body-of entry.header
             append out "^/^/"
 
-            do-nulyne entry/content
-            content-string: mold/only entry/content
+            do-nulyne entry.content
+            content-string: mold/only entry.content
 
             pos: content-string
             while [not tail? pos] [
@@ -299,10 +299,10 @@ draem: context [
         {Return the tags as a block sorted by popularity.}
         header [object!]
     ][
-        sorted-tags: copy header/tags
+        sorted-tags: copy header.tags
         sort/compare sorted-tags func [a b] [
-            (length? indexes/tag-to-entries/(a)) >
-            (length? indexes/tag-to-entries/(b))
+            (length? indexes.tag-to-entries.(a)) >
+            (length? indexes.tag-to-entries.(b))
         ]
     ]
 
@@ -326,23 +326,23 @@ draem: context [
         ]
 
         foreach entry entries [
-            repend indexes/slug-to-entry [entry/header/slug entry]
+            repend indexes.slug-to-entry [entry.header.slug entry]
 
-            header: entry/header
-            content: entry/content
+            header: entry.header
+            content: entry.content
 
-            foreach tag header/tags [
-                either select indexes/tag-to-entries tag [
-                    append select indexes/tag-to-entries tag entry
+            foreach tag header.tags [
+                either select indexes.tag-to-entries tag [
+                    append select indexes.tag-to-entries tag entry
                 ][
 
-                    append indexes/tag-to-entries compose/deep copy/deep [(tag) [(entry)]]
+                    append indexes.tag-to-entries compose/deep copy/deep [(tag) [(entry)]]
                 ]
             ]
 
             ; collect the characters from blocks beginning with set-word in the body
             characters: copy []
-            repend indexes/slug-to-characters [entry/header/slug characters]
+            repend indexes.slug-to-characters [entry.header.slug characters]
 
             collect-characters: function [blk [block!]] [
                 dialog-rule: [
@@ -371,10 +371,10 @@ draem: context [
             collect-characters content
 
             foreach character characters [
-                either select indexes/character-to-entries character [
-                    append select indexes/character-to-entries character entry
+                either select indexes.character-to-entries character [
+                    append select indexes.character-to-entries character entry
                 ][
-                    append indexes/character-to-entries compose/deep copy/deep [(character) [(entry)]]
+                    append indexes.character-to-entries compose/deep copy/deep [(character) [(entry)]]
                 ]
             ]
         ]
@@ -394,13 +394,13 @@ draem: context [
             unless entries [load-entries]
             unless indexes [build-indexes]
 
-            prompt-delete-dir-if-exists config/templates-dir
+            prompt-delete-dir-if-exists config.templates-dir
 
-            make-templates entries indexes config/templates-dir
+            make-templates entries indexes config.templates-dir
 
-            make-timeline entries (join config/templates-dir %timeline.xml)
+            make-timeline entries (join config.templates-dir %timeline.xml)
 
-            make-atom-feed entries (join config/templates-dir %atom.xml) 20
+            make-atom-feed entries (join config.templates-dir %atom.xml) 20
 
             null
         ]

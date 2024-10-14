@@ -146,8 +146,8 @@ htmlify: function [
                     {<a href="} url {">}
                         {<img src="} url {"} space
                         {alt="} caption {"} space
-                        {width="} to integer! size/1 {"} space
-                        {height="} to integer! size/2 {" />}
+                        {width="} to integer! size.1 {"} space
+                        {height="} to integer! size.2 {" />}
                     </a>
                     </div>
                 ]
@@ -166,8 +166,8 @@ htmlify: function [
                     {<a href="} to string! link-url {">}
                         {<img src="} to string! image-url {"} space
                         {alt="} caption {"} space
-                        {width="} to integer! size/1 {"} space
-                        {height="} to integer! size/2 {" />}
+                        {width="} to integer! size.1 {"} space
+                        {height="} to integer! size.2 {" />}
                     </a>
                     </div>
                 ]
@@ -411,8 +411,8 @@ htmlify: function [
                         {<iframe class="youtube-player"} space
 
                         ;-- Conversion needed as first 10x20 returns 10.0 :-/
-                        {width="} to integer! size/1 {"} space
-                        {height="} to integer! size/2 {"} space
+                        {width="} to integer! size.1 {"} space
+                        {height="} to integer! size.2 {"} space
                         {src="https://www.youtube.com/embed/} video-id {"} space
                         {allowFullScreen}
                         {>}
