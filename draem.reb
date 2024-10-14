@@ -286,7 +286,7 @@ draem: context [
                 ]
                 ++ pos
             ]
-            replace/all content-string "^/NULYNE" "^/"
+            replace content-string "^/NULYNE" "^/"
 
             append out content-string
             append out "^/"

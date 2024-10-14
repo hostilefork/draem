@@ -97,7 +97,7 @@ htmlify: function [
             ]]
         ] (
             ;-- put in better url encoding logic or decide what should be done
-            replace/all url "&" "&amp;"
+            replace url "&" "&amp;"
 
             append-result combine [
                 (begin-span-or-div span 'url) newline
@@ -278,9 +278,9 @@ htmlify: function [
 
                 ;-- Current markup is expected to be HTML compatible
                 ;-- http://stackoverflow.com/a/13010144/211160
-                replace/all code "&" "&amp;" ;-- ampersand has to be first, or you double escape!
-                replace/all code "<" "&lt;"
-                replace/all code ">" "&gt;"
+                replace code "&" "&amp;" ;-- ampersand has to be first, or you double escape!
+                replace code "<" "&lt;"
+                replace code ">" "&gt;"
 
                 trim-head-tail-lines code
 

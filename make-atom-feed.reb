@@ -135,9 +135,9 @@ atomid-from-url: function [
         {Date associated with URL, included in atom ID}
 ][
     str: to string! url
-    replace str "http://" {}
-    replace/all str "#" "/"
-    replace str "/" combine ["," to-iso8601-date d ":"]
+    replace:one str "http://" {}
+    replace str "#" "/"
+    replace:one str "/" combine ["," to-iso8601-date d ":"]
     insert str "tag:"
     return str
 ]

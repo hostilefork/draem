@@ -29,7 +29,7 @@ unless value? 'old-to [
 to: func [type value] [
     if any [string! == type  string! == type? type] [
         if any-word? value [
-            return replace/all replace/all replace/all old-to string! value {:} {} {'} {} {/} {}
+            return replace replace replace old-to string! value {:} {} {'} {} {/} {}
         ]
     ]
     return old-to type value
@@ -136,7 +136,7 @@ stringify: func [word [set-word! word! file! string!] /dashes] [
     either dashes [
         to string! word
     ][
-        replace/all to string! word "-" space
+        replace to string! word "-" space
     ]
 ]
 
@@ -152,7 +152,7 @@ link-to-entry: function [entry [object!]] [
         {<a href="} url-for-entry entry {">}
         entry.header.title
         </a>
-        space {:} space to string! replace/all copy to string! entry.header.date.date {0:00} {}
+        space {:} space to string! replace copy to string! entry.header.date.date {0:00} {}
         <br />
     ]
 ]
