@@ -216,7 +216,7 @@ combine: func [
             set/any 'temp delimiter depth
             if all [
                 value? 'temp
-                (not none? temp) or (block? out)
+                (not null? temp) or (block? out)
             ][
                 out: append out temp
             ]
@@ -225,7 +225,7 @@ combine: func [
         ]
     ]
 
-    ;-- Do evaluation of the block until a non-none evaluation result
+    ;-- Do evaluation of the block until a non-null evaluation result
     ;-- is found... or the end of the input is reached.
     while [not tail? block] [
         set/any 'value do/next block 'block
@@ -287,7 +287,7 @@ combine: func [
                 do make error! "Evaluation in COMBINE gave symbolic word"
             ]
 
-            none? value [
+            null? value [
                 ;-- Skip all nones
             ]
 

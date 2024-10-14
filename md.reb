@@ -17,7 +17,7 @@ REBOL[
 xml?: true
 start-para?: true
 end-para?: true
-md-buffer: none
+md-buffer: null
 
 ; FIXME: hacky switch to determine wheter to emit <p> or not (for snippets)
 
@@ -174,7 +174,7 @@ link-rule: use [text address value title] [
         #"("
         (
             address: copy ""
-            title: none
+            title: null
         )
         any [
             not [space | tab | #")"]

@@ -5,7 +5,7 @@ Rebol [
 
 
 begin-span-or-div: function [
-    is-span [none! logic!]
+    is-span [null! logic!]
     class [word!]
 ][
     combine [
@@ -19,7 +19,7 @@ begin-span-or-div: function [
 
 
 end-span-or-div: function [
-    is-span [none! logic!]
+    is-span [null! logic!]
 ][
     combine [{</} (either is-span [{span}] [{div}]) {>}]
 ]
@@ -38,7 +38,7 @@ htmlify: function [
     ;-- Review proposals for constructors...
     result: make string! 1000
 
-    last-append: none
+    last-append: null
     append-result: func [html [string!]] [
         append result html
         last-append: html
@@ -229,7 +229,7 @@ htmlify: function [
             ;-- NOTE and UPDATE
             [
                 ['note (is-note: true) | 'update (is-note: false)]
-                (date: none) opt [set date date!]
+                (date: null) opt [set date date!]
                 set args [block! | string!]
             ] (
                 append-result combine [
@@ -267,13 +267,13 @@ htmlify: function [
             ;-- CODE, TEXT, ERROR
             [
                 'source
-                (language: none) opt [set language lit-word!]
+                (language: null) opt [set language lit-word!]
                 [set code string!]
             ] (
                 language: if language [to-word language]
 
                 if language = 'text [
-                    language: none
+                    language: null
                 ]
 
                 ;-- Current markup is expected to be HTML compatible
@@ -285,7 +285,7 @@ htmlify: function [
                 trim-head-tail-lines code
 
                 needs-pre-tag: language <> 'error
-                needs-code-tag: language <> none
+                needs-code-tag: language <> null
 
                 ;-- TODO: work out the right language classes for google code prettify
                 ;-- http://stackoverflow.com/q/11742907/211160
@@ -317,7 +317,7 @@ htmlify: function [
             ;-- HEADING
             [
                 'heading
-                (anchor: none) opt [set anchor file!]
+                (anchor: null) opt [set anchor file!]
                 set heading-text string!
             ] (
                 append-result combine [
@@ -431,7 +431,7 @@ htmlify: function [
         'dialog and block! into [
             some [
                 [set character set-word!]
-                (parenthetical: none)
+                (parenthetical: null)
                 opt [set parenthetical tag!]
                 [set dialogue-text string!]
                 (

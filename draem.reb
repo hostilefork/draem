@@ -33,15 +33,15 @@ do %make-atom-feed.reb
 
 draem: context [
 
-    ;-- Site configuration, defaults to none
-    config: none
+    ;-- Site configuration, defaults to null
+    config: null
 
     set-config: func [
         {Do validation on the site configuration, and set it.}
 
         cfg [object!]
     ][
-        assert [none? config]
+        assert [null? config]
         assert [all [
             ;-- Required properties
             string? cfg/site-name
@@ -66,8 +66,8 @@ draem: context [
     ]
 
 
-    ;-- Block of entries sorted by reverse date, defaults to none
-    entries: none
+    ;-- Block of entries sorted by reverse date, defaults to null
+    entries: null
 
     ;-- a map that remembers where each entry was originally loaded from
     slug-to-source-path: make map! []
@@ -77,20 +77,19 @@ draem: context [
 
         ent [block!]
     ][
-        assert [none? entries]
+        assert [null? entries]
         entries: ent
     ]
 
 
-    ;-- Indexing information, defaults to none
-    indexes: none
+    indexes: null
 
     set-indexes: func [
         {Sets the index information in this context, assumed valid.}
 
         idx [object!]
     ][
-        assert [none? indexes]
+        assert [null? indexes]
         indexes: idx
     ]
 
@@ -201,7 +200,7 @@ draem: context [
 
     previous-entry: function [header [object!]] [
         if find config/site-toplevel-slugs header/slug [
-            return none
+            return null
         ]
 
         pos: entries
@@ -225,10 +224,10 @@ draem: context [
 
     next-entry: function [header [object!]] [
         if find config/site-toplevel-slugs header/slug [
-            return none
+            return null
         ]
 
-        result: none
+        result: null
         pos: entries
         while [not tail? pos] [
             if pos/1/header = header [
@@ -403,7 +402,7 @@ draem: context [
 
             make-atom-feed entries (join config/templates-dir %atom.xml) 20
 
-            none
+            null
         ]
 
         if err [

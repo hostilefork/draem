@@ -70,7 +70,7 @@ django-css: function [/with entry] [
     ]
 
     if empty? css-all [
-        return none
+        return null
     ]
 
     css-block: copy ["{{ block.super }}"]
@@ -107,7 +107,7 @@ django-scripts: function [/with entry [object!]] [
     ]
 
     if empty? script-all [
-        return none
+        return null
     ]
 
     script-block: copy ["{{ block.super }}"]
@@ -201,8 +201,8 @@ link-to-character: function [character [word!] /count num] [
 
 write-entry: function [
     entry [object!]
-    earlier-entry [none! object!]
-    later-entry [none! object!]
+    earlier-entry [null! object!]
+    later-entry [null! object!]
     html-file [file!]
 ][
     print [{write-entry} html-file]
@@ -377,13 +377,13 @@ make-templates: function [
     iter: entries
     while [not tail? iter] [
         entry: first iter
-        earlier-entry: draem/previous-entry entry/header ;-- maybe none
-        later-entry: draem/next-entry entry/header ;-- maybe none
+        earlier-entry: draem/previous-entry entry/header ;-- maybe null
+        later-entry: draem/next-entry entry/header ;-- maybe null
 
         write-entry entry earlier-entry later-entry (draem/config/file-for-template entry/header)
         unless all [
-            none? earlier-entry
-            none? later-entry
+            null? earlier-entry
+            null? later-entry
         ][
             ;-- It's not "chained" into the index, so leave it standing alone
             append index-html link-to-entry entry
