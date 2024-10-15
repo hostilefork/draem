@@ -27,7 +27,7 @@ do %md.reb
 
 do %htmlify.reb
 
-django-block: function [name [string!] stuff [string! block!] /inline] [
+django-block: function [name [text!] stuff [text! block!] /inline] [
     combine [
         "{% block" space name space "%}"
         if not inline [newline]
@@ -76,7 +76,7 @@ django-css: function [/with entry] [
     css-block: copy ["{{ block.super }}"]
 
     for-each item css-all [
-        append css-block either string? item [
+        append css-block either text? item [
             trim-head-tail-lines css-text: copy item
             take:last css-text ;--django-block adds newline
             combine [
@@ -87,7 +87,7 @@ django-css: function [/with entry] [
         ][
             combine [
                 {<link rel="stylesheet" type="text/css" href=}
-                {"} to string! item {"}
+                {"} to text! item {"}
                 { />}
             ]
         ]
@@ -113,7 +113,7 @@ django-scripts: function [/with entry [object!]] [
     script-block: copy ["{{ block.super }}"]
 
     for-each item script-all [
-        append script-block either string? item [
+        append script-block either text? item [
             trim-head-tail-lines js-text: copy item
             take:last js-text ;-- django-block adds newline
 
@@ -125,7 +125,7 @@ django-scripts: function [/with entry [object!]] [
         ][
             combine [
                 {<script type="text/javascript" src=}
-                {"} to string! item {"} {>}
+                {"} to text! item {"} {>}
                 </script>
             ]
         ]
@@ -141,7 +141,7 @@ django-scripts: function [/with entry [object!]] [
 ;-- The footer which offers the ability to comment and such is only on posts.
 django-extends: function [template [file!] /with entry [object!]] [
     combine [
-        ["{% extends" space {"} to string! template {"} space "%}"]
+        ["{% extends" space {"} to text! template {"} space "%}"]
 
         either with [
             [

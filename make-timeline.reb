@@ -37,7 +37,7 @@ to-timeline-date: function [d [date!]] [
         d.zone: -04:00
     ]
 
-    date-string: to string! d
+    date-string: to text! d
     rule: [
         copy day-string: to "-" skip
         copy month-string: to "-" skip

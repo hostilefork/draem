@@ -36,7 +36,7 @@ to-iso8601-date: function [
     ; from http://www.rebol.org/view-script.r?script=iso-8601-date.r
     comment [
         if not timestamp [
-            return to string! join date.year
+            return to text! join date.year
             ["-" copy:part tail join "0" [date.month] -2 "-" copy:part tail join "0" [date.day] -2 ]
         ]
     ]
@@ -99,7 +99,7 @@ to-iso8601-date: function [
     ]
 
     insert iso-date combine [
-        copy:part "000" (4 - length? to-string the-date.year)
+        copy:part "000" (4 - length? to text! the-date.year)
 
         the-date.year
 
@@ -128,13 +128,13 @@ atomid-from-url: function [
 
     ...which was the #1 Google hit for "atom ID".}
 
-    url [url! string!]
+    url [url! text!]
         {The URL to be specified}
 
     d [date!]
         {Date associated with URL, included in atom ID}
 ][
-    str: to string! url
+    str: to text! url
     replace:one str "http://" {}
     replace str "#" "/"
     replace:one str "/" combine ["," to-iso8601-date d ":"]

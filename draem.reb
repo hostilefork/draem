@@ -44,7 +44,7 @@ draem: context [
         assert [null? config]
         assert [all [
             ;-- Required properties
-            string? cfg.site-name
+            text? cfg.site-name
             url? cfg.site-url
             dir? cfg.entries-dir
             dir? cfg.templates-dir
@@ -96,7 +96,7 @@ draem: context [
 
     stage: function [
         {Log what stage we are in.}
-        name [string!]
+        name [text!]
     ][
         print [lf {===} name {===}]
     ]
@@ -153,9 +153,9 @@ draem: context [
 
                 if not all [
                     in header 'title
-                    string? header.title
+                    text? header.title
                 ][
-                    fail "Header requires a string! title field"
+                    fail "Header requires a text! title field"
                 ]
 
                 if not all [
@@ -248,7 +248,7 @@ draem: context [
         for-each elem blk [
             case [
                 any-list? elem [do-nulyne elem]
-                string? elem [replace elem "^/" "^/NULYNE"]
+                text? elem [replace elem "^/" "^/NULYNE"]
             ]
         ]
     ]
@@ -311,7 +311,7 @@ draem: context [
     ][
         stage "BUILDING INDEXES"
 
-        indexes: object [
+        indexes: make object! [
             ; map from tags to list of entries with that tag
             tag-to-entries: make map! []
 

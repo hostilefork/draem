@@ -27,9 +27,9 @@ if unset? $old-to [
 ]
 
 to: func [type value] [
-    if any [string! == type  string! == type? type] [
+    if any [text! == type] [
         if any-word? value [
-            return replace replace replace old-to string! value {:} {} {'} {} {/} {}
+            return replace replace replace old-to text! value {:} {} {'} {} {/} {}
         ]
     ]
     return old-to type value
@@ -67,7 +67,7 @@ in-as-block: func [obj [object!] key [word!]] [
 ;--
 ; We want to trim head and tail lines from code, but not tabs or spaces
 ;--
-trim-head-tail-lines: function [code [string!]] [
+trim-head-tail-lines: function [code [text!]] [
     ;-- Trim empty lines on top or bottom
     ;-- (they might make the source easier to read)
     code-lines: split code lf
@@ -127,16 +127,16 @@ prompt-delete-dir-if-exists: function [
 
 ; converts slug, character, or tag to a string with option to have dashes
 ; or spaces (default)
-stringify: func [word [set-word! word! file! string!] /dashes] [
-    if string? word [
+stringify: func [word [set-word! word! file! text!] /dashes] [
+    if text? word [
         print ["already stringified:" word]
         quit
     ]
 
     either dashes [
-        to string! word
+        to text! word
     ][
-        replace to string! word "-" space
+        replace to text! word "-" space
     ]
 ]
 
@@ -152,7 +152,7 @@ link-to-entry: function [entry [object!]] [
         {<a href="} url-for-entry entry {">}
         entry.header.title
         </a>
-        space {:} space to string! replace copy to string! entry.header.date.date {0:00} {}
+        space {:} space to text! replace copy to text! entry.header.date.date {0:00} {}
         <br />
     ]
 ]
@@ -194,7 +194,7 @@ combine: func [
 ][
     ;-- No good heuristic for string size yet
     if not into [
-        out: make string! 10
+        out: make text! 10
     ]
 
     if not action? get:any $delimiter [

@@ -12,7 +12,7 @@ begin-span-or-div: function [
         {<}
             (either is-span [{span}] [{div}])
             space
-            {class="} to string! class {"}
+            {class="} to text! class {"}
         {>}
     ]
 ]
@@ -36,10 +36,10 @@ htmlify: function [
     /span
 ][
     ;-- Review proposals for constructors...
-    result: make string! 1000
+    result: make text! 1000
 
     last-append: null
-    append-result: func [html [string!]] [
+    append-result: func [html [text!]] [
         append result html
         last-append: html
         exit
@@ -62,7 +62,7 @@ htmlify: function [
         ;-- Strings bottom out as being handled by markdown.  If a string
         ;-- starts a block, it's expected that the block is going to be
         ;-- a group of elements; hence there are no parameters.
-        ['print set str string!] (
+        ['print set str text!] (
             append-result combine [
                 (begin-span-or-div span 'exposition) newline
                 markdown str
@@ -87,12 +87,12 @@ htmlify: function [
         ;-- If lone URL, the URL is used as the anchor text also.
         [
             ['link set url url!] (
-                anchor-text: to-string url
+                anchor-text: to text! url
             )
         |
             ['link and block! into [
                 [set url url!]
-                [set anchor-text string!]
+                [set anchor-text text!]
                 end
             ]]
         ] (
@@ -120,12 +120,12 @@ htmlify: function [
                 append-result combine [
                     <div class="picture">
                     {<a href="http://s159.photobucket.com/albums/t125/realityhandbook/}
-                    to string! picture-file
+                    to text! picture-file
                     {">}
 
                     {<img src="http://i159.photobucket.com/albums/t125/realityhandbook/}
                     {th_}
-                    to string! picture-file
+                    to text! picture-file
                     {">}
                     </a>
                     </div>
@@ -138,7 +138,7 @@ htmlify: function [
             ['image and block! into [
                 [set url url!]
                 [set size pair!]
-                [set caption string!]
+                [set caption text!]
                 end
             ]] (
                 append-result combine [
@@ -157,14 +157,14 @@ htmlify: function [
             ['button and block! into [
                 [set image-url url!]
                 [set size pair!]
-                [set caption string!]
+                [set caption text!]
                 [set link-url url!]
                 end
             ] (
                 append-result combine [
                     <div class="picture">
-                    {<a href="} to string! link-url {">}
-                        {<img src="} to string! image-url {"} space
+                    {<a href="} to text! link-url {">}
+                        {<img src="} to text! image-url {"} space
                         {alt="} caption {"} space
                         {width="} to integer! size.1 {"} space
                         {height="} to integer! size.2 {" />}
@@ -174,11 +174,11 @@ htmlify: function [
             )
         |
             ;-- QUOTE
-            ['quote set args [string! | block!]] (
+            ['quote set args [text! | block!]] (
                 append-result combine [
                     <blockquote>
 
-                    either string? args [
+                    either text? args [
                         [
                             begin-span-or-div true 'exposition newline
                             markdown args
@@ -201,7 +201,7 @@ htmlify: function [
                 ]
             )
         |
-            ['attribution set str string!] (
+            ['attribution set str text!] (
                 ;-- http://html5doctor.com/blockquote-q-cite/
                 append-result combine [
                     <footer> markdown str </footer>
@@ -215,7 +215,7 @@ htmlify: function [
                 ]
             )
         |
-            ['attribution set string! str] (
+            ['attribution set text! str] (
                 ;-- http://html5doctor.com/blockquote-q-cite/
                 append-result combine [
                     <footer>
@@ -230,7 +230,7 @@ htmlify: function [
             [
                 ['note (is-note: true) | 'update (is-note: false)]
                 (date: null) opt [set date date!]
-                set args [block! | string!]
+                set args [block! | text!]
             ] (
                 append-result combine [
                     {<div class="} (either is-note [{note}] [{update}]) {">}
@@ -246,7 +246,7 @@ htmlify: function [
                         ]
                     ]
                     space
-                    either string? args [
+                    either text? args [
                         combine [
                             (begin-span-or-div true 'exposition) newline
                             markdown args
@@ -268,7 +268,7 @@ htmlify: function [
             [
                 'source
                 (language: null) opt [set language lit-word!]
-                [set code string!]
+                [set code text!]
             ] (
                 language: if language [to-word language]
 
@@ -299,7 +299,7 @@ htmlify: function [
                                 [
                                     space
                                     {class="prettyprint}
-                                    space {lang-} to string! language
+                                    space {lang-} to text! language
                                     {"}
                                 ]
                             ]
@@ -318,12 +318,12 @@ htmlify: function [
             [
                 'heading
                 (anchor: null) opt [set anchor file!]
-                set heading-text string!
+                set heading-text text!
             ] (
                 append-result combine [
                     if anchor [
                         ; http://stackoverflow.com/a/484781/211160
-                        [{<a id="} to string! anchor {">} </a>]
+                        [{<a id="} to text! anchor {">} </a>]
                     ]
                     <h3> markdown heading-text </h3>
                     newline
@@ -346,7 +346,7 @@ htmlify: function [
                 for-each elem args [
                     append result combine [
                         <li>
-                        either string? elem [
+                        either text? elem [
                             [
                                 begin-span-or-div false 'exposition newline
                                 markdown elem
@@ -371,7 +371,7 @@ htmlify: function [
             ;-- HTML
             [
                 'html
-                set html string!
+                set html text!
             ] (
                 ;-- The HTML construct should probably be more versatile, but
                 ;-- for the moment let's just limit it to one HTML string
@@ -392,7 +392,7 @@ htmlify: function [
 
                 ;-- But revisit what's tolerated and what isn't
                 if not all [
-                    parse to string! url [
+                    parse to text! url [
                         ["http" [opt "s"] "://" [opt "www."] "youtube.com/v/" copy video-id to [end | "?"]]
                     |
                         ["http" [opt "s"] "://" [opt "www."] "youtube.com/watch" thru "v=" copy video-id to [end | "#"]]
@@ -433,7 +433,7 @@ htmlify: function [
                 [set character set-word!]
                 (parenthetical: null)
                 opt [set parenthetical tag!]
-                [set dialogue-text string!]
+                [set dialogue-text text!]
                 (
                     append-result combine [
                         begin-span-or-div span 'dialogue
@@ -442,7 +442,7 @@ htmlify: function [
                         if parenthetical [
                             [
                                 <span class="action">
-                                "(" to string! parenthetical ")"
+                                "(" to text! parenthetical ")"
                                 </span> space
                             ]
                         ]
@@ -465,7 +465,7 @@ htmlify: function [
         quit
     ]
 
-    assert [string? result]
+    assert [text? result]
     assert [not empty? result]
     return result
 ]
