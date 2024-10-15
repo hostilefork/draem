@@ -108,7 +108,7 @@ draem: context [
 
         /recurse sub-dir [file!] entries [block!]
     ][
-        print ["Entering load entries with" sub-dir]
+        print ["Entering load entries with" reify sub-dir]
         if not recurse [
             stage "LOADING ENTRIES"
 
@@ -129,13 +129,15 @@ draem: context [
                 pos: data
 
                 if not all [
-                    'Draem == first+ pos
+                    'Draem == first pos
+                    elide pos: my next
                     block? first pos
                 ][
                     fail "Entry must start with Draem header"
                 ]
 
-                header: make object! first+ pos
+                header: make object! first pos
+                pos: my next
 
                 if not all [
                     in header 'date
@@ -281,10 +283,10 @@ draem: context [
                 if #"^/" = first pos [
                     if "^/NULYNE" <> copy/part pos 7 [
                         insert pos "^/"
-                        ++ pos
+                        pos: my next
                     ]
                 ]
-                ++ pos
+                pos: my next
             ]
             replace content-string "^/NULYNE" "^/"
 
