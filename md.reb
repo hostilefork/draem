@@ -19,6 +19,19 @@ start-para?: true
 end-para?: true
 md-buffer: null
 
+; Modern Ren-C doesn't emit tags as-text, they're formatting instructions
+; in things like PRINT.  So we can't use UNSPACED.  Redo AJOIN here as a
+; version that turns tags to plain strings
+;
+ajoin: func [block [block!] <local> out] [
+    out: copy block
+    for-next 'pos out [
+        if tag? pos.1 [change pos form pos.1]
+    ]
+    return unspaced out
+]
+
+
 ; FIXME: hacky switch to determine wheter to emit <p> or not (for snippets)
 
 para?: false
@@ -472,5 +485,5 @@ markdown: func [
     start-para?: old-start-para?
     end-para?: old-end-para?
     para?: old-para?
-    also md-buffer do [md-buffer: old-md-buffer]
+    md-buffer elide (md-buffer: old-md-buffer)
 ]
