@@ -115,7 +115,7 @@ prompt-delete-dir-if-exists: function [
         either "Y" = uppercase ask "Delete it [Y/N]?" [
             delete-dir dir
         ][
-            quit
+            quit 1
         ]
     ]
 ]
