@@ -201,8 +201,8 @@ link-to-character: function [character [word!] /count num] [
 
 write-entry: function [
     entry [object!]
-    earlier-entry [null! object!]
-    later-entry [null! object!]
+    earlier-entry [~null~ object!]
+    later-entry [~null~ object!]
     html-file [file!]
 ][
     print [{write-entry} html-file]

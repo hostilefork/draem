@@ -5,7 +5,7 @@ Rebol [
 
 
 begin-span-or-div: function [
-    is-span [null! logic!]
+    is-span [~null~ logic!]
     class [word!]
 ][
     combine [
@@ -19,7 +19,7 @@ begin-span-or-div: function [
 
 
 end-span-or-div: function [
-    is-span [null! logic!]
+    is-span [~null~ logic!]
 ][
     combine [{</} (either is-span [{span}] [{div}]) {>}]
 ]
