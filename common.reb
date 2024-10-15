@@ -99,11 +99,11 @@ delete-dir: func [
     if all [
         dir? dir
         dir: dirize dir
-        attempt [files: load dir]
+        not sys.util/rescue [files: load dir]
     ][
         for-each file files [delete-dir dir/(file)]
     ]
-    attempt [delete dir]
+    sys.util/rescue [delete dir]
 ]
 
 
