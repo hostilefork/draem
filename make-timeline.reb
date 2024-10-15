@@ -32,7 +32,7 @@ to-timeline-date: function [d [date!]] [
     ; Not all Rebol dates have times or time zone info.  Force it for
     ; convenience in the parse.
     ;
-    if not d.time false [
+    if not d.time [
         d.time: 10:20:03
         d.zone: -04:00
     ]

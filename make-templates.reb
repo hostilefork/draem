@@ -463,7 +463,7 @@ make-templates: function [
         ]
 
         for-each entry entries [
-            if true or (true? all [
+            if true or (all [
                 ;-- allow pages to appear in the tag list for now
                 draem/next-entry entry.header
                 draem/previous-entry entry.header
@@ -539,7 +539,7 @@ make-templates: function [
         ]
 
         for-each entry entries [
-            if true or (true? all [
+            if true or (all [
                 ;-- allow pages to appear in the character list for now
                 draem/next-entry entry.header
                 draem/previous-entry entry.header
