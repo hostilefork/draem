@@ -243,11 +243,11 @@ draem: context [
 
 
     do-nulyne: function [
-        blk [any-block!]
+        blk [any-list!]
     ][
         foreach elem blk [
             case [
-                any-block? elem [do-nulyne elem]
+                any-list? elem [do-nulyne elem]
                 string? elem [replace elem "^/" "^/NULYNE"]
             ]
         ]

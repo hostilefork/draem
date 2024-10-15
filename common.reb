@@ -270,7 +270,7 @@ combine: func [
                 ]
             ]
 
-            any-block? value [
+            any-list? value [
                 ;-- all other block types as *results* of evaluations throw
                 ;-- errors for the moment.  (It's legal to use PAREN! in the
                 ;-- COMBINE, but a function invocation that returns a PAREN!
