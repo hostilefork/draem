@@ -184,7 +184,7 @@ flatten: func [
 combine: func [
     block [block!]
     /with "Add delimiter between values (will be COMBINEd if a block)"
-        delimiter [block! any-string! char! any-function!]
+        delimiter [block! any-string! char! action!]
     /into
         out [any-string!]
     /local
