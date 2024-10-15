@@ -400,7 +400,7 @@ htmlify: function [
                         ["http" [opt "s"] "://" [opt "www."] "youtube.com/embed/" copy video-id to [end | "#"]]
                     ]
                 ][
-                    do make error! "Bad youtube embed"
+                    fail "Bad youtube embed"
                 ]
 
                 ;-- http://www.webupd8.org/2010/07/embed-youtube-videos-in-html5-new.html

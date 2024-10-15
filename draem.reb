@@ -132,7 +132,7 @@ draem: context [
                     'Draem == first+ pos
                     block? first pos
                 ][
-                    do make error! "Entry must start with Draem header"
+                    fail "Entry must start with Draem header"
                 ]
 
                 header: make object! first+ pos
@@ -141,21 +141,21 @@ draem: context [
                     in header 'date
                     date? header.date
                 ][
-                    do make error! "Header requires valid date field"
+                    fail "Header requires valid date field"
                 ]
 
                 if not all [
                     in header 'slug
                     file? header.slug
                 ][
-                    do make error! "Header requires a file! slug field"
+                    fail "Header requires a file! slug field"
                 ]
 
                 if not all [
                     in header 'title
                     string? header.title
                 ][
-                    do make error! "Header requires a string! title field"
+                    fail "Header requires a string! title field"
                 ]
 
                 if not all [
@@ -163,7 +163,7 @@ draem: context [
                     block? header.tags
                     does [for-each tag header.tags [if not word? tag return false] true]
                 ][
-                    do make error! "Header requires a tags block containing words"
+                    fail "Header requires a tags block containing words"
                 ]
 
                 if in config 'check-header [

@@ -199,7 +199,7 @@ link-rule: use [text address value title] [
                 find address ")"
             ][
                 print address
-                do make error! "( or ) in markdown URL, use %28 and %29"
+                fail "( or ) in markdown URL, use %28 and %29"
             ]
             start-para
             title: either title [ajoin [space {title="} title {"}]][""]

@@ -101,7 +101,7 @@ delete-dir: func [
         dir: dirize dir
         attempt [files: load dir]
     ][
-        for-each file files [delete-dir dir/:file]
+        for-each file files [delete-dir dir/(file)]
     ]
     attempt [delete dir]
 ]
@@ -230,16 +230,24 @@ combine: func [
     while [not tail? block] [
         set:any 'value do:next block 'block
 
-        ;-- Blocks are substituted in evaluation, like the recursive nature
-        ;-- of parse rules.
+        ; Blocks are substituted in evaluation, like the recursive nature
+        ; of parse rules.
 
         case [
-            unset? :value [
-                ;-- Ignore unset! (precedent: any, all, compose)
+            unset? 'value [
+                fail "Evaluation produced nothing"
+            ]
+
+            void? value [
+                ; Skip all voids
+            ]
+
+            null? value [
+                fail "Evaluation produced NULL in COMBINE"
             ]
 
             action? :value [
-                do make error! "Evaluation in COMBINE gave action"
+                fail "Evaluation in COMBINE gave action"
             ]
 
             block? value [
@@ -265,30 +273,30 @@ combine: func [
                     ]
 
                     true [
-                        do make error! "COMBINE refinement other than /+ used"
+                        fail "COMBINE refinement other than /+ used"
                     ]
                 ]
             ]
 
             any-list? value [
-                ;-- all other block types as *results* of evaluations throw
-                ;-- errors for the moment.  (It's legal to use PAREN! in the
-                ;-- COMBINE, but a function invocation that returns a PAREN!
-                ;-- will not recursively iterate the way BLOCK! does)
-                do make error! "Evaluation in COMBINE gave non-block! or path! block"
+                ;
+                ; all other block types as *results* of evaluations throw
+                ; errors for the moment.  (It's legal to use PAREN! in the
+                ; COMBINE, but a function invocation that returns a PAREN!
+                ; will not recursively iterate the way BLOCK! does)
+                ;
+                fail "Evaluation in COMBINE gave non-block! or path! block"
             ]
 
             any-word? value [
-                ;-- currently we throw errors on words if that's what an
-                ;-- evaluation produces.  Theoretically these could be
-                ;-- given behaviors in the dialect, but the potential for
-                ;-- bugs probably outweighs the value (of converting implicitly
-                ;-- to a string or trying to run an evaluation of a non-block)
-                do make error! "Evaluation in COMBINE gave symbolic word"
-            ]
-
-            null? value [
-                ;-- Skip all nones
+                ;
+                ; currently we throw errors on words if that's what an
+                ; evaluation produces.  Theoretically these could be
+                ; given behaviors in the dialect, but the potential for
+                ; bugs probably outweighs the value (of converting implicitly
+                ; to a string or trying to run an evaluation of a non-block)
+                ;
+                fail "Evaluation in COMBINE gave symbolic word"
             ]
 
             true [
