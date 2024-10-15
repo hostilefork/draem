@@ -464,7 +464,7 @@ htmlify: function [
         print mold blk
         print "LAST APPEND WAS"
         print mold last-append
-        quit
+        quit 1
     ]
 
     assert [text? result]
