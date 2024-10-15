@@ -75,7 +75,7 @@ django-css: function [/with entry] [
 
     css-block: copy ["{{ block.super }}"]
 
-    foreach item css-all [
+    for-each item css-all [
         append css-block either string? item [
             trim-head-tail-lines css-text: copy item
             take:last css-text ;--django-block adds newline
@@ -112,7 +112,7 @@ django-scripts: function [/with entry [object!]] [
 
     script-block: copy ["{{ block.super }}"]
 
-    foreach item script-all [
+    for-each item script-all [
         append script-block either string? item [
             trim-head-tail-lines js-text: copy item
             take:last js-text ;-- django-block adds newline
@@ -429,7 +429,7 @@ make-templates: function [
 
     taglist-sorted: make-sorted-block-from-map draem.indexes.tag-to-entries
 
-    foreach [tag entries] taglist-sorted [
+    for-each [tag entries] taglist-sorted [
         assert [word? tag]
         assert [block? entries]
 
@@ -462,7 +462,7 @@ make-templates: function [
             "{% block entries %}"
         ]
 
-        foreach entry entries [
+        for-each entry entries [
             if true or (true? all [
                 ;-- allow pages to appear in the tag list for now
                 draem/next-entry entry.header
@@ -503,7 +503,7 @@ make-templates: function [
 
     characterlist-sorted: make-sorted-block-from-map draem.indexes.character-to-entries
 
-    foreach [character entries] characterlist-sorted [
+    for-each [character entries] characterlist-sorted [
         assert [word? character]
         assert [block? entries]
 
@@ -538,7 +538,7 @@ make-templates: function [
             "{% block entries %}"
         ]
 
-        foreach entry entries [
+        for-each entry entries [
             if true or (true? all [
                 ;-- allow pages to appear in the character list for now
                 draem/next-entry entry.header

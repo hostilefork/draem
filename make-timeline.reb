@@ -70,7 +70,7 @@ make-timeline: function [entries [block!] xml-filename [file!]] [
         {>}
     ]
 
-    foreach entry entries [
+    for-each entry entries [
         append timelinexml combine [
             tab tab {<event start="} to-timeline-date entry.header.date {"}
             tab tab tab {title="} stringify entry.header.slug {"}

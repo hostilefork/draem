@@ -173,7 +173,7 @@ make-atom-feed: function [
         </author>
     ]
 
-    foreach entry entries [
+    for-each entry entries [
         if not any [ ;-- don't allow pages to appear in the rss atom for now
             draem/next-entry entry.header
             draem/previous-entry entry.header

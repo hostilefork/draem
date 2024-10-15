@@ -77,7 +77,7 @@ trim-head-tail-lines: function [code [string!]] [
     while ["" = trim copy last code-lines] [
         take:last code-lines
     ]
-    foreach line code-lines [
+    for-each line code-lines [
         append line lf
     ]
     change:part code (combine code-lines) tail code
@@ -101,7 +101,7 @@ delete-dir: func [
         dir: dirize dir
         attempt [files: load dir]
     ][
-        foreach file files [delete-dir dir/:file]
+        for-each file files [delete-dir dir/:file]
     ]
     attempt [delete dir]
 ]

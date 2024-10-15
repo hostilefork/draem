@@ -49,7 +49,7 @@ htmlify: function [
         ;-- FEEDER
         ;-- we only do this for PRINT now.  Lest would generalize it.
         ['print '<< set paragraphs block!] (
-            foreach str paragraphs [
+            for-each str paragraphs [
                 append-result combine [
                     (begin-span-or-div span 'exposition) newline
                     markdown str
@@ -343,7 +343,7 @@ htmlify: function [
 
                 append-result combine [<ul> newline]
 
-                foreach elem args [
+                for-each elem args [
                     append result combine [
                         <li>
                         either string? elem [

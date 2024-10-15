@@ -117,7 +117,7 @@ draem: context [
             sub-dir: to file! {}
         ]
 
-        foreach file load (join config.entries-dir sub-dir) [
+        for-each file load (join config.entries-dir sub-dir) [
             either dir? file [
                 print [{Recursing into:} rejoin [config.entries-dir sub-dir file]]
                 load-entries:recurse (join sub-dir file) entries
@@ -161,7 +161,7 @@ draem: context [
                 if not all [
                     in header 'tags
                     block? header.tags
-                    does [foreach tag header.tags [if not word? tag return false] true]
+                    does [for-each tag header.tags [if not word? tag return false] true]
                 ][
                     do make error! "Header requires a tags block containing words"
                 ]
@@ -245,7 +245,7 @@ draem: context [
     do-nulyne: function [
         blk [any-list!]
     ][
-        foreach elem blk [
+        for-each elem blk [
             case [
                 any-list? elem [do-nulyne elem]
                 string? elem [replace elem "^/" "^/NULYNE"]
@@ -258,13 +258,13 @@ draem: context [
     ][
         prompt-delete-dir-if-exists target-dir
 
-        foreach entry entries [
+        for-each entry entries [
             target-file: rejoin [target-dir (select slug-to-source-path entry.header.slug)]
             make-dir:deep first split-path target-file
 
             out: copy {Draem }
 
-            foreach w words-of entry.header [
+            for-each w words-of entry.header [
                 if word? select entry.header w [
                     entry.header.(w): to lit-word! select entry.header w
                 ]
@@ -325,13 +325,13 @@ draem: context [
             slug-to-entry: make map! []
         ]
 
-        foreach entry entries [
+        for-each entry entries [
             repend indexes.slug-to-entry [entry.header.slug entry]
 
             header: entry.header
             content: entry.content
 
-            foreach tag header.tags [
+            for-each tag header.tags [
                 either select indexes.tag-to-entries tag [
                     append select indexes.tag-to-entries tag entry
                 ][
@@ -370,7 +370,7 @@ draem: context [
 
             collect-characters content
 
-            foreach character characters [
+            for-each character characters [
                 either select indexes.character-to-entries character [
                     append select indexes.character-to-entries character entry
                 ][
