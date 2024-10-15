@@ -199,7 +199,7 @@ combine: func [
 
     if not action? get:any $delimiter [
         if not block? delimiter [
-            delimiter: compose [(delimiter)]
+            delimiter: compose [(maybe delimiter)]
         ]
         delimiter: func [depth [integer!]] compose:only:deep [
             combine (delimiter)
@@ -213,7 +213,7 @@ combine: func [
     needs-delimiter: false
     pre-delimit: does [
         either needs-delimiter [
-            set:any 'temp delimiter depth
+            temp: delimiter depth  ; no APPLY in bootstrap (!)
             if all [
                 value? 'temp
                 (not null? temp) or (block? out)
@@ -221,7 +221,7 @@ combine: func [
                 out: append out temp
             ]
         ][
-            needs-delimiter: true? with
+            needs-delimiter: did with
         ]
     ]
 
