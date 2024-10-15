@@ -49,10 +49,10 @@ django-path: function [stuff [block!]] [
 
 django-google-analytics: function [] [
     combine [
-        django-block/inline "ga_id" [
+        django-block:inline "ga_id" [
             draem.config.google-analytics.tracking-id
         ]
-        django-block/inline "ga_property" [
+        django-block:inline "ga_property" [
             draem.config.google-analytics.property
         ]
     ]
@@ -78,7 +78,7 @@ django-css: function [/with entry] [
     foreach item css-all [
         append css-block either string? item [
             trim-head-tail-lines css-text: copy item
-            take/last css-text ;--django-block adds newline
+            take:last css-text ;--django-block adds newline
             combine [
                 <style type="text/css">
                 css-text
@@ -115,7 +115,7 @@ django-scripts: function [/with entry [object!]] [
     foreach item script-all [
         append script-block either string? item [
             trim-head-tail-lines js-text: copy item
-            take/last js-text ;-- django-block adds newline
+            take:last js-text ;-- django-block adds newline
 
             combine [
                 <script type="text/javascript">
@@ -145,9 +145,9 @@ django-extends: function [template [file!] /with entry [object!]] [
 
         either with [
             [
-                django-css/with entry
+                django-css:with entry
 
-                django-scripts/with entry
+                django-scripts:with entry
             ]
         ][
             [
@@ -176,7 +176,7 @@ django-extends: function [template [file!] /with entry [object!]] [
 link-to-tag: function [tag [word!] /count num] [
     combine [
         {<a href="}
-        draem.config.site-url "tag/" stringify/dashes tag {/}
+        draem.config.site-url "tag/" stringify:dashes tag {/}
         {" class="post-tag" rel="tag">}
             stringify tag
         </a>
@@ -189,7 +189,7 @@ link-to-tag: function [tag [word!] /count num] [
 link-to-character: function [character [word!] /count num] [
     combine [
         {<a href="}
-        draem.config.site-url "character/" lowercase stringify/dashes character {/}
+        draem.config.site-url "character/" lowercase stringify:dashes character {/}
         {">}
             stringify character
         </a>
@@ -216,11 +216,11 @@ write-entry: function [
     is-post: any [earlier-entry later-entry]
 
     html: combine [
-        django-extends/with (either is-post [%post.html] [%page.html]) entry
+        django-extends:with (either is-post [%post.html] [%page.html]) entry
 
         ;-- <meta name="keywords" ...> information
-        django-block/inline "keywords" [
-            combine/with (map-each tag sorted-tags [stringify tag]) [{,} space]
+        django-block:inline "keywords" [
+            combine:with (map-each tag sorted-tags [stringify tag]) [{,} space]
         ]
 
         ;-- <meta name="description" ...> information
@@ -233,13 +233,13 @@ write-entry: function [
             ]
         ]
 
-        django-block/inline "title" [
+        django-block:inline "title" [
             if main-tag [stringify main-tag]
             space ":"
             space entry.header.title
         ]
 
-        django-block/inline "header" [
+        django-block:inline "header" [
             entry.header.title
         ]
 
@@ -266,7 +266,7 @@ write-entry: function [
             either empty? sorted-tags [
                 "(none)"
             ][
-                combine/with (map-each tag sorted-tags [
+                combine:with (map-each tag sorted-tags [
                     link-to-tag tag
                 ]) [{,} space]
             ]
@@ -276,7 +276,7 @@ write-entry: function [
             either empty? unsorted-characters [
                 "(none)"
             ][
-                 combine/with (map-each character unsorted-characters [
+                 combine:with (map-each character unsorted-characters [
                     link-to-character character
                 ]) [{,} space]
             ]
@@ -288,19 +288,19 @@ write-entry: function [
 
         either later-entry [
             [
-                django-block/inline {nexttitle} [
+                django-block:inline {nexttitle} [
                     later-entry.header.title
                 ]
-                django-block/inline {nexturl} [
+                django-block:inline {nexturl} [
                     url-for-entry later-entry
                 ]
             ]
         ][
             [
-                django-block/inline {nexttitle} [
+                django-block:inline {nexttitle} [
                     {Home}
                 ]
-                django-block/inline {nexturl} [
+                django-block:inline {nexturl} [
                     draem.config.site-url
                 ]
             ]
@@ -308,19 +308,19 @@ write-entry: function [
 
         either earlier-entry [
             [
-                django-block/inline {prevtitle} [
+                django-block:inline {prevtitle} [
                     earlier-entry.header.title
                 ]
-                django-block/inline {prevurl} [
+                django-block:inline {prevurl} [
                     url-for-entry earlier-entry
                 ]
             ]
         ][
             [
-                django-block/inline {prevtitle} [
+                django-block:inline {prevtitle} [
                     {Home}
                 ]
-                django-block/inline {prevurl} [
+                django-block:inline {prevurl} [
                     draem.config.site-url
                 ]
             ]
@@ -331,8 +331,8 @@ write-entry: function [
         ]
     ]
 
-    make-dir/deep first split-path html-file
-    write/lines html-file html
+    make-dir:deep first split-path html-file
+    write:lines html-file html
 ]
 
 make-templates: function [
@@ -357,15 +357,15 @@ make-templates: function [
     index-html: combine [
         django-extends %base.html
 
-        django-block/inline "title" [
+        django-block:inline "title" [
             draem.config.site-title
         ]
 
-        django-block/inline "header" [
+        django-block:inline "header" [
             draem.config.site-tagline
         ]
 
-        django-block/inline "path" [
+        django-block:inline "path" [
             <li> <span> draem.config.site-url </span> </li>
         ]
 
@@ -397,12 +397,12 @@ make-templates: function [
     append index-html "{% endblock main %}"
 
     append index-html combine [
-        django-block/inline "footer" [
+        django-block:inline "footer" [
             htmlify draem.config.site-footer
         ]
     ]
 
-    write/lines rejoin [templates-dir %index.html] index-html
+    write:lines rejoin [templates-dir %index.html] index-html
 
 
 
@@ -412,11 +412,11 @@ make-templates: function [
     tag-list-html: combine [
         django-extends %taglist.html
 
-        django-block/inline "title" [
+        django-block:inline "title" [
             {All Tags}
         ]
 
-        django-block/inline "header" [
+        django-block:inline "header" [
             {All Tags for} space draem.config.site-name
         ]
 
@@ -437,16 +437,16 @@ make-templates: function [
         if (not exists? directory) [
             make-dir directory
         ]
-        append tag-list-html link-to-tag/count tag length? entries
+        append tag-list-html link-to-tag:count tag length? entries
 
         tag-html: combine [
             django-extends %tag.html
 
-            django-block/inline "title" [
+            django-block:inline "title" [
                 {tag:} space (stringify tag)
             ]
 
-            django-block/inline "header" [
+            django-block:inline "header" [
                 (stringify tag)
             ]
 
@@ -473,11 +473,11 @@ make-templates: function [
         ]
 
         append tag-html "{% endblock entries %}"
-        write/lines (rejoin [directory stringify/dashes tag %.html]) tag-html
+        write:lines (rejoin [directory stringify:dashes tag %.html]) tag-html
     ]
 
     append tag-list-html "{% endblock tags %}"
-    write/lines (join templates-dir %tags.html) tag-list-html
+    write:lines (join templates-dir %tags.html) tag-list-html
 
 
     ;; GENERATE THE CHARACTER LIST AND A PAGE FOR EACH CHARACTER
@@ -486,11 +486,11 @@ make-templates: function [
     character-list-html: combine [
         django-extends %characterlist.html
 
-        django-block/inline "title" [
+        django-block:inline "title" [
             {Character List}
         ]
 
-        django-block/inline "header" [
+        django-block:inline "header" [
             {Character List}
         ]
 
@@ -516,11 +516,11 @@ make-templates: function [
         character-html: combine [
             django-extends %character.html
 
-            django-block/inline "title" [
+            django-block:inline "title" [
                 {character:} space (stringify character)
             ]
 
-            django-block/inline "header" [
+            django-block:inline "header" [
                 (stringify character)
             ]
 
@@ -549,9 +549,9 @@ make-templates: function [
         ]
 
         append character-html "{% endblock entries %}"
-        write/lines rejoin [directory lowercase stringify/dashes character ".html"] character-html
+        write:lines rejoin [directory lowercase stringify:dashes character ".html"] character-html
     ]
 
     append character-list-html "{% endblock characters %}"
-    write/lines (join templates-dir %characters.html) character-list-html
+    write:lines (join templates-dir %characters.html) character-list-html
 ]

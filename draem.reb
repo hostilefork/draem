@@ -51,12 +51,12 @@ draem: context [
             block? cfg.site-toplevel-slugs
 
             ;-- Required hooks
-            function? cfg.url-from-header/
-            function? cfg.file-for-template/
+            action? cfg.url-from-header/
+            action? cfg.file-for-template/
 
             ;-- Optional hooks
             either in cfg 'check-header [
-                function? cfg.check-header/
+                action? cfg.check-header/
             ][
                 true
             ]
@@ -120,7 +120,7 @@ draem: context [
         foreach file load (join config.entries-dir sub-dir) [
             either dir? file [
                 print [{Recursing into:} rejoin [config.entries-dir sub-dir file]]
-                load-entries/recurse (join sub-dir file) entries
+                load-entries:recurse (join sub-dir file) entries
             ][
                 print [{Pre-processing:} file]
 
@@ -170,7 +170,7 @@ draem: context [
                     config/check-header header
                 ]
 
-                entry: make object! compose/only [
+                entry: make object! compose:only [
                     header: (header)
                     content: (copy pos)
                 ]
@@ -187,7 +187,7 @@ draem: context [
             ]
         ]
 
-        sort/compare entries func [a b] [a.header.date > b.header.date]
+        sort:compare entries func [a b] [a.header.date > b.header.date]
 
         unless recurse [
             set-entries entries
@@ -248,7 +248,7 @@ draem: context [
         foreach elem blk [
             case [
                 any-block? elem [do-nulyne elem]
-                string? elem [replace/all elem "^/" "^/NULYNE"]
+                string? elem [replace elem "^/" "^/NULYNE"]
             ]
         ]
     ]
@@ -260,7 +260,7 @@ draem: context [
 
         foreach entry entries [
             target-file: rejoin [target-dir (select slug-to-source-path entry.header.slug)]
-            make-dir/deep first split-path target-file
+            make-dir:deep first split-path target-file
 
             out: copy {Draem }
 
@@ -274,7 +274,7 @@ draem: context [
             append out "^/^/"
 
             do-nulyne entry.content
-            content-string: mold/only entry.content
+            content-string: mold:only entry.content
 
             pos: content-string
             while [not tail? pos] [
@@ -300,7 +300,7 @@ draem: context [
         header [object!]
     ][
         sorted-tags: copy header.tags
-        sort/compare sorted-tags func [a b] [
+        sort:compare sorted-tags func [a b] [
             (length? indexes.tag-to-entries.(a)) >
             (length? indexes.tag-to-entries.(b))
         ]
@@ -336,7 +336,7 @@ draem: context [
                     append select indexes.tag-to-entries tag entry
                 ][
 
-                    append indexes.tag-to-entries compose/deep copy/deep [(tag) [(entry)]]
+                    append indexes.tag-to-entries compose:deep copy:deep [(tag) [(entry)]]
                 ]
             ]
 
@@ -374,7 +374,7 @@ draem: context [
                 either select indexes.character-to-entries character [
                     append select indexes.character-to-entries character entry
                 ][
-                    append indexes.character-to-entries compose/deep copy/deep [(character) [(entry)]]
+                    append indexes.character-to-entries compose:deep copy:deep [(character) [(entry)]]
                 ]
             ]
         ]

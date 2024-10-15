@@ -37,7 +37,7 @@ to-iso8601-date: function [
     comment [
         unless timestamp [
             return to string! join date.year
-            ["-" copy/part tail join "0" [date.month] -2 "-" copy/part tail join "0" [date.day] -2 ]
+            ["-" copy:part tail join "0" [date.month] -2 "-" copy:part tail join "0" [date.day] -2 ]
         ]
     ]
 
@@ -99,7 +99,7 @@ to-iso8601-date: function [
     ]
 
     insert iso-date combine [
-        copy/part "000" (4 - length? to-string the-date.year)
+        copy:part "000" (4 - length? to-string the-date.year)
 
         the-date.year
 
@@ -167,7 +167,7 @@ make-atom-feed: function [
         {<link href="} draem.config.site-url {feed/" rel="self" />}
         {<link href="} draem.config.site-url {" />}
         <id> {tag:} draem.config.rss-tag {,1975-04-21:} </id>
-        <updated> to-iso8601-date/timestamp now </updated>
+        <updated> to-iso8601-date:timestamp now </updated>
         <author>
             <name> draem.config.site-author </name>
         </author>
@@ -188,7 +188,7 @@ make-atom-feed: function [
             break
         ]
         atom-length: atom-length - 1
-        append atom-xml combine/with [
+        append atom-xml combine:with [
             <entry>
                 [<title> (entry.header.title) </title>]
             ;   <link href="} (url-for-entry entry) {" />
@@ -197,7 +197,7 @@ make-atom-feed: function [
                 [<id> (atomid-from-url url-for-entry entry entry.header.date) </id>]
                 [<updated> (to-iso8601-date/timestamp entry.header.date) </updated>]
                 <summary>
-                [{Tags: } combine/with sorted-tags [{,} space]]
+                [{Tags: } combine:with sorted-tags [{,} space]]
                 </summary>
             </entry>
         ] newline

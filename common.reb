@@ -42,10 +42,10 @@ to: func [type value] [
 ;---
 make-sorted-block-from-map: function [map [map!]] [
     blk: split make block! map 2
-    sort/compare blk func [a b] [(length? second a) > (length? second b)]
+    sort:compare blk func [a b] [(length? second a) > (length? second b)]
     pos: head blk
     while [not tail? pos] [
-        pos: change/part pos first pos 1
+        pos: change:part pos first pos 1
     ]
     return blk
 ]
@@ -58,7 +58,7 @@ make-sorted-block-from-map: function [map [map!]] [
 
 in-as-block: func [obj [object!] key [word!]] [
     either in obj key [
-        either block? obj/(key) [obj/(key)] [reduce [obj/(key)]]
+        either block? obj.(key) [obj.(key)] [reduce [obj.(key)]]
     ][
         []
     ]
@@ -75,12 +75,12 @@ trim-head-tail-lines: function [code [string!]] [
         take code-lines
     ]
     while ["" = trim copy last code-lines] [
-        take/last code-lines
+        take:last code-lines
     ]
     foreach line code-lines [
         append line lf
     ]
-    change/part code (combine code-lines) tail code
+    change:part code (combine code-lines) tail code
     exit
 ]
 
@@ -197,11 +197,11 @@ combine: func [
         out: make string! 10
     ]
 
-    unless any-function? :delimiter [
+    unless action? get:any $delimiter [
         unless block? delimiter [
             delimiter: compose [(delimiter)]
         ]
-        delimiter: func [depth [integer!]] compose/only/deep [
+        delimiter: func [depth [integer!]] compose:only:deep [
             combine (delimiter)
         ]
     ]
@@ -213,7 +213,7 @@ combine: func [
     needs-delimiter: false
     pre-delimit: does [
         either needs-delimiter [
-            set/any 'temp delimiter depth
+            set:any 'temp delimiter depth
             if all [
                 value? 'temp
                 (not null? temp) or (block? out)
@@ -228,7 +228,7 @@ combine: func [
     ;-- Do evaluation of the block until a non-null evaluation result
     ;-- is found... or the end of the input is reached.
     while [not tail? block] [
-        set/any 'value do/next block 'block
+        set:any 'value do:next block 'block
 
         ;-- Blocks are substituted in evaluation, like the recursive nature
         ;-- of parse rules.
@@ -238,13 +238,13 @@ combine: func [
                 ;-- Ignore unset! (precedent: any, all, compose)
             ]
 
-            any-function? :value [
-                do make error! "Evaluation in COMBINE gave function/closure"
+            action? :value [
+                do make error! "Evaluation in COMBINE gave action"
             ]
 
             block? value [
                 pre-delimit
-                out: combine/with/into/level value :delimiter out depth + 1
+                out: combine:with:into:level value :delimiter out depth + 1
             ]
 
             ; This is an idea that was not met with much enthusiasm, which was

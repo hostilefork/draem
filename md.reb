@@ -127,7 +127,7 @@ entity-rule: [
     ]
     ";"
     finish:
-    (emit copy/part start finish)
+    (emit copy:part start finish)
 ]
 
 tag-rule: [
@@ -146,7 +146,7 @@ tag-rule: [
     ]
     ">"
     finish:
-    (emit copy/part start finish)
+    (emit copy:part start finish)
 ]
 
 header-rule: [
@@ -223,7 +223,7 @@ em-rule: use [mark text] [
             mark: either equal? length? mark 1 [<em>] [<strong>]
             emit ajoin [
                 mark
-                either xml? [markdown/xml text] [markdown text]
+                either xml? [markdown:xml text] [markdown text]
                 close-tag mark
             ]
         )

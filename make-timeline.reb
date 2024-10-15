@@ -84,5 +84,5 @@ make-timeline: function [entries [block!] xml-filename [file!]] [
         </data>
     ]
 
-    write/lines xml-filename timelinexml
+    write:lines xml-filename timelinexml
 ]

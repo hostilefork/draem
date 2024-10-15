@@ -211,7 +211,7 @@ htmlify: function [
             ['attribution set arg block!] (
                 ;-- http://html5doctor.com/blockquote-q-cite/
                 append-result combine [
-                    <footer> htmlify/span arg </footer>
+                    <footer> htmlify:span arg </footer>
                 ]
             )
         |
@@ -254,7 +254,7 @@ htmlify: function [
                         ]
                     ][
                         either 1 = length? args [
-                            htmlify/span args
+                            htmlify:span args
                         ][
                             htmlify args
                         ]
@@ -485,7 +485,7 @@ htmlify-range: function [
     pos: start
     while [pos <> end] [
         ;-- htmlify always expects a block of elements
-        blk: append/only copy [] first pos
+        blk: append:only copy [] first pos
         protect blk
 
         case [
@@ -493,13 +493,13 @@ htmlify-range: function [
                 end = next pos
                 start = pos
             ][
-                append result htmlify/nestfirst/nestlast blk
+                append result htmlify:nestfirst:nestlast blk
             ]
             start = pos [
-                append result htmlify/nestfirst blk
+                append result htmlify:nestfirst blk
             ]
             end = next pos [
-                append result htmlify/nestlast blk
+                append result htmlify:nestlast blk
             ]
             true [
                 append result htmlify blk
