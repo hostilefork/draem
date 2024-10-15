@@ -467,7 +467,7 @@ markdown: func [
     md-buffer: either into [out] [copy ""]
 
 ;    probe rules
-    parse data [some rules]
+    parse/redbol data [some rules]
 
     start-para?: old-start-para?
     end-para?: old-end-para?

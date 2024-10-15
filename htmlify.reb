@@ -392,7 +392,7 @@ htmlify: function [
 
                 ;-- But revisit what's tolerated and what isn't
                 if not all [
-                    parse to text! url [
+                    parse/redbol to text! url [
                         ["http" [opt "s"] "://" [opt "www."] "youtube.com/v/" copy video-id to [end | "?"]]
                     |
                         ["http" [opt "s"] "://" [opt "www."] "youtube.com/watch" thru "v=" copy video-id to [end | "#"]]
@@ -456,7 +456,7 @@ htmlify: function [
         ]
     ]]
 
-    if not parse blk group-rule [
+    if not parse/match/redbol blk group-rule [
         print "INVALID DRAEM DATA - PARSE RETURNED FALSE"
         print "BLOCK WAS"
         print mold blk

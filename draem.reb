@@ -367,7 +367,7 @@ draem: context [
                     skip
                 ]]
 
-                parse blk rule
+                parse/redbol blk rule
             ]
 
             collect-characters content

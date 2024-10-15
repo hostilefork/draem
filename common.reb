@@ -167,7 +167,7 @@ flatten: func [
     |
         set value skip (append local value)
     ]
-    parse data [some rule]
+    parse/redbol data [some rule]
     local
 ]
 

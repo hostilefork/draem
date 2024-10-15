@@ -46,7 +46,7 @@ to-timeline-date: function [d [date!]] [
         copy time-string: to ["+" | "-" | end]
         copy gmt-string: to end
     ]
-    if not parse date-string rule [
+    if not parse/redbol date-string rule [
         fail ["Could not convert" date-string "to timeline format."]
     ]
 
