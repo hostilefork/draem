@@ -228,7 +228,7 @@ combine: func [
     ;-- Do evaluation of the block until a non-null evaluation result
     ;-- is found... or the end of the input is reached.
     while [not tail? block] [
-        set:any 'value do:next block 'block
+        block: eval:step3 block 'value
 
         ; Blocks are substituted in evaluation, like the recursive nature
         ; of parse rules.
