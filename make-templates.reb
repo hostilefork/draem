@@ -331,7 +331,7 @@ write-entry: function [
         ]
     ]
 
-    make-dir:deep first split-path html-file
+    make-dir:deep split-path html-file
     write:lines html-file html
 ]
 

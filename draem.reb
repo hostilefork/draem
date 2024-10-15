@@ -262,7 +262,7 @@ draem: context [
 
         for-each entry entries [
             target-file: rejoin [target-dir (select slug-to-source-path entry.header.slug)]
-            make-dir:deep first split-path target-file
+            make-dir:deep split-path target-file
 
             out: copy {Draem }
 
