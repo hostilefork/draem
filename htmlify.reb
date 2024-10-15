@@ -5,7 +5,7 @@ Rebol [
 
 
 begin-span-or-div: function [
-    is-span [~null~ logic!]
+    is-span [logic!]
     class [word!]
 ][
     combine [
@@ -19,7 +19,7 @@ begin-span-or-div: function [
 
 
 end-span-or-div: function [
-    is-span [~null~ logic!]
+    is-span [logic!]
 ][
     combine [{</} (either is-span [{span}] [{div}]) {>}]
 ]
@@ -35,6 +35,8 @@ htmlify: function [
     /nestlast
     /span
 ][
+    span: to logic! span
+
     ;-- Review proposals for constructors...
     result: make text! 1000
 
