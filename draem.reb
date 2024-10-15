@@ -109,7 +109,7 @@ draem: context [
         /recurse sub-dir [file!] entries [block!]
     ][
         print ["Entering load entries with" sub-dir]
-        unless recurse [
+        if not recurse [
             stage "LOADING ENTRIES"
 
             ; entries list sorted newest first, oldest last
@@ -128,7 +128,7 @@ draem: context [
 
                 pos: data
 
-                unless all [
+                if not all [
                     'Draem == first+ pos
                     block? first pos
                 ][
@@ -137,31 +137,31 @@ draem: context [
 
                 header: make object! first+ pos
 
-                unless all [
+                if not all [
                     in header 'date
                     date? header.date
                 ][
                     do make error! "Header requires valid date field"
                 ]
 
-                unless all [
+                if not all [
                     in header 'slug
                     file? header.slug
                 ][
                     do make error! "Header requires a file! slug field"
                 ]
 
-                unless all [
+                if not all [
                     in header 'title
                     string? header.title
                 ][
                     do make error! "Header requires a string! title field"
                 ]
 
-                unless all [
+                if not all [
                     in header 'tags
                     block? header.tags
-                    does [foreach tag header.tags [unless word? tag return false] true]
+                    does [foreach tag header.tags [if not word? tag return false] true]
                 ][
                     do make error! "Header requires a tags block containing words"
                 ]
@@ -181,7 +181,7 @@ draem: context [
                 ]
 
                 ;-- Hacky
-                unless find header.tags 'draft [
+                if not find header.tags 'draft [
                     append entries entry
                 ]
             ]
@@ -189,7 +189,7 @@ draem: context [
 
         sort:compare entries func [a b] [a.header.date > b.header.date]
 
-        unless recurse [
+        if not recurse [
             set-entries entries
         ]
 
@@ -233,7 +233,7 @@ draem: context [
             if pos.1.header = header [
                 return result
             ]
-            unless find config.site-toplevel-slugs pos.1.header.slug [
+            if not find config.site-toplevel-slugs pos.1.header.slug [
                 result: pos.1
             ]
             pos: next pos
@@ -391,8 +391,8 @@ draem: context [
         err: catch [
 
             ;-- Clients may have loaded the entries prior for analysis
-            unless entries [load-entries]
-            unless indexes [build-indexes]
+            if not entries [load-entries]
+            if not indexes [build-indexes]
 
             prompt-delete-dir-if-exists config.templates-dir
 

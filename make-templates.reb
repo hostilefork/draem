@@ -30,9 +30,9 @@ do %htmlify.reb
 django-block: function [name [string!] stuff [string! block!] /inline] [
     combine [
         "{% block" space name space "%}"
-        unless inline [newline]
+        if not inline [newline]
         stuff
-        unless inline [newline]
+        if not inline [newline]
         "{% endblock" space name space "%}"
         newline
     ]
@@ -344,7 +344,7 @@ make-templates: function [
 ][
     draem/stage "TEMPLATES OUTPUT"
 
-    unless exists? templates-dir [
+    if not exists? templates-dir [
         make-dir templates-dir
     ]
 
@@ -383,7 +383,7 @@ make-templates: function [
         write-entry entry earlier-entry later-entry (
             draem.config/file-for-template entry.header
         )
-        unless all [
+        if not all [
             null? earlier-entry
             null? later-entry
         ][
@@ -508,7 +508,7 @@ make-templates: function [
         assert [block? entries]
 
         directory: to file! (join templates-dir %characters/)
-        unless exists? directory [
+        if not exists? directory [
             make-dir directory
         ]
         append character-list-html link-to-character/count character length? entries

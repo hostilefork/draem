@@ -35,7 +35,7 @@ to-iso8601-date: function [
     ; old code probably supplanted by /timestamp refinement
     ; from http://www.rebol.org/view-script.r?script=iso-8601-date.r
     comment [
-        unless timestamp [
+        if not timestamp [
             return to string! join date.year
             ["-" copy:part tail join "0" [date.month] -2 "-" copy:part tail join "0" [date.day] -2 ]
         ]
@@ -48,21 +48,21 @@ to-iso8601-date: function [
                 "T"
 
                 ; insert leading zero if needed
-                unless (the-date.time.hour > 9) ["0"]
+                if not (the-date.time.hour > 9) ["0"]
 
                 the-date.time.hour
 
                 ":"
 
                 ; again, leading zero if needed...
-                unless (the-date.time.minute > 9) ["0"]
+                if not (the-date.time.minute > 9) ["0"]
 
                 the-date.time.minute
 
                 ":"
 
                 ; once again zero, note Rebol only returns seconds if non-zero
-                unless (the-date.time.second > 9) ["0"]
+                if not (the-date.time.second > 9) ["0"]
 
                 (to integer! the-date.time.second)
 
@@ -174,7 +174,7 @@ make-atom-feed: function [
     ]
 
     foreach entry entries [
-        unless any [ ;-- don't allow pages to appear in the rss atom for now
+        if not any [ ;-- don't allow pages to appear in the rss atom for now
             draem/next-entry entry.header
             draem/previous-entry entry.header
         ][

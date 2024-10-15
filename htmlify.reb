@@ -391,7 +391,7 @@ htmlify: function [
                 ;-- video from the source I'm writing.
 
                 ;-- But revisit what's tolerated and what isn't
-                unless all [
+                if not all [
                     parse to string! url [
                         ["http" [opt "s"] "://" [opt "www."] "youtube.com/v/" copy video-id to [end | "?"]]
                     |
@@ -456,7 +456,7 @@ htmlify: function [
         ]
     ]]
 
-    unless parse blk group-rule [
+    if not parse blk group-rule [
         print "INVALID DRAEM DATA - PARSE RETURNED FALSE"
         print "BLOCK WAS"
         print mold blk

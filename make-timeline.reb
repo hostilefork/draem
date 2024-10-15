@@ -46,7 +46,7 @@ to-timeline-date: function [d [date!]] [
         copy time-string: to ["+" | "-" | end]
         copy gmt-string: to end
     ]
-    unless parse date-string rule [
+    if not parse date-string rule [
         do make error! form ["Could not convert" date-string "to timeline format."]
     ]
 

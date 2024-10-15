@@ -22,7 +22,7 @@ rebol [
 ; into the mainline yet.
 ;---
 
-unless value? 'old-to [
+if unset? $old-to [
     old-to: :to
 ]
 
@@ -193,12 +193,12 @@ combine: func [
     /level depth
 ][
     ;-- No good heuristic for string size yet
-    unless into [
+    if not into [
         out: make string! 10
     ]
 
-    unless action? get:any $delimiter [
-        unless block? delimiter [
+    if not action? get:any $delimiter [
+        if not block? delimiter [
             delimiter: compose [(delimiter)]
         ]
         delimiter: func [depth [integer!]] compose:only:deep [
@@ -206,7 +206,7 @@ combine: func [
         ]
     ]
 
-    unless depth [
+    if not depth [
         depth: 1
     ]
 
