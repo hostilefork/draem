@@ -42,7 +42,7 @@ htmlify: function [
     append-result: func [html [text!]] [
         append result html
         last-append: html
-        exit
+        return ~
     ]
 
     group-rule: [some [

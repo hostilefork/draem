@@ -195,7 +195,7 @@ draem: context [
             set-entries entries
         ]
 
-        exit
+        return ~
     ]
 
     ;-- Next and previous entry logic; slow and bad
@@ -411,6 +411,6 @@ draem: context [
             print form err
         ]
 
-        exit
+        return ~
     ]
 ]

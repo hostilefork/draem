@@ -81,7 +81,7 @@ trim-head-tail-lines: function [code [text!]] [
         append line lf
     ]
     change:part code (combine code-lines) tail code
-    exit
+    return code
 ]
 
 
