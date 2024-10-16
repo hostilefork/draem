@@ -48,7 +48,7 @@ htmlify: function [
     group-rule: [some [
         ;-- FEEDER
         ;-- we only do this for PRINT now.  Lest would generalize it.
-        ['print '<< set paragraphs block!] (
+        ['print '<< paragraphs: block!] (
             for-each str paragraphs [
                 append-result combine [
                     (begin-span-or-div span 'exposition) newline
@@ -62,7 +62,7 @@ htmlify: function [
         ;-- Strings bottom out as being handled by markdown.  If a string
         ;-- starts a block, it's expected that the block is going to be
         ;-- a group of elements; hence there are no parameters.
-        ['print set str text!] (
+        ['print str: text!] (
             append-result combine [
                 (begin-span-or-div span 'exposition) newline
                 markdown str
@@ -86,14 +86,14 @@ htmlify: function [
         ;-- Can be either lone URL, or block with URL and anchor label.
         ;-- If lone URL, the URL is used as the anchor text also.
         [
-            ['link set url url!] (
+            ['link url: url!] (
                 anchor-text: to text! url
             )
         |
-            ['link and block! into [
-                [set url url!]
-                [set anchor-text text!]
-                end
+            ['link ahead block! into [
+                [url: url!]
+                [anchor-text: text!]
+                <end>
             ]]
         ] (
             ;-- put in better url encoding logic or decide what should be done
@@ -114,7 +114,7 @@ htmlify: function [
             ;-- site-wide way of locating media.  See also IMAGE.
             [
                 'picture
-                set picture-file file!
+                picture-file: file!
             ] (
 
                 append-result combine [
@@ -135,11 +135,11 @@ htmlify: function [
         |
             ;-- IMAGE
             ;-- See also PICTURE (hack)
-            ['image and block! into [
-                [set url url!]
-                [set size pair!]
-                [set caption text!]
-                end
+            ['image ahead block! into [
+                [url: url!]
+                [size: pair!]
+                [caption: text!]
+                <end>
             ]] (
                 append-result combine [
                     <div class="picture">
@@ -154,12 +154,12 @@ htmlify: function [
             )
         |
             ;-- BUTTON
-            ['button and block! into [
-                [set image-url url!]
-                [set size pair!]
-                [set caption text!]
-                [set link-url url!]
-                end
+            ['button ahead block! into [
+                [image-url: url!]
+                [size: pair!]
+                [caption: text!]
+                [link-url: url!]
+                <end>
             ] (
                 append-result combine [
                     <div class="picture">
@@ -174,7 +174,7 @@ htmlify: function [
             )
         |
             ;-- QUOTE
-            ['quote set args [text! | block!]] (
+            ['quote args: [text! | block!]] (
                 append-result combine [
                     <blockquote>
 
@@ -194,28 +194,28 @@ htmlify: function [
                 ]
             )
         |
-            ['attribution set url url!] (
+            ['attribution url: url!] (
                 ;-- http://html5doctor.com/blockquote-q-cite/
                 append-result combine [
                     <footer> -{<a href="}- url -{">}- url -{/a>}- </footer>
                 ]
             )
         |
-            ['attribution set str text!] (
+            ['attribution str: text!] (
                 ;-- http://html5doctor.com/blockquote-q-cite/
                 append-result combine [
                     <footer> markdown str </footer>
                 ]
             )
         |
-            ['attribution set arg block!] (
+            ['attribution arg: block!] (
                 ;-- http://html5doctor.com/blockquote-q-cite/
                 append-result combine [
                     <footer> htmlify:span arg </footer>
                 ]
             )
         |
-            ['attribution set text! str] (
+            ['attribution str: text!] (
                 ;-- http://html5doctor.com/blockquote-q-cite/
                 append-result combine [
                     <footer>
@@ -229,8 +229,8 @@ htmlify: function [
             ;-- NOTE and UPDATE
             [
                 ['note (is-note: true) | 'update (is-note: false)]
-                (date: null) opt [set date date!]
-                set args [block! | text!]
+                (date: null) opt [date: date!]
+                args: [block! | text!]
             ] (
                 append-result combine [
                     -{<div class="}- (either is-note ["note"] ["update"]) -{">}-
@@ -267,8 +267,8 @@ htmlify: function [
             ;-- CODE, TEXT, ERROR
             [
                 'source
-                (language: null) opt [set language lit-word!]
-                [set code text!]
+                (language: null) opt [language: lit-word!]
+                [code: text!]
             ] (
                 language: if language [to-word language]
 
@@ -317,8 +317,8 @@ htmlify: function [
             ;-- HEADING
             [
                 'heading
-                (anchor: null) opt [set anchor file!]
-                set heading-text text!
+                (anchor: null) opt [anchor: file!]
+                heading-text: text!
             ] (
                 append-result combine [
                     if anchor [
@@ -332,8 +332,8 @@ htmlify: function [
         |
             ;-- LIST
             [
-                'list and block! into [
-                    'item '<< set args block!
+                'list ahead block! into [
+                    'item '<< args: block!
                 ]
             ] (
                 ;-- First I tried using map-each
@@ -371,7 +371,7 @@ htmlify: function [
             ;-- HTML
             [
                 'html
-                set html text!
+                html: text!
             ] (
                 ;-- The HTML construct should probably be more versatile, but
                 ;-- for the moment let's just limit it to one HTML string
@@ -381,9 +381,9 @@ htmlify: function [
             ;-- YOUTUBE
             [
                 'youtube
-                and block! into [
-                    [set url url!]
-                    [set size pair!]
+                ahead block! into [
+                    [url: url!]
+                    [size: pair!]
                 ]
             ] (
                 ;-- I like the idea of being able to put actual working youtube URLs in
@@ -392,12 +392,12 @@ htmlify: function [
 
                 ;-- But revisit what's tolerated and what isn't
                 if not all [
-                    parse/redbol to text! url [
-                        ["http" [opt "s"] "://" [opt "www."] "youtube.com/v/" copy video-id to [end | "?"]]
+                    parse to text! url [
+                        ["http" [opt "s"] "://" [opt "www."] "youtube.com/v/" video-id: across to [<end> | "?"]]
                     |
-                        ["http" [opt "s"] "://" [opt "www."] "youtube.com/watch" thru "v=" copy video-id to [end | "#"]]
+                        ["http" [opt "s"] "://" [opt "www."] "youtube.com/watch" thru "v=" video-id: across to [<end> | "#"]]
                     |
-                        ["http" [opt "s"] "://" [opt "www."] "youtube.com/embed/" copy video-id to [end | "#"]]
+                        ["http" [opt "s"] "://" [opt "www."] "youtube.com/embed/" video-id: across to [<end> | "#"]]
                     ]
                 ][
                     fail "Bad youtube embed"
@@ -430,10 +430,10 @@ htmlify: function [
         ;-- Rebol does that systems like Django/Rails cannot.
         'dialog and block! into [
             some [
-                [set character set-word!]
+                [character: set-word!]
                 (parenthetical: null)
-                opt [set parenthetical tag!]
-                [set dialogue-text text!]
+                opt [parenthetical: tag!]
+                [dialogue-text: text!]
                 (
                     append-result combine [
                         begin-span-or-div span 'dialogue
@@ -456,7 +456,7 @@ htmlify: function [
         ]
     ]]
 
-    if not parse/match/redbol blk group-rule [
+    if not parse:match blk group-rule [
         print "INVALID DRAEM DATA - PARSE RETURNED FALSE"
         print "BLOCK WAS"
         print mold blk

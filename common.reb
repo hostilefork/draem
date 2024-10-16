@@ -165,10 +165,10 @@ flatten: func [
     rule: [
         into [some rule]
     |
-        set value skip (append local value)
+        value: one (append local value)
     ]
-    parse/redbol data [some rule]
-    local
+    parse data [some rule]
+    return local
 ]
 
 ; The COMBINE dialect is intended to assist with the common task of creating

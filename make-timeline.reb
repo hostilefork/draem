@@ -39,14 +39,14 @@ to-timeline-date: function [d [date!]] [
 
     date-string: to text! d
     rule: [
-        copy day-string: to "-" skip
-        copy month-string: to "-" skip
-        copy year-string: to "/" skip
+        day-string: across to "-" one
+        month-string: across to "-" one
+        year-string: across to "/" one
         ;-- current potential bug that timezone is being omitted...
-        copy time-string: to ["+" | "-" | end]
-        copy gmt-string: to end
+        time-string: across to ["+" | "-" | <end>]
+        gmt-string: across to <end>
     ]
-    if not parse/redbol date-string rule [
+    if not parse:match date-string rule [
         fail ["Could not convert" date-string "to timeline format."]
     ]
 

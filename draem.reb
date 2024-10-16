@@ -347,26 +347,26 @@ draem: context [
 
             collect-characters: function [blk [block!]] [
                 dialog-rule: [
-                    any [
-                        set who set-word! (
+                    some [
+                        who: set-word! (
                             if not find characters to-word who [
                                 append characters to-word who
                             ]
                         )
                     |
-                        skip
+                        one
                     ]
                 ]
 
-                rule: [any [
-                    'dialog and block! into dialog-rule
+                rule: [opt some [
+                    'dialog ahead block! into dialog-rule
                 |
-                    and block! into rule
+                    ahead block! into rule
                 |
-                    skip
+                    one
                 ]]
 
-                parse/redbol blk rule
+                parse blk rule
             ]
 
             collect-characters content
