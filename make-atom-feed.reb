@@ -1,8 +1,8 @@
 Rebol [
     Title: "Make Atom Feed"
-    Description: {
+    Description: --{
         Build an RSS ATOM xml file from the last N entries.
-    }
+    }--
 
     Home: http://draem.hostilefork.com
     License: 'mit
@@ -22,13 +22,10 @@ do %common.reb
 ; had to tweak to meet the specifications of date construct, http://tools.ietf.org/html/rfc4287
 
 to-iso8601-date: function [
-     {converts a date! to a string which complies with the ISO 8602 standard.
-      If the time is not set on the input date, a default of 00:00 is used.}
+    "Converts a date! to a string which complies with the ISO 8602 standard"
 
     the-date [date!]
-        "The date to be reformatted"
-    /timestamp
-        {Include the timestamp}
+    /timestamp "Include the timestamp, defaults to 00:00 if not present"
 ][
     iso-date: copy ""
 
@@ -78,13 +75,13 @@ to-iso8601-date: function [
                 ][
                     [
                         ; + or - UTC
-                        either (the-date.zone.hour > 0) [{+}] [{-}]
+                        either (the-date.zone.hour > 0) ["+"] ["-"]
 
                         if ((absolute the-date.zone.hour) < 10) ["0"]
 
                         absolute the-date.zone.hour
 
-                        {:}
+                        ":"
 
                         if (the-date.zone.minute < 10) ["0"]
 
@@ -121,21 +118,13 @@ to-iso8601-date: function [
 
 
 atomid-from-url: function [
-    {Generates an "atom ID" from a URL.  I'm not sure if this is correct,
-    but I got my information from:
-
-        http://diveintomark.org/archives/2004/05/28/howto-atom-id
-
-    ...which was the #1 Google hit for "atom ID".}
+    "Atom ID: http://diveintomark.org/archives/2004/05/28/howto-atom-id"
 
     url [url! text!]
-        {The URL to be specified}
-
     d [date!]
-        {Date associated with URL, included in atom ID}
 ][
     str: to text! url
-    replace:one str "http://" {}
+    replace:one str "http://" void
     replace str "#" "/"
     replace:one str "/" combine ["," to-iso8601-date d ":"]
     insert str "tag:"
@@ -144,16 +133,14 @@ atomid-from-url: function [
 
 
 make-atom-feed: function [
-    {Generates an RSS "Atom" feed, so that polling requests from RSS
-    readers will know when there are new entries available.}
+    "Generates an RSS Atom feed (pollable for when new entries added)"
 
     entries [block!]
 
-    xml-filename [file!]
-        {Name of the output file (should end in .xml)}
-
-    atom-length [integer!]
-        {Number of most recent entries to feed}
+    xml-filename "Output file (should end in .xml)"
+        [file!]
+    atom-length "Number of most recent entries to feed"
+        [integer!]
 ][
     draem/stage "ATOM FEED OUTPUT"
 
@@ -164,9 +151,9 @@ make-atom-feed: function [
 
         <title> draem.config.site-title </title>
         <subtitle> draem.config.site-tagline </subtitle>
-        {<link href="} draem.config.site-url {feed/" rel="self" />}
-        {<link href="} draem.config.site-url {" />}
-        <id> {tag:} draem.config.rss-tag {,1975-04-21:} </id>
+        -{<link href="}- draem.config.site-url -{feed/" rel="self" />}-
+        -{<link href="}- draem.config.site-url -{" />}-
+        <id> -{tag:}- draem.config.rss-tag -{,1975-04-21:}- </id>
         <updated> to-iso8601-date:timestamp now </updated>
         <author>
             <name> draem.config.site-author </name>
@@ -192,12 +179,12 @@ make-atom-feed: function [
             <entry>
                 [<title> (entry.header.title) </title>]
             ;   <link href="} (url-for-entry entry) {" />
-                [{<link rel="alternate" type="text/html" href="} url-for-entry entry {" />}]
+                [-{<link rel="alternate" type="text/html" href="}- url-for-entry entry -{" />}-]
             ;   <link rel="edit" href="} ("http://example.org/2003/12/13/atom03/edit") {"/>
                 [<id> (atomid-from-url url-for-entry entry entry.header.date) </id>]
                 [<updated> (to-iso8601-date/timestamp entry.header.date) </updated>]
                 <summary>
-                [{Tags: } combine:with sorted-tags [{,} space]]
+                [-{Tags: }- combine:with sorted-tags [-{,}- space]]
                 </summary>
             </entry>
         ] newline

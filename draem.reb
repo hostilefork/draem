@@ -1,12 +1,12 @@
 Rebol [
     Title: "Draem"
-    Description: {
+    Description: --{
         This is the main module for the static website builder known as
         Draem.  Currently it implements loading of entries and the
         indexing of those entries.  The goal will be to also provide
         hooks for reusing the loader and then "munging" the entries
         to rewrite them using arbitrary meta-programming.
-    }
+    }--
 
     Home: http://draem.hostilefork.com
     License: 'mit
@@ -19,10 +19,10 @@ Rebol [
     Type: 'dialect
     Level: 'intermediate
 
-    Usage: {
+    Usage: --{
        Current usage is just to run this script in the directory containing
        %entries/ and it will spit out a directory called %templates/
-    }
+    }--
 ]
 
 do %common.reb
@@ -37,7 +37,7 @@ draem: context [
     config: null
 
     set-config: func [
-        {Do validation on the site configuration, and set it.}
+        "Do validation on the site configuration, and set it"
 
         cfg [object!]
     ][
@@ -73,7 +73,7 @@ draem: context [
     slug-to-source-path: make map! []
 
     set-entries: func [
-        {Sets the entries block in this context, assumed valid.}
+        "Sets the entries block in this context, assumed valid"
 
         ent [block!]
     ][
@@ -85,7 +85,7 @@ draem: context [
     indexes: null
 
     set-indexes: func [
-        {Sets the index information in this context, assumed valid.}
+        "Sets the index information in this context, assumed valid"
 
         idx [object!]
     ][
@@ -95,16 +95,15 @@ draem: context [
 
 
     stage: function [
-        {Log what stage we are in.}
+        "Log what stage we are in"
         name [text!]
     ][
-        print [lf {===} name {===}]
+        print [lf "===" name "==="]
     ]
 
 
     load-entries: function [
-        {Recurse into the provided directory and load all the entries
-        into a block, sorted reverse chronologically.}
+        "Recursively load all entries into reverse-chronological block"
 
         /recurse sub-dir [file!] entries [block!]
     ][
@@ -114,15 +113,15 @@ draem: context [
 
             ; entries list sorted newest first, oldest last
             entries: copy []
-            sub-dir: to file! {}
+            sub-dir: to file! ""
         ]
 
         for-each file load (join config.entries-dir sub-dir) [
             either dir? file [
-                print [{Recursing into:} rejoin [config.entries-dir sub-dir file]]
+                print ["Recursing into:" rejoin [config.entries-dir sub-dir file]]
                 load-entries:recurse (join sub-dir file) entries
             ][
-                print [{Pre-processing:} file]
+                print ["Pre-processing:" file]
 
                 data: load rejoin [config.entries-dir sub-dir file]
 
@@ -264,7 +263,7 @@ draem: context [
             target-file: rejoin [target-dir (select slug-to-source-path entry.header.slug)]
             make-dir:deep split-path target-file
 
-            out: copy {Draem }
+            out: copy "Draem "
 
             for-each w words-of entry.header [
                 if word? select entry.header w [
@@ -298,7 +297,7 @@ draem: context [
     ]
 
     entry-tags-by-popularity: function [
-        {Return the tags as a block sorted by popularity.}
+        "Return the tags as a block sorted by popularity"
         header [object!]
     ][
         sorted-tags: copy header.tags
@@ -309,7 +308,7 @@ draem: context [
     ]
 
     build-indexes: function [
-        {Build indexing information over the entries block.}
+        "Build indexing information over the entries block"
     ][
         stage "BUILDING INDEXES"
 

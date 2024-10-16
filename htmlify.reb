@@ -1,5 +1,5 @@
 Rebol [
-    Title: {Takes input in the Draem dialect and produces HTML}
+    Title: "Takes input in the Draem dialect and produces HTML"
     File: %htmlify.reb
 ]
 
@@ -9,11 +9,11 @@ begin-span-or-div: function [
     class [word!]
 ][
     combine [
-        {<}
-            (either is-span [{span}] [{div}])
+        "<"
+            (either is-span ["span"] ["div"])
             space
-            {class="} to text! class {"}
-        {>}
+            -{class="}- to text! class -{"}-
+        ">"
     ]
 ]
 
@@ -21,16 +21,14 @@ begin-span-or-div: function [
 end-span-or-div: function [
     is-span [logic!]
 ][
-    combine [{</} (either is-span [{span}] [{div}]) {>}]
+    combine ["</" (either is-span ["span"] ["div"]) ">"]
 ]
 
 
 htmlify: function [
-    {Recursively produces the HTML for a Draem Rebol structure.
-    Input must be a block of items to turn into HTML, not just
-    a block representing an element, so it is legal to pass in
-    [[quote "Some text"]] but not merely [quote "Some text"].}
-    blk [block!]
+    "Recursively produce HTML for a Draem Rebol structure"
+    blk -{Legal to be [[quote "Some text"]], but not [quote "Some text"]}-
+        [block!]
     /nestfirst
     /nestlast
     /span
@@ -81,7 +79,7 @@ htmlify: function [
         ;-- SEPARATOR
         ;-- Adds some spacing, but no line.
         ['separator] (
-            append-result combine [<span> {&nbsp;} <br /> </span> newline]
+            append-result combine [<span> "&nbsp;" <br /> </span> newline]
         )
     |
         ;-- URL
@@ -103,7 +101,7 @@ htmlify: function [
 
             append-result combine [
                 (begin-span-or-div span 'url) newline
-                {<a href="} url {">}
+                -{<a href="}- url -{">}-
                 anchor-text
                 </a>
                 (end-span-or-div span) newline
@@ -121,14 +119,14 @@ htmlify: function [
 
                 append-result combine [
                     <div class="picture">
-                    {<a href="http://s159.photobucket.com/albums/t125/realityhandbook/}
+                    -{<a href="http://s159.photobucket.com/albums/t125/realityhandbook/}-
                     to text! picture-file
-                    {">}
+                    -{">}-
 
-                    {<img src="http://i159.photobucket.com/albums/t125/realityhandbook/}
-                    {th_}
+                    -{<img src="http://i159.photobucket.com/albums/t125/realityhandbook/}-
+                    -{th_}-
                     to text! picture-file
-                    {">}
+                    -{">}-
                     </a>
                     </div>
                     newline
@@ -145,11 +143,11 @@ htmlify: function [
             ]] (
                 append-result combine [
                     <div class="picture">
-                    {<a href="} url {">}
-                        {<img src="} url {"} space
-                        {alt="} caption {"} space
-                        {width="} to integer! size.1 {"} space
-                        {height="} to integer! size.2 {" />}
+                    -{<a href="}- url -{">}-
+                        -{<img src="}- url -{"}- space
+                        -{alt="}- caption -{"}- space
+                        -{width="}- to integer! size.1 -{"}- space
+                        -{height="}- to integer! size.2 -{" />}-
                     </a>
                     </div>
                 ]
@@ -165,11 +163,11 @@ htmlify: function [
             ] (
                 append-result combine [
                     <div class="picture">
-                    {<a href="} to text! link-url {">}
-                        {<img src="} to text! image-url {"} space
-                        {alt="} caption {"} space
-                        {width="} to integer! size.1 {"} space
-                        {height="} to integer! size.2 {" />}
+                    -{<a href="}- to text! link-url -{">}-
+                        -{<img src="}- to text! image-url -{"}- space
+                        -{alt="}- caption -{"}- space
+                        -{width="}- to integer! size.1 -{"}- space
+                        -{height="}- to integer! size.2 -{" />}-
                     </a>
                     </div>
                 ]
@@ -199,7 +197,7 @@ htmlify: function [
             ['attribution set url url!] (
                 ;-- http://html5doctor.com/blockquote-q-cite/
                 append-result combine [
-                    <footer> {<a href="} url {">} url {/a>} </footer>
+                    <footer> -{<a href="}- url -{">}- url -{/a>}- </footer>
                 ]
             )
         |
@@ -235,12 +233,12 @@ htmlify: function [
                 set args [block! | text!]
             ] (
                 append-result combine [
-                    {<div class="} (either is-note [{note}] [{update}]) {">}
+                    -{<div class="}- (either is-note ["note"] ["update"]) -{">}-
                     either is-note [
-                        [<span class="note-span"> {Note} </span>]
+                        [<span class="note-span"> -{Note}- </span>]
                     ][
                         [
-                            <span class="update-span"> {UPDATE}
+                            <span class="update-span"> -{UPDATE}-
                             if date [
                                 [space date]
                             ]
@@ -294,18 +292,18 @@ htmlify: function [
                 append-result combine [
                     if needs-pre-tag [
                         [
-                            {<pre}
+                            -{<pre}-
                             if all [
                                 language
                             ][
                                 [
                                     space
-                                    {class="prettyprint}
-                                    space {lang-} to text! language
-                                    {"}
+                                    -{class="prettyprint}-
+                                    space "lang-" to text! language
+                                    -{"}-
                                 ]
                             ]
-                            {>}
+                            -{>}-
                         ]
                     ]
                     (if needs-code-tag [<code>])
@@ -325,7 +323,7 @@ htmlify: function [
                 append-result combine [
                     if anchor [
                         ; http://stackoverflow.com/a/484781/211160
-                        [{<a id="} to text! anchor {">} </a>]
+                        [-{<a id="}- to text! anchor -{">}- </a>]
                     ]
                     <h3> markdown heading-text </h3>
                     newline
@@ -410,14 +408,14 @@ htmlify: function [
 
                 append-result combine [
                     <div class="youtube">
-                        {<iframe class="youtube-player"} space
+                        -{<iframe class="youtube-player"}- space
 
                         ;-- Conversion needed as first 10x20 returns 10.0 :-/
-                        {width="} to integer! size.1 {"} space
-                        {height="} to integer! size.2 {"} space
-                        {src="https://www.youtube.com/embed/} video-id {"} space
-                        {allowFullScreen}
-                        {>}
+                        -{width="}- to integer! size.1 -{"}- space
+                        -{height="}- to integer! size.2 -{"}- space
+                        -{src="https://www.youtube.com/embed/}- video-id -{"}- space
+                        -{allowFullScreen}-
+                        -{>}-
                         </iframe>
                     </div>
                 ]
@@ -449,7 +447,7 @@ htmlify: function [
                             ]
                         ]
 
-                        {"} markdown dialogue-text {"}
+                        -{"}- markdown dialogue-text -{"}-
 
                         end-span-or-div span
                     ]
@@ -474,8 +472,7 @@ htmlify: function [
 
 
 htmlify-range: function [
-    {The ordinary htmlify function considers blocks to be elements,
-    but this treats blocks as groups.}
+    "Consider blocks as groups (unlike HTMLIFY treating blocks as elements)"
 
     start [block!]
     end [block!]
@@ -483,7 +480,7 @@ htmlify-range: function [
     assert [(head start) = (head end)]
     assert [1 <= offset? start end]
 
-    result: copy {}
+    result: copy ""
     pos: start
     while [pos <> end] [
         ;-- htmlify always expects a block of elements

@@ -174,7 +174,7 @@ header-rule: [
 ;        to gt skip
 ;        (
 ;            start-para
-;            emit ajoin [{<a href="} address {">} address </a>]
+;            emit ajoin [-{<a href="}- address -{">}- address </a>]
 ;        )
 ;    ]
 ;]
@@ -215,9 +215,9 @@ link-rule: use [text address value title] [
                 fail "( or ) in markdown URL, use %28 and %29"
             ]
             start-para
-            title: either title [ajoin [space {title="} title {"}]][""]
+            title: either title [ajoin [space -{title="}- title -{"}-]][""]
             emit ajoin [
-                {<a href="} address {"} title {>}
+                -{<a href="}- address -{"}- title -{>}-
                 either xml? [markdown/xml text] [markdown text]
                 </a>
             ]
@@ -254,7 +254,10 @@ img-rule: use [text address] [
         to #")" skip
         (
             start-para
-            emit ajoin [{<img src="} address {" alt="} text {"} either xml? { /} {} {>}]
+            emit ajoin [
+                -{<img src="}- address -{" alt="}- text -{"}-
+                    either xml? -{ />}- -{>}-
+            ]
         )
     ]
 ]

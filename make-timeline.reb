@@ -1,6 +1,6 @@
 Rebol [
     Title: "Make Timeline"
-    Description: {
+    Description: --{
         This is a small experiment which builds the XML file needed so that
         the entries can be shown on a SIMILE timeline:
 
@@ -9,7 +9,7 @@ Rebol [
        More modern timeline codebases now exist for JavaScript and HTML5,
        and it would probably be a good idea to update to another solution,
        as the SIMILE widgets seem to have not had any updates for some time.
-    }
+    }--
 
     Home: http://draem.hostilefork.com
     License: 'mit
@@ -64,17 +64,17 @@ make-timeline: function [entries [block!] xml-filename [file!]] [
     draem/stage "TIMELINE OUTPUT"
 
     timelinexml: combine [
-        {<data}
-        space {wiki-url="} draem.config.site-url {"}
-        space {wiki-section="} draem.config.site-name { Timeline"}
-        {>}
+        -{<data}-
+        space -{wiki-url="}- draem.config.site-url -{"}-
+        space -{wiki-section="}- draem.config.site-name -{ Timeline"}-
+        -{>}-
     ]
 
     for-each entry entries [
         append timelinexml combine [
-            tab tab {<event start="} to-timeline-date entry.header.date {"}
-            tab tab tab {title="} stringify entry.header.slug {"}
-            tab tab tab {>}
+            tab tab -{<event start="}- to-timeline-date entry.header.date -{"}-
+            tab tab tab -{title="}- stringify entry.header.slug -{"}-
+            tab tab tab -{>}-
             entry.header.title
             tab tab tab </event>
         ]
