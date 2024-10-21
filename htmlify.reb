@@ -121,12 +121,11 @@ htmlify: function [
 
                 append-result combine [
                     <div class="picture">
-                    -{<a href="http://s159.photobucket.com/albums/t125/realityhandbook/}-
+                    -{<a href="http://realityhandbook.org/media/entries/}-
                     to text! picture-file
                     -{">}-
 
-                    -{<img src="http://i159.photobucket.com/albums/t125/realityhandbook/}-
-                    -{th_}-
+                    -{<img src="http://realityhandbook.org/media/entries/}-
                     to text! picture-file
                     -{">}-
                     </a>
