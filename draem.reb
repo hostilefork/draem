@@ -123,7 +123,13 @@ draem: context [
             ][
                 print ["Pre-processing:" file]
 
-                data: load rejoin [config.entries-dir sub-dir file]
+                data: read rejoin [config.entries-dir sub-dir file]
+
+                if find data #{C2A0} [
+                    fail "Non-breaking space found.  Get rid of it."
+                ]
+
+                data: load data
 
                 pos: data
 
