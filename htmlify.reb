@@ -47,7 +47,7 @@ htmlify: function [
         return ~
     ]
 
-    group-rule: [some [
+    segment-rule: [
         ;-- FEEDER
         ;-- we only do this for PRINT now.  Lest would generalize it.
         ['print '<< paragraphs: block!] (
@@ -455,19 +455,17 @@ htmlify: function [
                 )
             ]
         ]
-    ]]
+    ]
 
-    if not parse:match blk group-rule [
+    if not parse:match blk [opt some [pos: <here>, segment-rule]] [
         print "INVALID DRAEM DATA - PARSE RETURNED FALSE"
-        print "BLOCK WAS"
-        print mold blk
+        print mold pos
         print "LAST APPEND WAS"
         print mold last-append
         quit 1
     ]
 
-    assert [text? result]
-    assert [not empty? result]
+    assert [text? result]  ; may be empty
     return result
 ]
 
