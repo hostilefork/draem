@@ -25,6 +25,8 @@ end-span-or-div: function [
 ]
 
 
+last-append: null
+
 htmlify: function [
     "Recursively produce HTML for a Draem Rebol structure"
     blk -{Legal to be [[quote "Some text"]], but not [quote "Some text"]}-
@@ -32,13 +34,13 @@ htmlify: function [
     /nestfirst
     /nestlast
     /span
+    <with> last-append
 ][
     span: to logic! span
 
     ;-- Review proposals for constructors...
     result: make text! 1000
 
-    last-append: null
     append-result: func [html [text!]] [
         append result html
         last-append: html
